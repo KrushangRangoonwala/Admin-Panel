@@ -17,7 +17,7 @@ export async function handleLogin(req, res) {
         // console.log('name', name);
         const token = setUser({ name: user.name, id: user._id });
         console.log('token', token)
-        res.cookie('userToken', token);
+        res.cookie('userToken', token);  // i set cookie using this, i cannot find  this cookie in client device
         res.status(200).send({
             success: true,
             message: 'Logged in successfully',

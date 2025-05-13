@@ -9,20 +9,26 @@ import categoryRouter from './routes/categoryRoutes.js';
 import subCategoryRouter from './routes/subCategoryRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import otherDetailsRoute from './routes/otherDetailsRoute.js';
+import cors from 'cors';
 
 const app = express();
 app.use(morgan('dev'))
 
 app.use(express.json()); // for parsing application/json format request data
+// app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:5173', // your frontend origin
+  credentials: true
+}));
 
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 
 connectToDB('mongodb://localhost:27017/app');
 
-app.use('/', checkAuth, otherDetailsRoute)
 app.use('/login', userRouter);
+app.use('/', checkAuth, otherDetailsRoute)
 app.use('/category', checkAuth, categoryRouter);
 app.use('/subCategory', checkAuth, subCategoryRouter);
 app.use('/product', checkAuth, productRouter);

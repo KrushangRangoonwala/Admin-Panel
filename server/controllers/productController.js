@@ -88,3 +88,40 @@ export async function deleteProduct(req, res) {
         })
     }
 }
+
+export async function getProductBySubCategory(req, res) {
+    const subCategoryId = req.params.subCategoryId;
+    console.log('subCategoryId', subCategoryId);
+    try {
+        const record = await product.find({ subCategory: subCategoryId });
+        res.send({
+            success: true,
+            message: 'Product found',
+            data: record,
+        })
+    } catch (error) {
+        res.status(404).send({
+            success: false,
+            error,
+        })
+    }
+}
+
+export async function getProductByCategory(req, res) {
+    const categoryId = req.params.categoryId;
+    console.log('categoryId', categoryId);
+    try {
+        const record = await product.find({ category: categoryId });
+        res.send({
+            success: true,
+            message: 'Product found',
+            data: record,
+        })
+    }
+    catch (error) {
+        res.status(404).send({
+            success: false,
+            error,
+        })
+    }
+}

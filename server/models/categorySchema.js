@@ -6,7 +6,7 @@ const categorySchema = Schema({
     type: String,
     required: true,
     trim: true,
-    unique:true,
+    unique: true,
   },
   slug: {
     type: String,
@@ -14,8 +14,9 @@ const categorySchema = Schema({
     match: [/^[a-z0-9-]+$/, 'Only lowercase letters, numbers, and hyphens are allowed'],
   },
   image: {
-    type: String,
-    required: true,
+    data: Buffer,
+    contentType: String,
+    originalName: String,
   },
   desc: {
     type: String,

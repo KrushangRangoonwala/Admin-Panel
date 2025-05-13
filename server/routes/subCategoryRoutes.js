@@ -10,6 +10,6 @@ router.route('/id/:id')
     .put(updateSubCategory)
     .delete(deleteSubCategory)  
 
-router.get('subCategoryByCategory/:categoryId',getSubCategoryByCategory)
+router.get('/subCategoryByCategory/:categoryId',getSubCategoryByCategory)
 
 export default router;

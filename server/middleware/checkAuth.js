@@ -2,6 +2,7 @@ import { getUser } from "../helpers/jwtHelper.js";
 
 export function checkAuth(req, res, next) {
     const token = req.cookies?.userToken;
+    // console.log('req.path', req.path)
     console.log('token', token);
     if (token) {
         const userData = getUser(token);

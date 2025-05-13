@@ -44,7 +44,7 @@ export async function getSubCategoryById(req, res) {
             data: record,
         })
     } catch (error) {
-        res.status(404).send({
+        res.send({
             success: false,
             error,
         })
@@ -58,13 +58,13 @@ export async function updateSubCategory(req, res) {
             new: true, // return updated data
             runValidators: true, // validate for updating 
         });
-        res.status(404).send({
+        res.send({
             success: true,
             message: 'SubCategory updated',
             updatedSubCategory: record,
         })
     } catch (error) {
-        res.status(404).send({
+        res.send({
             success: false,
             error,
         })
@@ -98,7 +98,7 @@ export async function getSubCategoryByCategory(req,res) {
         })
     } catch (error) {
         console.log('error', error)
-        res.status(404).send({
+        res.send({
             success: false,
             error,
         })
