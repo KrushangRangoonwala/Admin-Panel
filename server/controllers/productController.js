@@ -15,9 +15,28 @@ export async function getAllProduct(req, res) {
 }
 
 export async function addProduct(req, res) {
-    console.log('req.body', req.body);
+    // console.log('\n\n\n\nreq.body', req.body);
+    const newProduct = {
+        ...req.body,
+    }
+    // console.log('\n\n\n\nreq.files', req.files);
+    if (req.files.mainImage) {
+        newProduct.mainImage = {
+            data: req.files.mainImage[0].buffer,
+            contentType: req.files.mainImage[0].mimetype,
+            originalName: req.files.mainImage[0].originalname,
+        };
+    }
+    if(req.files.subImages) {
+        newProduct.subImages = req.files.subImages.map((file) => ({
+            data: file.buffer,
+            contentType: file.mimetype,
+            originalName: file.originalname,
+        }));
+    }   
     try {
-        const addedProduct = await product.create(req.body);
+        const addedProduct = await product.create(newProduct);
+        console.log('addedProduct', addedProduct);
         res.status(200).send({
             success: true,
             message: 'Product added',
@@ -35,7 +54,7 @@ export async function addProduct(req, res) {
 
 export async function getProductById(req, res) {
     const id = req.params.id;
-    console.log('id',id);
+    console.log('id', id);
     try {
         const record = await product.findById(id);
         res.send({

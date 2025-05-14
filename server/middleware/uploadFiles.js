@@ -19,3 +19,14 @@ export const uploadSingleImage = multer({
         fileSize: 400 * 1024, // 400KB max
     },
 }).single('image'); // expecting field name 'image'
+
+export const uploadProductImages = multer({
+    storage,
+    fileFilter,
+    limits: {
+        fileSize: 400 * 1024, // 400KB max
+    },
+}).fields([
+    { name: 'mainImage', maxCount: 1 },
+    { name: 'subImages', maxCount: 10 }
+]); // expecting field name 'image'

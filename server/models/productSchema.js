@@ -1,18 +1,21 @@
 import { model, Schema } from "mongoose";
 
 const productSchema = Schema({
-  name: {
+  productName: {
     type: String,
     required: true,
     trim: true,
   },
-  image: {
-    type: String,
-    required: true,
+  mainImage: {
+    data: Buffer,
+    contentType: String,
+    originalName: String,
   },
-  subImages: {
-    type: [String],
-  },
+  subImages: [{
+    data: Buffer,
+    contentType: String,
+    originalName: String,
+  }],
   categoryId: {
     type: Schema.Types.ObjectId,
     ref: 'category', // reference to the category model
@@ -23,29 +26,37 @@ const productSchema = Schema({
     ref: 'subCategory', // reference to the subCategory model
     required: true,
   },
-  sizes: [
-    {
-      size: {
-        type: String,
-        enum: ['S', 'M', 'L', 'XL', 'XXL'],
-        required: true,
-      },
-      quantity: {
-        type: Number,
-        required: true,
-      },
-    }
-  ],
+  size: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  // sizes: [
+  //   {
+  //     size: {
+  //       type: String,
+  //       enum: ['S', 'M', 'L', 'XL', 'XXL'],
+  //       required: true,
+  //     },
+  //     quantity: {
+  //       type: Number,
+  //       required: true,
+  //     },
+  //   }
+  // ],
   price: {
     type: Number,
     required: true,
   },
   status: {
     type: String,
-    enum: ['ReadyToSheep', 'onBooking'],
+    enum: ['ReadyToShip', 'onBooking'],
     default: 'active',
   },
-  weigth: {
+  weight: {
     type: Number,
     required: true,
   },

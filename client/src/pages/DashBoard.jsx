@@ -4,6 +4,8 @@ import api from "../axiosConfig";
 import CategoryForm from "../components/CategoryForm";
 import SubCategoryForm from "../components/SubCategoryForm";
 import { useNavigate } from "react-router";
+import Size from "../components/Size";
+import AddSizeForm from "../components/AddSizeForm";
 
 const DashboardPage = () => {
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -12,9 +14,11 @@ const DashboardPage = () => {
   const [subcategories, setSubcategories] = useState([]);
 
   const [isCatFormOpen, setIsCatFormOpen] = useState(false);
-  const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false)
+  const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
+  const [isSizeFormOpen, setIsSizeFormOpen] = useState(false);
+  const [allSize, setAllSize] = useState([]);
 
-  const [editCatData, setEditCatData] = useState()
+  const [editCatData, setEditCatData] = useState();
 
   const navigate = useNavigate();
 
@@ -43,22 +47,24 @@ const DashboardPage = () => {
     getDashboardData();
   }, []);
 
+  async function getSubCategoryData() {
+    try {
+      const response = await api.get(
+        `/subCategory/subCategoryByCategory/${expandedCategoryId}`
+      );
+      console.log("Subcategories:", response.data);
+      setSubcategories(response.data.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   useEffect(() => {
     // console.log('expandedCategory', expandedCategoryId)
-    async function getSubCategoryData() {
-      try {
-        const response = await api.get(`/subCategory/subCategoryByCategory/${expandedCategoryId}`);
-        console.log("Subcategories:", response.data);
-        setSubcategories(response.data.data);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    }
-
     if (expandedCategoryId) {
       getSubCategoryData();
     }
-  }, [expandedCategoryId])
+  }, [expandedCategoryId]);
 
   function openEditCatForm(catDetails) {
     setEditCatData(catDetails);
@@ -69,10 +75,53 @@ const DashboardPage = () => {
     setExpandedCategoryId((prevId) => (prevId === id ? null : id));
   };
 
+  async function getAllSize() {
+    try {
+      const response = await api.get("/size");
+      console.log("Sizes:", response.data);
+      setAllSize(response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  async function handleAddSize(values) {
+    setIsSizeFormOpen(false);
+    try {
+      const response = await api.post("/size", values);
+      console.log("Size added:", response.data);
+      getAllSize();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   return (
     <>
-      {isCatFormOpen && <CategoryForm isOpen={isCatFormOpen} onClose={() => setIsCatFormOpen(false)} editCatData={editCatData} setEditCatData={setEditCatData} />}
-      {isSubCatFormOpen && <SubCategoryForm isOpen={isSubCatFormOpen} onClose={() => setIsSubCatFormOpen(false)} categoryId={expandedCategoryId} />}
+      {isSizeFormOpen && (
+        <AddSizeForm
+          isOpen={isSizeFormOpen}
+          onClose={() => setIsSizeFormOpen(false)}
+          onSubmit={handleAddSize}
+        />
+      )}
+
+      {isCatFormOpen && (
+        <CategoryForm
+          isOpen={isCatFormOpen}
+          onClose={() => setIsCatFormOpen(false)}
+          editCatData={editCatData}
+          setEditCatData={setEditCatData}
+        />
+      )}
+
+      {isSubCatFormOpen && (
+        <SubCategoryForm
+          isOpen={isSubCatFormOpen}
+          onClose={() => setIsSubCatFormOpen(false)}
+          categoryId={expandedCategoryId}
+        />
+      )}
 
       <div className="dashboard-container">
         {/* Top Summary Boxes */}
@@ -96,10 +145,30 @@ const DashboardPage = () => {
         {/* Category Table */}
         <div className="category-table-container">
           <h2>Categories</h2>
+
+          <div className="add-btn-container">
+            <button
+              className="add-category-button"
+              onClick={() => navigate("/addProduct")}
+            >
+              <i className="bi bi-plus-lg"></i> Add Product
+            </button>
+
+            <button
+              className="add-category-button"
+              onClick={() => setIsCatFormOpen(true)}
+              style={{ backgroundColor: "#007bff" }}
+            >
+              <i className="bi bi-plus-lg"></i> Add Category
+            </button>
+          </div>
+
           <table className="category-table">
             <thead>
               <tr>
-                <th style={{ width: "10%" }}><input type="checkbox" /></th>
+                <th style={{ width: "10%" }}>
+                  <input type="checkbox" />
+                </th>
                 <th>Category Name</th>
                 <th>Slug</th>
                 <th style={{ width: "12%" }}></th>
@@ -110,27 +179,50 @@ const DashboardPage = () => {
             <tbody>
               {categories.map((cat) => (
                 <React.Fragment key={cat._id}>
-                  <tr
-                    className="category-row"
-                  >
+                  <tr className="category-row">
                     <td>
                       {/* {expandedCategoryId === cat.id ? null : ( */}
                       <input type="checkbox" />
                       {/* )} */}
                     </td>
-                    <td onClick={() => toggleExpand(cat._id)} className="category-text">{cat.name}</td>
-                    <td onClick={() => toggleExpand(cat._id)} className="category-text">{cat.slug}</td>
-                    <td className="icon eyeIcon" onClick={() => navigate(`/category/${cat._id}`)}>
-                      <abbr title="view"> <i className="bi bi-eye-fill"></i> </abbr>
+                    <td
+                      onClick={() => toggleExpand(cat._id)}
+                      className="category-text"
+                    >
+                      {cat.name}
                     </td>
-                    <td className="icon pencilIcon" onClick={() => openEditCatForm(cat)}>
-                      <abbr title="edit"> <i className="bi bi-pencil-fill"></i> </abbr>
+                    <td
+                      onClick={() => toggleExpand(cat._id)}
+                      className="category-text"
+                    >
+                      {cat.slug}
+                    </td>
+                    <td
+                      className="icon eyeIcon"
+                      onClick={() => navigate(`/category/${cat._id}`)}
+                    >
+                      <abbr title="view">
+                        {" "}
+                        <i className="bi bi-eye-fill"></i>{" "}
+                      </abbr>
+                    </td>
+                    <td
+                      className="icon pencilIcon"
+                      onClick={() => openEditCatForm(cat)}
+                    >
+                      <abbr title="edit">
+                        {" "}
+                        <i className="bi bi-pencil-fill"></i>{" "}
+                      </abbr>
                     </td>
                     <td className="icon trashIcon">
-                      <abbr title="delete"> <i className="bi bi-trash3-fill"></i> </abbr>
+                      <abbr title="delete">
+                        {" "}
+                        <i className="bi bi-trash3-fill"></i>{" "}
+                      </abbr>
                     </td>
                   </tr>
-                  {expandedCategoryId === cat._id &&
+                  {expandedCategoryId === cat._id && (
                     <>
                       {subcategories.map((subCat, index) => (
                         <tr key={index} className="subcategory-roww">
@@ -147,21 +239,37 @@ const DashboardPage = () => {
                         <td></td>
                         <td></td>
                         {/* <td></td> */}
-                        <td colSpan={4} style={{ textAlign: 'end' }}>
+                        <td colSpan={4} style={{ textAlign: "end" }}>
                           <button
                             className="add-subcategory-button"
                             onClick={() => setIsSubCatFormOpen(true)}
-                          ><i className="bi bi-plus "></i> Add SubCategory</button>
+                          >
+                            <i className="bi bi-plus "></i> Add SubCategory
+                          </button>
                         </td>
                       </tr>
-                    </>}
+                    </>
+                  )}
                 </React.Fragment>
               ))}
             </tbody>
           </table>
-          <button className="add-category-button" onClick={() => setIsCatFormOpen(true)}><i className="bi bi-plus-lg"></i> Add Category</button>
+          {/* <button
+            className="add-category-button"
+            onClick={() => setIsCatFormOpen(true)}
+          >
+            <i className="bi bi-plus-lg"></i> Add Category
+          </button> */}
+
+          <Size
+            isSizeFormOpen={isSizeFormOpen}
+            setIsSizeFormOpen={setIsSizeFormOpen}
+            getAllSize={getAllSize}
+            setAllSize={setAllSize}
+            allSize={allSize}
+          />
         </div>
-      </div >
+      </div>
     </>
   );
 };

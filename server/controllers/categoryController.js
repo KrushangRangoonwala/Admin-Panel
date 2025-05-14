@@ -3,7 +3,7 @@ import category from "../models/categorySchema.js";
 export async function getAllCategory(req, res) {
     try {
         const allCategory = await category.find({})
-        console.log('allCategory', allCategory);
+        // console.log('allCategory', allCategory);
 
         res.send({
             success: true,
@@ -99,6 +99,7 @@ export async function addCategory(req, res) {
             desc,
         };
 
+        console.log('req.file', req.file)
         if (req.file) {
             newCategory.image = {
                 data: req.file.buffer,
@@ -106,7 +107,7 @@ export async function addCategory(req, res) {
                 originalName: req.file.originalname,
             };
         }
-        console.log('newCategory', newCategory);
+        // console.log('newCategory', newCategory);
         const addedCategory = await category.create(newCategory);
         res.status(200).json({
             success: true,
@@ -142,7 +143,7 @@ export async function updateCategory(req, res) {
                 originalName: req.file.originalname,
             };
         }
-        console.log('updateFields', updateFields);
+        // console.log('updateFields', updateFields);
         const updated = await category.findByIdAndUpdate(id, updateFields, {
             new: true,
             runValidators: true,

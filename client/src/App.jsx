@@ -47,8 +47,10 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} /> 
           <Route path="/" element={<CheckAuth><Dashboard /></CheckAuth>} />
-          <Route path="/addProduct" element={<CheckAuth><ProductForm /></CheckAuth>} />
           <Route path="/category/:categoryId" element={<CheckAuth><ViewCategory /></CheckAuth>} />
+          <Route path="/addProduct/:categoryId?/:subCategoryId?" element={<CheckAuth><ProductForm /></CheckAuth>} />
+          {/* <Route path="/allProducts" element={<CheckAuth><ProductForm /></CheckAuth>} />
+          <Route path="/product/id/:id" element={<CheckAuth><ProductForm /></CheckAuth>} /> */}
         </Routes>
       </BrowserRouter>
 

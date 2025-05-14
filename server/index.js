@@ -10,6 +10,7 @@ import subCategoryRouter from './routes/subCategoryRoutes.js';
 import productRouter from './routes/productRoutes.js';
 import otherDetailsRoute from './routes/otherDetailsRoute.js';
 import cors from 'cors';
+import sizeRouter from './routes/sizeRoutes.js';
 
 const app = express();
 app.use(morgan('dev'))
@@ -32,5 +33,6 @@ app.use('/', checkAuth, otherDetailsRoute)
 app.use('/category', checkAuth, categoryRouter);
 app.use('/subCategory', checkAuth, subCategoryRouter);
 app.use('/product', checkAuth, productRouter);
+app.use('/size', checkAuth, sizeRouter);
 
 app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));

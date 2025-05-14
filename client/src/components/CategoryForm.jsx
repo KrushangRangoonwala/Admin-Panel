@@ -155,16 +155,16 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
           </label>
 
           <label>
-            Images:
+            Image:
           </label>
           {imagePreview && <img src={imagePreview} alt="preview" className="img" />}
           <i
-            className="bi bi-x-circle"
+            className="bi bi-x-circle img-upload-icon"
             ref={cancelImgUploadBtn}
             style={{ display: 'none', cursor: 'pointer' }}
             onClick={handleCancelImgUpload}
           ></i>
-          <i className="bi bi-trash-fill"
+          <i className="bi bi-trash-fill img-upload-icon"
             ref={removeImgUploadBtn}
             style={{ display: 'none', cursor: 'pointer' }}
             onClick={handleRemoveImage}
