@@ -15,6 +15,7 @@ const Login = () => {
                 password: formik.values.password
             });
             console.log('Login response:', response);
+            localStorage.setItem('UserName',formik.values.name);
             navigate('/');
         } catch (error) {
             console.error('Login error:', error);

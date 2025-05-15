@@ -10,6 +10,11 @@ export async function getAllProduct(req, res) {
             allProduct,
         })
     } catch (error) {
+        res.status(404).send({
+            success: false,
+            message: 'Error in getAllProduct API',
+            error,
+        })
         console.log('error', error)
     }
 }
@@ -27,13 +32,13 @@ export async function addProduct(req, res) {
             originalName: req.files.mainImage[0].originalname,
         };
     }
-    if(req.files.subImages) {
+    if (req.files.subImages) {
         newProduct.subImages = req.files.subImages.map((file) => ({
             data: file.buffer,
             contentType: file.mimetype,
             originalName: file.originalname,
         }));
-    }   
+    }
     try {
         const addedProduct = await product.create(newProduct);
         console.log('addedProduct', addedProduct);
@@ -44,7 +49,7 @@ export async function addProduct(req, res) {
         })
     } catch (error) {
         console.log('error', error)
-        res.send({
+        res.status(400).send({
             success: false,
             message: 'Error in addProduct API',
             error,
@@ -73,17 +78,39 @@ export async function getProductById(req, res) {
 
 export async function updateProduct(req, res) {
     const id = req.params.id;
+    const newProduct = {
+        ...req.body,
+    }
+    delete newProduct.isRemoveMainImg;
+    const isRemoveMainImg = req.body.isRemoveMainImg;
+    console.log(' newProduct', newProduct);
+    console.log('\n\n\n\nreq.files', req.files);
+
+    if (isRemoveMainImg  === 'true') {
+        newProduct.mainImage = null;
+    } else if (req.files.mainImage) {
+        newProduct.mainImage = {
+            data: req.files.mainImage[0].buffer,
+            contentType: req.files.mainImage[0].mimetype,
+            originalName: req.files.mainImage[0].originalname,
+        };
+    }
+    if (req.files.subImages) {
+        newProduct.subImages = req.files.subImages.map((file) => ({
+            data: file.buffer,
+            contentType: file.mimetype,
+            originalName: file.originalname,
+        }));
+    }
     try {
-        const record = await product.findByIdAndUpdate(id, req.body, {
-            new: true, // return updated data
-            runValidators: true, // validate for updating 
-        });
-        res.status(404).send({
+        const record = await product.findByIdAndUpdate(id, newProduct);
+        res.status(200).send({
             success: true,
             message: 'Product updated',
             updatedProduct: record,
         })
     } catch (error) {
+        console.log('error', error);
         res.status(404).send({
             success: false,
             error,
@@ -112,7 +139,7 @@ export async function getProductBySubCategory(req, res) {
     const subCategoryId = req.params.subCategoryId;
     console.log('subCategoryId', subCategoryId);
     try {
-        const record = await product.find({ subCategory: subCategoryId });
+        const record = await product.find({ subCategoryId: subCategoryId });
         res.send({
             success: true,
             message: 'Product found',

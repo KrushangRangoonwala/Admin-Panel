@@ -3,18 +3,22 @@ import { useFormik } from 'formik';
 import './ProductForm.css';
 import { useParams } from 'react-router';
 import api from '../axiosConfig';
+import imageReader, { multipleImageReader } from '../helpers/imageReader';
 
 const ProductForm = () => {
+  const { productId } = useParams();
+  const { categoryId, subCategoryId } = useParams();
   const [category, setcategory] = useState([])
   const [subCategory, setSubCategory] = useState([]);
-  const { categoryId, subCategoryId } = useParams();
   const [allSize, setAllSize] = useState([]);
+  const [editProductData, setEditProductData] = useState(null);
 
-  const [imagePreview, setImagePreview] = useState('');
+  const [previewMainImgUrl, setPreviewMainImgUrl] = useState('');
   const [previewSubImageUrls, setPreviewSubImageUrls] = useState([]);
-  const [uploadedSubImageUrl, setUploadedSubImageUrl] = useState('');
+  const [uploadedSubImageUrl, setUploadedSubImageUrl] = useState([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
-  const [imgIcon, setImgIcon] = useState('')
+  const [imgIcon, setImgIcon] = useState('');
+  const [isRemoveMainImg, setIsRemoveMainImg] = useState(false)
 
   async function getAllCategory() {
     try {
@@ -47,36 +51,85 @@ const ProductForm = () => {
   }
 
   useEffect(() => {
-    getAllCategory();
-    categoryId && setFieldValue('categoryId', categoryId);
-    subCategoryId && setFieldValue('subCategoryId', subCategoryId);
+    async function setCatandSubCat(categoryId, subCategoryId) {
+      await getAllCategory();
+      categoryId && formik.setFieldValue('categoryId', categoryId);
+      if (subCategoryId) {
+        await getSubCatByCat(categoryId);
+        formik.setFieldValue('subCategoryId', subCategoryId);
+      }
+    }
+    setCatandSubCat(categoryId, subCategoryId);
+
+    async function getProductById() {
+      try {
+        await getAllCategory();
+        await getAllSize();
+        const response = await api.get(`/product/id/${productId}`);
+        console.log('Product Data:', response.data);
+        const productData = response.data.data;
+        console.log('productData', productData)
+        await getSubCatByCat(productData.categoryId);
+        setEditProductData(productData);
+        formik.setValues(productData);
+        formik.setFieldValue('mainImage', null);
+        formik.setFieldValue('subImages', [null]);
+
+        setUploadedImageUrl(imageReader(productData, "mainImage"));
+        setPreviewMainImgUrl(imageReader(productData, "mainImage"));
+        productData.mainImage && setImgIcon('trash');
+        setUploadedSubImageUrl(multipleImageReader(productData.subImages));
+        setPreviewSubImageUrls(multipleImageReader(productData.subImages));
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+    productId && getProductById();
   }, []);
 
   async function handleSubmit(values) {
     console.log('Form Values:', values);
-    const formData = new FormData();
 
+    // append values in formData
+    const formData = new FormData();
     for (const key in values) {
       if (key === 'subImages') {
         for (let file of values.subImages) {
-          formData.append('subImages', file);
+         values.subImages[0] && formData.append('subImages', file);
         }
       } else if (key === 'mainImage') {
-        formData.append('mainImage', values.mainImage);
+        console.log('values.mainImage', values.mainImage);
+        values.mainImage && formData.append('mainImage', values.mainImage);
       } else {
         formData.append(key, values[key]);
       }
     }
 
     try {
-      const response = await api.post('/product', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log('Product created successfully:', response.data);
+      if (editProductData) {
+        formData.append('isRemoveMainImg', isRemoveMainImg);
+        const response = await api.put(`/product/id/${productId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('Product edited successfully:', response.data);
+      } else {
+        const response = await api.post('/product', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log('Product created successfully:', response.data);
+        formik.resetForm(); // resets form to its initialValues.
+        setPreviewSubImageUrls([]);
+        setPreviewMainImgUrl('');
+        setImgIcon('');
+      }
     } catch (error) {
       console.error('Error submitting product form:', error);
+    }finally{
+      window.location.reload();
     }
   }
 
@@ -101,8 +154,6 @@ const ProductForm = () => {
 
   const handleCategoryChange = (e) => {
     e.target.value && getSubCatByCat(e.target.value);
-    // const selected = category.find(cat => cat.slug === e.target.value);
-    // setSubCategory(selected ? selected.subCategory : []);
     formik.setFieldValue('categoryId', e.target.value);
     formik.setFieldValue('subCategoryId', '');
   };
@@ -111,7 +162,6 @@ const ProductForm = () => {
     const files = e.currentTarget.files;
     const fileArray = Array.from(files);
     formik.setFieldValue('subImages', fileArray);
-    // formik.setFieldValue('subImages', Array.from(e.currentTarget.files));
     const previewUrls = fileArray.map(file => URL.createObjectURL(file));
     setPreviewSubImageUrls(previewUrls);
   }
@@ -130,36 +180,38 @@ const ProductForm = () => {
 
   async function handleMainImgChange(e) {
     const file = e.currentTarget.files[0];
-    formik.setFieldValue('mainImage', file);
     if (file) {
-      setImagePreview(URL.createObjectURL(file));
+      setIsRemoveMainImg(false);
+      formik.setFieldValue('mainImage', file);
+      setPreviewMainImgUrl(URL.createObjectURL(file));
       setImgIcon('cross');
-      // cancelImgUploadBtn.current.style.display = 'inline';
-      // removeImgUploadBtn.current.style.display = 'none';
     }
   }
 
-  function handleCancelImgUpload() {
+  function handleCancelMainImgUpload() {
     formik.setFieldValue('mainImage', '');
     if (uploadedImageUrl) {
-      setImagePreview(uploadedImageUrl);
+      setPreviewMainImgUrl(uploadedImageUrl);
       setImgIcon('trash');
     } else {
       setImgIcon('');
-      setImagePreview('');
+      setPreviewMainImgUrl('');
+      document.getElementById('mainImage').value = ''
     }
   }
 
-  function handleRemoveImage() {
+  function handleRemoveMainImg() {
+    setIsRemoveMainImg(true);
+    setUploadedImageUrl('')
+    document.getElementById('mainImage').value = ''
     formik.setFieldValue('mainImage', '');
     setImgIcon('');
-    // removeImgUploadBtn.current.style.display = 'none';
-    setImagePreview('');
+    setPreviewMainImgUrl('');
   }
 
-  useEffect(() => {
-    console.log('previewSubImageUrls', previewSubImageUrls);
-  }, [previewSubImageUrls])
+  // useEffect(() => {
+  //   console.log('previewSubImageUrls', previewSubImageUrls);
+  // }, [previewSubImageUrls])
 
   return (
     <div className="product-form-container">
@@ -213,36 +265,37 @@ const ProductForm = () => {
         {/* <label> */}
         Select Main Image:
         {/* </label> */}
-        {imagePreview && <img src={imagePreview} alt="preview" className="img" />}
+        {previewMainImgUrl && <img src={previewMainImgUrl} alt="preview" className="img" />}
 
         {imgIcon === 'cross' &&
           <i className="bi bi-x-circle img-upload-icon"
             style={{ cursor: 'pointer' }}
-            onClick={handleCancelImgUpload}></i>}
+            onClick={handleCancelMainImgUpload}></i>}
 
         {imgIcon === 'trash' &&
           <i className="bi bi-trash-fill img-upload-icon"
             style={{ cursor: 'pointer' }}
-            onClick={handleRemoveImage}></i>}
+            onClick={handleRemoveMainImg}></i>}
         <label>
           <input
             type="file"
             name="mainImage"
             accept="image/*"
+            id='mainImage'
             onChange={(e) => handleMainImgChange(e)}
-            required
+            // required
           />
         </label>
         {/* <label> */}
         Select Sub Images:
         {/* </label> */}
-        {previewSubImageUrls.map((img, index) => (
+        {previewSubImageUrls?.map((img, index) => (
           <React.Fragment key={index}>
             <img key={index} src={img} alt={`preview-${index}`} className="img" />
-            <i
+            {/* <i
               className="bi bi-trash-fill img-upload-icon"
               onClick={() => handleRemoveSubImgUpload(index)}
-            ></i>
+            ></i> */}
           </React.Fragment>
         ))}
         <label>
@@ -261,12 +314,13 @@ const ProductForm = () => {
             type="number"
             name="price"
             min="0"
-            style={{ paddingLeft: '30px',width: '93%' }}
+            step="any"
+            style={{ paddingLeft: '30px', width: '93%' }}
             value={formik.values.price}
             onChange={formik.handleChange}
             required
           />
-          <i class="bi bi-currency-dollar dollar-class"></i>
+          <i className="bi bi-currency-dollar dollar-class"></i>
         </label>
 
         <label>
@@ -297,7 +351,7 @@ const ProductForm = () => {
           >
             <option value="">-- Select Status --</option>
             <option value="ReadyToShip">Ready To Ship</option>
-            <option value="OnBooking">On Booking</option>
+            <option value="onBooking">On Booking</option>
           </select>
         </label>
 
@@ -321,6 +375,7 @@ const ProductForm = () => {
             name="weight"
             value={formik.values.weight}
             onChange={formik.handleChange}
+            step="any"
             required
           />
         </label>

@@ -8,7 +8,7 @@ router.route('/').get(getAllProduct).post(uploadProductImages,addProduct);
 
 router.route('/id/:id')
 .get(getProductById)
-.put(updateProduct)
+.put(uploadProductImages,updateProduct)
 .delete(deleteProduct);
 
 router.get('/productByCategory/:categoryId', getProductByCategory);

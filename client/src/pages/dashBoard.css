@@ -202,9 +202,26 @@ input[type="checkbox"] {
     color: #007BFF;
 }
 
-.add-btn-container{
+.add-btn-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 1rem 0px;
+    margin: 0.6rem 0px;
+}
+
+.add-product-by-subcategory-btn {
+    padding: 7px 8px;
+    font-size: 11px;
+}
+
+
+.disableDelete {
+    cursor: no-drop;
+    opacity: 0.5;
+}
+
+.delete-div {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 0.8rem;
 }

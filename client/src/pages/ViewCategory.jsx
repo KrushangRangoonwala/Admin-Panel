@@ -1,34 +1,41 @@
 import React, { use, useEffect, useState } from 'react';
 import './ViewCategory.css';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import api from '../axiosConfig';
 import SubCategoryForm from '../components/SubCategoryForm';
 import imageReader from '../helpers/imageReader';
+import AllProducts from './AllProducts';
 
 const ViewCategory = () => {
   const { categoryId } = useParams();
+  const navigate = useNavigate();
   const [openSub, setOpenSub] = useState(null);
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
   const [categoryData, setCategoryData] = useState({});
   const [subcategories, setSubcategories] = useState([]);
   const [productsList, setProductsList] = useState([]);
+  const [isproductListReady, setIsproductListReady] = useState(false);
   const [editSubCatData, setEditSubCatData] = useState()
 
   const [selectedItems, setSelectedItems] = useState([]);
 
+  async function getProductBySubCategory(subId) {
+    try {
+      const response = await api.get(`/product/productBySubCategory/${subId}`);
+      setProductsList(response.data.data);
+    } catch (error) {
+      console.error('Error fetching product data:', error);
+    }
+  }
+
+  useEffect(() => {
+    console.log('productsList', productsList);
+    setIsproductListReady(true);
+  }, [productsList]);
+
   const toggleSubCategory = (subName, subId) => {
     setOpenSub(prev => (prev === subName ? null : subName));
-
-    async function getProductBySubCategory() {
-      try {
-        const response = await api.get(`/product/productBySubCategory/${subId}`);
-        console.log('Products:', response.data.data);
-        setProductsList(response.data.data);
-      } catch (error) {
-        console.error('Error fetching product data:', error);
-      }
-    }
-    getProductBySubCategory();
+    openSub && getProductBySubCategory(subId);
   };
 
   async function handleEditSubCategory(sub) {
@@ -108,9 +115,17 @@ const ViewCategory = () => {
               <h2>{categoryData.name}</h2>
               <p><strong>Slug:</strong> {categoryData.slug}</p>
               <p><strong>Description:</strong> {categoryData.desc}</p>
+              <div>
+                <button
+                  className="add-category-button"
+                  onClick={() => navigate("/addProduct")}
+                >
+                  <i className="bi bi-plus-lg"></i> Add Product
+                </button>
+              </div>
             </div>
             <div className="category-image">
-              <img src={imageReader(categoryData)} alt={categoryData.name} className='image'/>
+              <img src={imageReader(categoryData, "image")} alt={categoryData.name} className='image' />
             </div>
           </div>
 
@@ -121,7 +136,7 @@ const ViewCategory = () => {
               className={`btn delete-btn ${selectedItems.length <= 0 && 'disableDelete'}`}
               onClick={selectedItems.length > 0 ? handleDeleteAllSubCat : null}
             >
-              <i className="bi bi-trash3-fill"></i>Delete
+              <i className="bi bi-trash3-fill" style={{ marginRight: '6px' }}></i>Delete
             </button>
             <button
               className="add-subcategory-button"
@@ -153,23 +168,8 @@ const ViewCategory = () => {
                     <>
                       {/* <div className="subcategory-details"> */}
                       <p><strong>Description:</strong> {sub.desc}</p>
-
-                      <div className="product-list">
-                        {productsList.map((prod, i) => (
-                          <div key={i} className="product-card">
-                            <img src={prod.image} alt={prod.name} />
-                            <div className="product-info">
-                              <h6>{prod.name}</h6>
-                              <p>${prod.price}</p>
-                              <div className="actions">
-                                <i className="bi bi-pencil-fill"></i>
-                                <i className="bi bi-trash3-fill"></i>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      {/* </div> */}
+                      {/* <AllProducts isproductListReady={isproductListReady} productsList={productsList} /> */}
+                      {isproductListReady && <AllProducts isproductListReady={isproductListReady} productsList={productsList} />}
                     </>
                   )}
                 </div>

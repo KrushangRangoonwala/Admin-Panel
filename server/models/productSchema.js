@@ -7,6 +7,7 @@ const productSchema = Schema({
     trim: true,
   },
   mainImage: {
+    // required: true,
     data: Buffer,
     contentType: String,
     originalName: String,

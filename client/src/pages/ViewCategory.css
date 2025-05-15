@@ -6,7 +6,7 @@
 
 
   .category-container {
-    max-width: 800px;
+    max-width: 810px;
     /* margin: auto; */
     margin: 8% auto;
     padding: 30px;
@@ -131,7 +131,7 @@
   .actions {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 18px;
     margin-top: 8px;
   }
 
@@ -145,10 +145,10 @@
     color: white;
   }
 
-  .bi-pencil-fill,
+  /* .bi-pencil-fill,
   .bi-trash3-fill {
     margin-right: 9px;
-  }
+  } */
 
   .edit-btn {
     background-color: #007BFF;
@@ -156,6 +156,7 @@
 
   .delete-btn {
     background-color: #e74c3c;
+    cursor: pointer;
   }
 
   h3 {
@@ -198,3 +199,4 @@
     height: 180px;
     width: 180px;
   }
+

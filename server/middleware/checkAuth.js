@@ -12,6 +12,7 @@ export function checkAuth(req, res, next) {
                 message: 'invalid or expired token'
             })
         } else {
+            req.userData = userData;
             next();
         }
     } else {

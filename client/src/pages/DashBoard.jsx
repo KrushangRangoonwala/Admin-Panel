@@ -6,6 +6,7 @@ import SubCategoryForm from "../components/SubCategoryForm";
 import { useNavigate } from "react-router";
 import Size from "../components/Size";
 import AddSizeForm from "../components/AddSizeForm";
+import Navbar from "../components/Navbar";
 
 const DashboardPage = () => {
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -20,29 +21,32 @@ const DashboardPage = () => {
 
   const [editCatData, setEditCatData] = useState();
 
+  const [selectedCategory, setSelectedCategory] = useState([]);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function getCategoryData() {
-      try {
-        const response = await api.get("/category");
-        // console.log("Categories:", response.data);
-        setCategories(response.data.allCategory);
-      } catch (error) {
-        console.error("Error:", error);
-      }
+  async function getCategoryData() {
+    try {
+      const response = await api.get("/category");
+      // console.log("Categories:", response.data);
+      setCategories(response.data.allCategory);
+    } catch (error) {
+      console.error("Error:", error);
     }
+  }
 
-    async function getDashboardData() {
-      try {
-        const response = await api.get("/");
-        // console.log("Dashboard Data:", response.data);
-        const { categoryCount, subCategoryCount, productCount } = response.data;
-        setDashboardData({ categoryCount, subCategoryCount, productCount });
-      } catch (error) {
-        console.error("Error:", error);
-      }
+  async function getDashboardData() {
+    try {
+      const response = await api.get("/");
+      // console.log("Dashboard Data:", response.data);
+      const { categoryCount, subCategoryCount, productCount } = response.data;
+      setDashboardData({ categoryCount, subCategoryCount, productCount });
+    } catch (error) {
+      console.error("Error:", error);
     }
+  }
+
+  useEffect(() => {
     getCategoryData();
     getDashboardData();
   }, []);
@@ -96,8 +100,40 @@ const DashboardPage = () => {
     }
   }
 
+  function handleHideCatForm() {
+    // setEditCatData(null);
+    setIsCatFormOpen(false);
+    getCategoryData();
+  }
+
+  function handleCheckboxChange(e) {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedCategory(prev => [...prev, value]);
+    } else {
+      setSelectedCategory(prev => prev.filter(item => item !== value));
+    }
+  }
+
+  async function handleDeleteCategory(id) {
+    try {
+      const response = await api.delete(`/category/id/${id}`);
+      console.log("Response", response.data);
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  async function handleDeleteAllCategory() {
+    selectedCategory.forEach(id => handleDeleteCategory(id));
+    setSelectedCategory([]);
+    await getCategoryData();
+    await getDashboardData();
+  }
+
   return (
     <>
+      
       {isSizeFormOpen && (
         <AddSizeForm
           isOpen={isSizeFormOpen}
@@ -109,7 +145,7 @@ const DashboardPage = () => {
       {isCatFormOpen && (
         <CategoryForm
           isOpen={isCatFormOpen}
-          onClose={() => setIsCatFormOpen(false)}
+          onClose={handleHideCatForm}
           editCatData={editCatData}
           setEditCatData={setEditCatData}
         />
@@ -163,6 +199,15 @@ const DashboardPage = () => {
             </button>
           </div>
 
+          <div className="delete-div">
+            <button type="button"
+              className={`btn delete-btn ${selectedCategory.length <= 0 && 'disableDelete'}`}
+              onClick={selectedCategory.length > 0 ? handleDeleteAllCategory : null}
+            >
+              <i className="bi bi-trash3-fill" style={{ marginRight: '4px' }}></i>Delete
+            </button>
+          </div>
+
           <table className="category-table">
             <thead>
               <tr>
@@ -173,7 +218,7 @@ const DashboardPage = () => {
                 <th>Slug</th>
                 <th style={{ width: "12%" }}></th>
                 <th style={{ width: "12%" }}></th>
-                <th style={{ width: "12%" }}></th>
+                {/* <th style={{ width: "12%" }}></th> */}
               </tr>
             </thead>
             <tbody>
@@ -182,7 +227,7 @@ const DashboardPage = () => {
                   <tr className="category-row">
                     <td>
                       {/* {expandedCategoryId === cat.id ? null : ( */}
-                      <input type="checkbox" />
+                      <input type="checkbox" value={cat._id} onChange={handleCheckboxChange} />
                       {/* )} */}
                     </td>
                     <td
@@ -215,12 +260,12 @@ const DashboardPage = () => {
                         <i className="bi bi-pencil-fill"></i>{" "}
                       </abbr>
                     </td>
-                    <td className="icon trashIcon">
+                    {/* <td className="icon trashIcon">
                       <abbr title="delete">
                         {" "}
                         <i className="bi bi-trash3-fill"></i>{" "}
                       </abbr>
-                    </td>
+                    </td> */}
                   </tr>
                   {expandedCategoryId === cat._id && (
                     <>
@@ -230,9 +275,16 @@ const DashboardPage = () => {
                           <td colSpan="2" className="subcategory-cell">
                             {subCat.name}
                           </td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
+                          {/* <td></td> */}
+                          <td colSpan="3" style={{ textAlign: "end" }}>
+                            <button
+                              className="add-category-button add-product-by-subcategory-btn"
+                              onClick={() => navigate(`/addProduct/${cat._id}/${subCat._id}`)}
+                            >
+                              <i className="bi bi-plus-lg"></i> Product
+                            </button>
+                          </td>
+                          {/* <td></td> */}
                         </tr>
                       ))}
                       <tr className="">

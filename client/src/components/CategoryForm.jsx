@@ -27,42 +27,27 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
     formData.append('slug', values.slug);
     formData.append('desc', values.desc);
     formData.append('isRemoveImg', isRemoveImg);
+    console.log('values.image', values.image)
     values.image && formData.append('image', values.image);
-
-    // Append all selected images
-    // if (values.images && values.images.length > 0) {
-    //   for (let i = 0; i < values.images.length; i++) {
-    //     formData.append('image', values.images[i]);
-    //   }
-    // }
 
     try {
       const headers = { 'Content-Type': 'multipart/form-data' };
 
       if (editCatData?._id) {
         const response = await api.put(`/category/id/${editCatData._id}`, formData, { headers });
-        // console.log('Update Response:', response);
       } else {
         const response = await api.post('/category', formData, { headers });
-        // console.log('Create Response:', response);
       }
     } catch (error) {
       console.error('Error submitting category form:', error);
     }
 
     handleClose();
-    window.location.reload();  // for fetching new data by api
   }
-
-  // function arrayBufferToBase64(buffer) {
-  //   let binary = '';
-  //   binary = String.fromCharCode(...new Uint8Array(buffer));
-  //   return window.btoa(binary);
-  // }
 
   useEffect(() => {
     if (editCatData?.image) {
-      const url = imageReader(editCatData);
+      const url = imageReader(editCatData, "image");
       setUploadedImageUrl(url);
       setImagePreview(url);
       removeImgUploadBtn.current.style.display = 'inline';
@@ -76,6 +61,7 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
 
   function handleCancelImgUpload() {
     formik.setFieldValue('image', '');
+    document.getElementById('image').value = '';
     cancelImgUploadBtn.current.style.display = 'none';
     if (uploadedImageUrl) {
       setImagePreview(uploadedImageUrl);
@@ -88,6 +74,7 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
   function handleRemoveImage() {
     formik.setFieldValue('image', '');
     setIsRemoveImg(true);
+    document.getElementById('image').value = '';
     removeImgUploadBtn.current.style.display = 'none';
     setUploadedImageUrl('');
     setImagePreview('');
@@ -96,8 +83,10 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
   function handleImageChange(event) {
     console.log('handleImageChange');
     const file = event.currentTarget.files[0];
-    formik.setFieldValue('image', file);
     if (file) {
+      setIsRemoveImg(false);
+      // document.getElementById('image').value = file.name;  // we can't set file.name, we can only set null ('') by this
+      formik.setFieldValue('image', file);
       setImagePreview(URL.createObjectURL(file));
       cancelImgUploadBtn.current.style.display = 'inline';
       removeImgUploadBtn.current.style.display = 'none';
@@ -172,6 +161,7 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
           <input
             type="file"
             name="image"
+            id='image'
             accept="image/*"
             onChange={handleImageChange}
           />

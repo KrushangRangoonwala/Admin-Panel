@@ -7,50 +7,23 @@ import ViewCategory from './pages/ViewCategory'
 import Login from './pages/Login'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import CheckAuth from './CheckAuth'
+import Navbar from './components/Navbar'
+import AllProducts from './pages/AllProducts'
 // import './App.css'
 
 function App() {
 
-  const dummyCategory = {
-    name: 'Electronics',
-    slug: 'electronics',
-    description: 'All electronic gadgets and accessories.',
-    subCategories: [
-      {
-        name: 'Mobiles',
-        description: 'Smartphones of all brands.',
-        products: [
-          { name: 'iPhone 14', price: 999, image: 'https://via.placeholder.com/120' },
-          { name: 'Samsung S22', price: 899, image: 'https://via.placeholder.com/120' },
-        ],
-      },
-      {
-        name: 'Laptops',
-        description: 'All kinds of laptops.',
-        products: [
-          { name: 'MacBook Pro', price: 1999, image: 'https://via.placeholder.com/120' },
-        ],
-      },
-    ],
-  };
-
   return (
     <>
-      {/* <Dashboard /> */}
-      {/* <CategoryForm isOpen={true}/> */}
-      {/* <SubCategoryForm isOpen={true}/> */}
-      {/* <ProductForm /> */}
-      {/* <ViewCategory categoryData={dummyCategory} /> */}
-      {/* <Login /> */}
-
       <BrowserRouter>
+        <Navbar />
         <Routes>
-          <Route path="/login" element={<Login />} /> 
+          <Route path="/login" element={<Login />} />
           <Route path="/" element={<CheckAuth><Dashboard /></CheckAuth>} />
           <Route path="/category/:categoryId" element={<CheckAuth><ViewCategory /></CheckAuth>} />
+          <Route path="/product/:productId" element={<CheckAuth><ProductForm /></CheckAuth>} />
           <Route path="/addProduct/:categoryId?/:subCategoryId?" element={<CheckAuth><ProductForm /></CheckAuth>} />
-          {/* <Route path="/allProducts" element={<CheckAuth><ProductForm /></CheckAuth>} />
-          <Route path="/product/id/:id" element={<CheckAuth><ProductForm /></CheckAuth>} /> */}
+          <Route path="/allProducts" element={<CheckAuth><AllProducts /></CheckAuth>} />
         </Routes>
       </BrowserRouter>
 
