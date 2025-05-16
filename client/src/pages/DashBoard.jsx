@@ -133,6 +133,7 @@ const DashboardPage = () => {
 
   return (
     <>
+        <Navbar />
       
       {isSizeFormOpen && (
         <AddSizeForm

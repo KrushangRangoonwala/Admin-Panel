@@ -45,3 +45,16 @@
 .show-btn:hover {
   background-color: #2563eb; /* blue-600 */
 }
+
+.left-nav-container{
+  display: flex;
+  gap: 20px;
+}
+
+.home{
+  cursor: pointer;
+}
+
+.home:hover{
+  color: #3b82f6;
+}

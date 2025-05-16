@@ -1,4 +1,5 @@
 import product from "../models/productSchema.js";
+import { json2csv } from 'json-2-csv'
 
 export async function getAllProduct(req, res) {
     try {
@@ -86,7 +87,7 @@ export async function updateProduct(req, res) {
     console.log(' newProduct', newProduct);
     console.log('\n\n\n\nreq.files', req.files);
 
-    if (isRemoveMainImg  === 'true') {
+    if (isRemoveMainImg === 'true') {
         newProduct.mainImage = null;
     } else if (req.files.mainImage) {
         newProduct.mainImage = {
@@ -166,6 +167,67 @@ export async function getProductByCategory(req, res) {
     }
     catch (error) {
         res.status(404).send({
+            success: false,
+            error,
+        })
+    }
+}
+
+export async function getBySearchText(req, res) {
+    const searchText = req.params.searchText || '';
+    console.log('searchText', searchText);
+    try {
+        const response = await product.find({
+            productName: { $regex: searchText, $options: 'i' }
+        })
+        console.log('response', response);
+        res.json({
+            success: true,
+            data: response
+        });
+    } catch (error) {
+        console.log('error', error)
+        res.status(500).send({
+            success: false,
+            message: "Search failed",
+            error,
+        })
+    }
+}
+
+export async function downloadCsv(req, res) {
+    const { selectedIds } = req.body;
+
+    try {
+        const response = await product.find({ _id: { $in: selectedIds } });
+        // console.log('response', response);
+        response.forEach(prod => {
+            delete prod.mainImage;
+            delete prod.subImages;
+        });
+
+        const options = {
+            keys: ['_id','productName', 'quantity', 'price', 'weight', 'desc'],
+            rename: {
+                _id: 'Id',
+                desc: 'Description',
+                weight: "Weight",
+                price: "Price",
+                quantity: "Quantity",
+                productName: "Product Name",
+            }
+        }
+
+        const csv = await json2csv(response, options);
+
+        res.setHeader('Content-Disposition', 'attachment; filename=selected_item123123s.csv');
+        res.setHeader('Content-Type', 'text/csv');
+
+
+        res.status(200).send(csv)
+    } catch (error) {
+        console.log('error in downloadCsv', error);
+        res.status(400).send({
             success: false,
             error,
         })

@@ -1,12 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import api from '../axiosConfig';
 import './Login.css';
 import { useNavigate } from 'react-router';
+import Cookies from 'js-cookie';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+
+    const token = Cookies.get('userToken');
+
+    useEffect(() => {
+        if (token?.length > 0) {
+            navigate('/');
+        }
+    }, [])
 
     async function handleLogin() {
         try {
@@ -15,7 +24,7 @@ const Login = () => {
                 password: formik.values.password
             });
             console.log('Login response:', response);
-            localStorage.setItem('UserName',formik.values.name);
+            localStorage.setItem('UserName', formik.values.name);
             navigate('/');
         } catch (error) {
             console.error('Login error:', error);
@@ -72,7 +81,7 @@ const Login = () => {
 
                 <button type="submit" className="login-btn">Login</button>
 
-                <p className="forgot">Forgot your password?</p>
+                {/* <p className="forgot">Forgot your password?</p> */}
             </form>
         </div>
     );

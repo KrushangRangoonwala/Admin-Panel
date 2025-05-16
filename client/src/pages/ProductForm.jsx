@@ -4,6 +4,7 @@ import './ProductForm.css';
 import { useParams } from 'react-router';
 import api from '../axiosConfig';
 import imageReader, { multipleImageReader } from '../helpers/imageReader';
+import Navbar from '../components/Navbar';
 
 const ProductForm = () => {
   const { productId } = useParams();
@@ -53,11 +54,11 @@ const ProductForm = () => {
   useEffect(() => {
     async function setCatandSubCat(categoryId, subCategoryId) {
       await getAllCategory();
-      categoryId && formik.setFieldValue('categoryId', categoryId);
-      if (subCategoryId) {
+      if (categoryId) {
+        formik.setFieldValue('categoryId', categoryId);
         await getSubCatByCat(categoryId);
-        formik.setFieldValue('subCategoryId', subCategoryId);
       }
+      subCategoryId && formik.setFieldValue('subCategoryId', subCategoryId);
     }
     setCatandSubCat(categoryId, subCategoryId);
 
@@ -95,7 +96,7 @@ const ProductForm = () => {
     for (const key in values) {
       if (key === 'subImages') {
         for (let file of values.subImages) {
-         values.subImages[0] && formData.append('subImages', file);
+          values.subImages[0] && formData.append('subImages', file);
         }
       } else if (key === 'mainImage') {
         console.log('values.mainImage', values.mainImage);
@@ -128,7 +129,7 @@ const ProductForm = () => {
       }
     } catch (error) {
       console.error('Error submitting product form:', error);
-    }finally{
+    } finally {
       window.location.reload();
     }
   }
@@ -214,191 +215,195 @@ const ProductForm = () => {
   // }, [previewSubImageUrls])
 
   return (
-    <div className="product-form-container">
-      <h2>Add Product</h2>
-      <form onSubmit={formik.handleSubmit} className="product-form">
-        <label>
-          Select Category:
-          <select
-            name="categoryId"
-            value={formik.values.categoryId}
-            onChange={handleCategoryChange}
-            required
-          >
-            <option value="">-- Select Category --</option>
-            {category.map((cat, index) => (
-              <option key={index} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </label>
+    <>
+      <Navbar />
 
-        <label>
-          Select SubCategory:
-          <select
-            name="subCategoryId"
-            value={formik.values.subCategoryId}
-            onChange={formik.handleChange}
-            required
-          >
-            <option value="">-- Select SubCategory --</option>
-            {subCategory.map((sub, index) => (
-              <option key={index} value={sub._id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="product-form-container">
+        <h2>Add Product</h2>
+        <form onSubmit={formik.handleSubmit} className="product-form">
+          <label>
+            Select Category:
+            <select
+              name="categoryId"
+              value={formik.values.categoryId}
+              onChange={handleCategoryChange}
+              required
+            >
+              <option value="">-- Select Category --</option>
+              {category.map((cat, index) => (
+                <option key={index} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <label>
-          Product Name:
-          <input
-            type="text"
-            name="productName"
-            value={formik.values.productName}
-            onChange={formik.handleChange}
-            required
-          />
-        </label>
+          <label>
+            Select SubCategory:
+            <select
+              name="subCategoryId"
+              value={formik.values.subCategoryId}
+              onChange={formik.handleChange}
+              required
+            >
+              <option value="">-- Select SubCategory --</option>
+              {subCategory.map((sub, index) => (
+                <option key={index} value={sub._id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        {/* <label> */}
-        Select Main Image:
-        {/* </label> */}
-        {previewMainImgUrl && <img src={previewMainImgUrl} alt="preview" className="img" />}
+          <label>
+            Product Name:
+            <input
+              type="text"
+              name="productName"
+              value={formik.values.productName}
+              onChange={formik.handleChange}
+              required
+            />
+          </label>
 
-        {imgIcon === 'cross' &&
-          <i className="bi bi-x-circle img-upload-icon"
-            style={{ cursor: 'pointer' }}
-            onClick={handleCancelMainImgUpload}></i>}
+          {/* <label> */}
+          Select Main Image:
+          {/* </label> */}
+          {previewMainImgUrl && <img src={previewMainImgUrl} alt="preview" className="img" />}
 
-        {imgIcon === 'trash' &&
-          <i className="bi bi-trash-fill img-upload-icon"
-            style={{ cursor: 'pointer' }}
-            onClick={handleRemoveMainImg}></i>}
-        <label>
-          <input
-            type="file"
-            name="mainImage"
-            accept="image/*"
-            id='mainImage'
-            onChange={(e) => handleMainImgChange(e)}
+          {imgIcon === 'cross' &&
+            <i className="bi bi-x-circle img-upload-icon"
+              style={{ cursor: 'pointer' }}
+              onClick={handleCancelMainImgUpload}></i>}
+
+          {imgIcon === 'trash' &&
+            <i className="bi bi-trash-fill img-upload-icon"
+              style={{ cursor: 'pointer' }}
+              onClick={handleRemoveMainImg}></i>}
+          <label>
+            <input
+              type="file"
+              name="mainImage"
+              accept="image/*"
+              id='mainImage'
+              onChange={(e) => handleMainImgChange(e)}
             // required
-          />
-        </label>
-        {/* <label> */}
-        Select Sub Images:
-        {/* </label> */}
-        {previewSubImageUrls?.map((img, index) => (
-          <React.Fragment key={index}>
-            <img key={index} src={img} alt={`preview-${index}`} className="img" />
-            {/* <i
+            />
+          </label>
+          {/* <label> */}
+          Select Sub Images:
+          {/* </label> */}
+          {previewSubImageUrls?.map((img, index) => (
+            <React.Fragment key={index}>
+              <img key={index} src={img} alt={`preview-${index}`} className="img" />
+              {/* <i
               className="bi bi-trash-fill img-upload-icon"
               onClick={() => handleRemoveSubImgUpload(index)}
             ></i> */}
-          </React.Fragment>
-        ))}
-        <label>
-          <input
-            type="file"
-            name="subImages"
-            accept="image/*"
-            multiple
-            onChange={(e) => handleSubImgChange(e)}
-          />
-        </label>
+            </React.Fragment>
+          ))}
+          <label>
+            <input
+              type="file"
+              name="subImages"
+              accept="image/*"
+              multiple
+              onChange={(e) => handleSubImgChange(e)}
+            />
+          </label>
 
-        <label className="price-label">
-          Price:
-          <input
-            type="number"
-            name="price"
-            min="0"
-            step="any"
-            style={{ paddingLeft: '30px', width: '93%' }}
-            value={formik.values.price}
-            onChange={formik.handleChange}
-            required
-          />
-          <i className="bi bi-currency-dollar dollar-class"></i>
-        </label>
+          <label className="price-label">
+            Price:
+            <input
+              type="number"
+              name="price"
+              min="0"
+              step="any"
+              style={{ paddingLeft: '30px', width: '93%' }}
+              value={formik.values.price}
+              onChange={formik.handleChange}
+              required
+            />
+            <i className="bi bi-currency-dollar dollar-class"></i>
+          </label>
 
-        <label>
-          Select Size:
-          <select
-            name="size"
-            value={formik.values.size}
-            onChange={formik.handleChange}
-            onFocus={getAllSize}
-            required
-          >
-            <option value="">-- Select Size --</option>
-            {allSize.map((size, index) => (
-              <option key={index} value={size._id}>
-                {size.shortName} {" - "}{size.name}
-              </option>
-            ))}
-          </select>
-        </label>
+          <label>
+            Select Size:
+            <select
+              name="size"
+              value={formik.values.size}
+              onChange={formik.handleChange}
+              onFocus={getAllSize}
+              required
+            >
+              <option value="">-- Select Size --</option>
+              {allSize.map((size, index) => (
+                <option key={index} value={size._id}>
+                  {size.shortName} {" - "}{size.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <label>
-          Select Status:
-          <select
-            name="status"
-            value={formik.values.status}
-            onChange={formik.handleChange}
-            required
-          >
-            <option value="">-- Select Status --</option>
-            <option value="ReadyToShip">Ready To Ship</option>
-            <option value="onBooking">On Booking</option>
-          </select>
-        </label>
+          <label>
+            Select Status:
+            <select
+              name="status"
+              value={formik.values.status}
+              onChange={formik.handleChange}
+              required
+            >
+              <option value="">-- Select Status --</option>
+              <option value="ReadyToShip">Ready To Ship</option>
+              <option value="onBooking">On Booking</option>
+            </select>
+          </label>
 
-        <label>
-          No of Product in Stock:
-          <input
-            type="number"
-            name="quantity"
-            min="0"
-            value={formik.values.quantity}
-            onChange={formik.handleChange}
-            required
-          />
-        </label>
+          <label>
+            No of Product in Stock:
+            <input
+              type="number"
+              name="quantity"
+              min="0"
+              value={formik.values.quantity}
+              onChange={formik.handleChange}
+              required
+            />
+          </label>
 
-        <label>
-          Weight (in kg):
-          <input
-            type="number"
-            min="0"
-            name="weight"
-            value={formik.values.weight}
-            onChange={formik.handleChange}
-            step="any"
-            required
-          />
-        </label>
+          <label>
+            Weight (in kg):
+            <input
+              type="number"
+              min="0"
+              name="weight"
+              value={formik.values.weight}
+              onChange={formik.handleChange}
+              step="any"
+              required
+            />
+          </label>
 
-        <label>
-          Description:
-          <textarea
-            name="desc"
-            rows="4"
-            value={formik.values.desc}
-            onChange={formik.handleChange}
-            required
-          ></textarea>
-        </label>
+          <label>
+            Description:
+            <textarea
+              name="desc"
+              rows="4"
+              value={formik.values.desc}
+              onChange={formik.handleChange}
+              required
+            ></textarea>
+          </label>
 
-        <div className="form-actions">
-          <button type="submit">Add Product</button>
-          <button type="button" className="cancel-btn">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+          <div className="form-actions">
+            <button type="submit">Add Product</button>
+            <button type="button" className="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 };
 

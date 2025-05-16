@@ -13,7 +13,10 @@ const Navbar = () => {
     return (
         <nav className="navbar">
             <div className="navbar-left">
-                Welcome, {localStorage.getItem('UserName')}
+                <div className="left-nav-container">
+                    <span> Welcome, {localStorage.getItem('UserName')}</span>
+                    <span className='home' onClick={() => navigate('/')}><i class="bi bi-house-door-fill" style={{marginRight:'3px'}}></i>Home</span>
+                </div>
             </div>
 
             <div className="navbar-center">

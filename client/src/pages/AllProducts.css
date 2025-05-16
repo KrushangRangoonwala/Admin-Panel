@@ -1,8 +1,13 @@
+.all-product-container {
+    margin-left: 50px;
+}
+
 .product-list {
     display: flex;
     flex-wrap: wrap;
     gap: 14px;
     margin-top: 12px;
+    justify-content: center;
 }
 
 .product-card {
@@ -25,6 +30,7 @@
 .product-info {
     margin-top: 10px;
     text-align: center;
+    position: relative;
 }
 
 .product-info h6 {
@@ -45,6 +51,41 @@
     margin-top: 8px;
 }
 
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    /* background-color: #007bff; */
+    background-color: #6c757d;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.filter-btn:hover {
+    background-color: #ffffff;
+    color: #6c757d;
+    border: 3px solid #6c757d;
+    padding: 8px 14px;
+}
+
+.product-checkbox{
+    position: absolute;
+    left: 0px;
+    top: 3px;
+}
+
+.search-filter {
+    display: flex;
+    gap: 10px;
+}
+
 .delete-icon {
     color: #e74c3c;
     cursor: pointer;
@@ -55,8 +96,23 @@
     cursor: pointer;
 }
 
-.add-prod-btn{
+.add-prod-btn {
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     margin: 14px 0px 30px 0px;
+}
+
+.product-list-title {
+    text-align: center;
+}
+
+.bi-filter {
+    /* -webkit-text-stroke: 0.5px; */
+    font-size: 22px;
+}
+
+.above-product{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

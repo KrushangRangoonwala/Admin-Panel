@@ -5,6 +5,7 @@ import api from '../axiosConfig';
 import SubCategoryForm from '../components/SubCategoryForm';
 import imageReader from '../helpers/imageReader';
 import AllProducts from './AllProducts';
+import Navbar from '../components/Navbar';
 
 const ViewCategory = () => {
   const { categoryId } = useParams();
@@ -20,6 +21,7 @@ const ViewCategory = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   async function getProductBySubCategory(subId) {
+    // setProductsList([]);
     try {
       const response = await api.get(`/product/productBySubCategory/${subId}`);
       setProductsList(response.data.data);
@@ -30,13 +32,19 @@ const ViewCategory = () => {
 
   useEffect(() => {
     console.log('productsList', productsList);
-    setIsproductListReady(true);
+    setTimeout(() => {
+      setIsproductListReady(true)
+      console.log('setTimeout');
+    },2000);
   }, [productsList]);
 
   const toggleSubCategory = (subName, subId) => {
-    setOpenSub(prev => (prev === subName ? null : subName));
-    openSub && getProductBySubCategory(subId);
+    setOpenSub(prev => (prev === subId ? null : subId));
   };
+  
+  // useEffect(() => {
+  //   openSub && getProductBySubCategory(openSub);
+  // },[openSub])
 
   async function handleEditSubCategory(sub) {
     setEditSubCatData(sub);
@@ -99,6 +107,8 @@ const ViewCategory = () => {
 
   return (
     <>
+        <Navbar />
+
       {isSubCatFormOpen &&
         <SubCategoryForm
           isOpen={isSubCatFormOpen}
@@ -118,7 +128,7 @@ const ViewCategory = () => {
               <div>
                 <button
                   className="add-category-button"
-                  onClick={() => navigate("/addProduct")}
+                  onClick={() => navigate(`/addProduct/${categoryId}`)}
                 >
                   <i className="bi bi-plus-lg"></i> Add Product
                 </button>
@@ -151,8 +161,9 @@ const ViewCategory = () => {
                 {/* SubCategory Row */}
                 <div className="subcategory-row">
                   <div className="subCategoryHead">
-                    {openSub === sub.name ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
+                    {openSub === sub._id ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
                     <input type="checkbox" value={sub._id} onChange={(e) => handleCheckboxChange(e)} />
+                    {/* {console.log('sub', sub)} */}
                     <span
                       className="subcategory-name"
                       onClick={() => toggleSubCategory(sub.name, sub._id)}
@@ -164,12 +175,12 @@ const ViewCategory = () => {
                     </button>
                   </div>
                   {/* SubCategory Details & Products */}
-                  {openSub === sub.name && (
+                  {openSub === sub._id && (
                     <>
                       {/* <div className="subcategory-details"> */}
                       <p><strong>Description:</strong> {sub.desc}</p>
                       {/* <AllProducts isproductListReady={isproductListReady} productsList={productsList} /> */}
-                      {isproductListReady && <AllProducts isproductListReady={isproductListReady} productsList={productsList} />}
+                      {/* {isproductListReady && <AllProducts isproductListReady={isproductListReady} productsList={productsList} categoryId={categoryId} subCategoryId={sub._id}/>} */}
                     </>
                   )}
                 </div>
