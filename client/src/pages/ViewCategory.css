@@ -1,7 +1,7 @@
   /* .container {
     display: grid;
     place-items: center;
-    height: 100vh;
+     height: 100vh;
   } */
 
 
@@ -15,11 +15,18 @@
     box-shadow: 0 0 13px 12px #ddd;
   }
 
+  /* @media (max-width: 740){
+    .category-container{
+      margin: 8%;
+      background-color: #e74c3c;
+    }
+  } */
+
   .category-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
   .category-info {
@@ -200,3 +207,8 @@
     width: 180px;
   }
 
+
+  .desc-add-product{
+    display: flex;
+    justify-content: space-between;
+  }

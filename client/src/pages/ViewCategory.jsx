@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { use, useEffect, useRef, useState } from 'react';
 import './ViewCategory.css';
 import { useNavigate, useParams } from 'react-router';
 import api from '../axiosConfig';
@@ -10,7 +10,7 @@ import Navbar from '../components/Navbar';
 const ViewCategory = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const [openSub, setOpenSub] = useState(null);
+  const [openSub, setOpenSub] = useState({ id: null, desc: null });
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
   const [categoryData, setCategoryData] = useState({});
   const [subcategories, setSubcategories] = useState([]);
@@ -20,31 +20,49 @@ const ViewCategory = () => {
 
   const [selectedItems, setSelectedItems] = useState([]);
 
+  const catDescRef = useRef(null);
+  const subCatDescRef = useRef(null);
+
   async function getProductBySubCategory(subId) {
     // setProductsList([]);
     try {
       const response = await api.get(`/product/productBySubCategory/${subId}`);
-      setProductsList(response.data.data);
+      console.log('response.data', response.data);
+      response.data.success && setProductsList(response.data.data);
     } catch (error) {
       console.error('Error fetching product data:', error);
     }
   }
 
   useEffect(() => {
-    console.log('productsList', productsList);
     setTimeout(() => {
       setIsproductListReady(true)
-      console.log('setTimeout');
-    },2000);
+    }, 2000);
   }, [productsList]);
 
-  const toggleSubCategory = (subName, subId) => {
-    setOpenSub(prev => (prev === subId ? null : subId));
+  const toggleSubCategory = (subId, subDesc) => {
+    // setOpenSub(prev => (prev === subId ? null : subId));
+    if (openSub.id === subId) {
+      setOpenSub(prev => ({
+        ...prev,
+        id: null,
+        desc: null,
+      }))
+    } else {
+      setOpenSub(prev => ({
+        ...prev,
+        id: subId,
+        desc: subDesc,
+      }))
+    }
   };
-  
-  // useEffect(() => {
-  //   openSub && getProductBySubCategory(openSub);
-  // },[openSub])
+
+  useEffect(() => {
+    if (openSub.id) {
+      subCatDescRef.current.innerHTML = openSub.desc;
+      getProductBySubCategory(openSub.id);
+    }
+  }, [openSub])
 
   async function handleEditSubCategory(sub) {
     setEditSubCatData(sub);
@@ -68,8 +86,9 @@ const ViewCategory = () => {
   async function getCategoryData() {
     try {
       const response = await api.get(`/category/id/${categoryId}`);
-      console.log('Category Data:', response.data);
+      // console.log('Category Data:', response.data);
       setCategoryData(response.data.data);
+      catDescRef.current.innerHTML = response.data.data.desc;
     } catch (error) {
       console.error('Error fetching category data:', error);
     }
@@ -77,7 +96,7 @@ const ViewCategory = () => {
   async function getSubCategoryData() {
     try {
       const response = await api.get(`/subCategory/subCategoryByCategory/${categoryId}`);
-      console.log('Subcategories:', response.data);
+      // console.log('Subcategories:', response.data);
       setSubcategories(response.data.data);
     } catch (error) {
       console.error('Error fetching subcategory data:', error);
@@ -92,7 +111,11 @@ const ViewCategory = () => {
   function onClose() {
     setEditSubCatData(null);
     setIsSubCatFormOpen(false);
-    setOpenSub(null);
+    setOpenSub(prev => ({
+      ...prev,
+      id: null,
+      desc: null,
+    }))
     getSubCategoryData();
   }
 
@@ -107,7 +130,7 @@ const ViewCategory = () => {
 
   return (
     <>
-        <Navbar />
+      <Navbar />
 
       {isSubCatFormOpen &&
         <SubCategoryForm
@@ -124,8 +147,10 @@ const ViewCategory = () => {
             <div className="category-info">
               <h2>{categoryData.name}</h2>
               <p><strong>Slug:</strong> {categoryData.slug}</p>
-              <p><strong>Description:</strong> {categoryData.desc}</p>
-              <div>
+              {/* <p><strong>Description:</strong> {categoryData.desc}</p> */}
+              <div><strong>Description:</strong> <div ref={catDescRef} style={{ marginLeft: '40px', marginTop: '8px' }}></div></div>
+
+              <div style={{ marginTop: '20px' }}>
                 <button
                   className="add-category-button"
                   onClick={() => navigate(`/addProduct/${categoryId}`)}
@@ -133,6 +158,7 @@ const ViewCategory = () => {
                   <i className="bi bi-plus-lg"></i> Add Product
                 </button>
               </div>
+
             </div>
             <div className="category-image">
               <img src={imageReader(categoryData, "image")} alt={categoryData.name} className='image' />
@@ -161,12 +187,12 @@ const ViewCategory = () => {
                 {/* SubCategory Row */}
                 <div className="subcategory-row">
                   <div className="subCategoryHead">
-                    {openSub === sub._id ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
+                    {openSub.id === sub._id ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
                     <input type="checkbox" value={sub._id} onChange={(e) => handleCheckboxChange(e)} />
                     {/* {console.log('sub', sub)} */}
                     <span
                       className="subcategory-name"
-                      onClick={() => toggleSubCategory(sub.name, sub._id)}
+                      onClick={() => toggleSubCategory(sub._id, sub.desc)}
                     >
                       {sub.name}
                     </span>
@@ -175,11 +201,48 @@ const ViewCategory = () => {
                     </button>
                   </div>
                   {/* SubCategory Details & Products */}
-                  {openSub === sub._id && (
+                  {openSub.id === sub._id && (
                     <>
                       {/* <div className="subcategory-details"> */}
-                      <p><strong>Description:</strong> {sub.desc}</p>
-                      {/* <AllProducts isproductListReady={isproductListReady} productsList={productsList} /> */}
+                      <div><strong>Description:</strong>
+                        <div className="desc-add-product">
+                          <div ref={subCatDescRef} style={{ marginLeft: '40px', marginTop: '8px' }}></div>
+                          <button
+                            className="add-category-button"
+                            onClick={() => navigate(`/addProduct/${categoryId}/${sub._id}`)}
+                            style={{
+                              padding: '4px 8px',
+                              maxHeight: '26px',
+                              fontWeight: 'normal',
+                              fontSize: '12px',
+                            }}
+                          >
+                            <i className="bi bi-plus-lg"></i> Add Product
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="product-list">
+                        {productsList.length <= 0 && <p className='no-record'>No Product Found</p>}
+                        {productsList.map((prod, i) => (
+                          <div key={i} className="product-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${prod._id}`)}>
+                            {/* {console.log('prod', prod)} */}
+                            <img src={imageReader(prod, "mainImage")} alt={prod.name} />
+                            <div className="product-info">
+                              <input type="checkbox" className='product-checkbox' value={prod._id} onClick={(e) => handleCheckBoxClick(e)} />
+                              <h6>{prod.productName}</h6>
+                              <div className="actions">
+                                <i className="bi bi-pencil-fill edit-icon"></i>
+                                <p>${prod.price}</p>
+                                <i className="bi bi-trash3-fill delete-icon" onClick={(e) => deleteIconClicked(e, prod)}></i>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+
+                      {/* <AllProducts productsList={productsList} /> */}
                       {/* {isproductListReady && <AllProducts isproductListReady={isproductListReady} productsList={productsList} categoryId={categoryId} subCategoryId={sub._id}/>} */}
                     </>
                   )}

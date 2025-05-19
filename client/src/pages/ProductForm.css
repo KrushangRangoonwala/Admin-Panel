@@ -85,16 +85,143 @@
   color: white;
 }
 
-.dollar-class{
+.dollar-class {
   position: absolute;
   left: 10px;
   top: 35px;
 }
 
-.price-label{
+.price-label {
   position: relative;
 }
 
-.price-input{
+.price-input {
   padding-left: 300px;
+}
+
+.position-absolute {
+  position: absolute;
+  min-width: 150px;
+  bottom: 2px;
+}
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+  /*ck editor's in built class, we use to set max height of it*/
+  max-height: 20vh;
+}
+
+.add-select {
+  display: flex;
+  justify-content: space-between;
+  justify-items: center;
+  gap: 20px;
+  align-items: center;
+}
+
+
+/* ----  DROPDOWN  ----*/
+/* ----  DROPDOWN  ----*/
+/* ----  DROPDOWN  ----*/
+/* ----  DROPDOWN  ----*/
+
+
+
+.subcat-dropdown-container {
+  width: 63%;
+  position: relative;
+  font-family: Arial, sans-serif;
+  margin-top: 8px;
+}
+
+.subcat-dropdown-header {
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  user-select: none;
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+  gap: 20px;
+}
+
+.subcat-dropdown-header:hover {
+  background-color: #e0e0e0;
+}
+
+.arrow {
+  transition: transform 0.2s ease;
+}
+
+.arrow.open {
+  transform: rotate(180deg);
+}
+
+.subcat-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 5px;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.subcat-dropdown-list li {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.subcat-dropdown-list li:hover {
+  background-color: #f7f7f7;
+}
+
+.add-size {
+  color: green;
+  font-weight: 300;
+  -webkit-text-stroke: 1px;
+  opacity: 70%;
+}
+
+.subcat-dropdown-list li i:hover {
+  color: red;
+  font-weight: 300;
+  /* -webkit-text-stroke: 1px; */
+  opacity: 70%;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0 10px;
+  /* height: 50px; */
+  font-size: 15px;
+  line-height: 20px;
+  border-radius: 25px;
+  background-color: #f1f1f1;
+  margin-right: 5px;
+  margin-bottom: 10px;
+}
+
+.closebtn {
+  padding-left: 10px;
+  color: #888;
+  font-weight: bold;
+  float: right;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.closebtn:hover {
+  color: #000;
 }

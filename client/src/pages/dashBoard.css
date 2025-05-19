@@ -1,8 +1,14 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
 .dashboard-container {
     padding: 2rem;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f4f7fa;
     min-height: 140vh;
+
 }
 
 .summary-container {
@@ -55,8 +61,8 @@
     padding: 1.5rem;
     border-radius: 12px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-    max-width: fit-content;
-    position: absolute;
+    max-width: 700px;
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
     padding-bottom: 55px;

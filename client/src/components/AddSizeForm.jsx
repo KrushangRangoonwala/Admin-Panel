@@ -19,7 +19,7 @@ const AddSizeForm = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="size-modal-content">
         <h2>Add Size</h2>
         <form onSubmit={formik.handleSubmit}>
           <label>

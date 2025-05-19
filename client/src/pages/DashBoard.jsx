@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import Size from "../components/Size";
 import AddSizeForm from "../components/AddSizeForm";
 import Navbar from "../components/Navbar";
+import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
 
 const DashboardPage = () => {
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -16,6 +17,8 @@ const DashboardPage = () => {
 
   const [isCatFormOpen, setIsCatFormOpen] = useState(false);
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const [isSizeFormOpen, setIsSizeFormOpen] = useState(false);
   const [allSize, setAllSize] = useState([]);
 
@@ -28,7 +31,7 @@ const DashboardPage = () => {
   async function getCategoryData() {
     try {
       const response = await api.get("/category");
-      // console.log("Categories:", response.data);
+      console.log("Categories:", response.data);
       setCategories(response.data.allCategory);
     } catch (error) {
       console.error("Error:", error);
@@ -104,6 +107,7 @@ const DashboardPage = () => {
     // setEditCatData(null);
     setIsCatFormOpen(false);
     getCategoryData();
+    getDashboardData();
   }
 
   function handleCheckboxChange(e) {
@@ -123,18 +127,32 @@ const DashboardPage = () => {
       console.log('error', error)
     }
   }
+  function handleDeleteClicked() {
+    setIsDeleteDialogOpen(true);
+  }
 
   async function handleDeleteAllCategory() {
-    selectedCategory.forEach(id => handleDeleteCategory(id));
+    selectedCategory.forEach(async (id) => await handleDeleteCategory(id));
     setSelectedCategory([]);
-    await getCategoryData();
-    await getDashboardData();
+    setTimeout(() => {
+      getCategoryData();
+      getDashboardData();
+    }, 1000)
   }
 
   return (
     <>
-        <Navbar />
-      
+      <Navbar />
+
+      {isDeleteDialogOpen &&
+        <DeleteConfirmDialog
+          isOpen={isDeleteDialogOpen}
+          propmt={`Are you sure, you want to delete this Category?`}
+          onConfirm={handleDeleteAllCategory}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+        />
+      }
+
       {isSizeFormOpen && (
         <AddSizeForm
           isOpen={isSizeFormOpen}
@@ -155,7 +173,11 @@ const DashboardPage = () => {
       {isSubCatFormOpen && (
         <SubCategoryForm
           isOpen={isSubCatFormOpen}
-          onClose={() => setIsSubCatFormOpen(false)}
+          onClose={() => {
+            getSubCategoryData();
+            getDashboardData();
+            setIsSubCatFormOpen(false);
+          }}
           categoryId={expandedCategoryId}
         />
       )}
@@ -203,7 +225,7 @@ const DashboardPage = () => {
           <div className="delete-div">
             <button type="button"
               className={`btn delete-btn ${selectedCategory.length <= 0 && 'disableDelete'}`}
-              onClick={selectedCategory.length > 0 ? handleDeleteAllCategory : null}
+              onClick={selectedCategory.length > 0 ? handleDeleteClicked : null}
             >
               <i className="bi bi-trash3-fill" style={{ marginRight: '4px' }}></i>Delete
             </button>

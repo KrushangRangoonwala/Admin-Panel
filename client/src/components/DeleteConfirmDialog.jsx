@@ -5,7 +5,7 @@ const DeleteConfirmDialog = ({ isOpen, propmt, id, onConfirm, onCancel }) => {
   if (!isOpen) return null;
 
   function handleOkClick() {
-    onConfirm(id);
+    id ? onConfirm(id) : onConfirm();
     onCancel();
   }
 

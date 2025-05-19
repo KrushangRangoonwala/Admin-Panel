@@ -11,13 +11,15 @@
   z-index: 1000;
 }
 
-.modal-content {
+.cat-modal-content {
   background-color: #fff;
-  width: 400px;
+  width: 360px;
   border-radius: 10px;
-  padding: 25px;
+  padding: 20px 25px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease-out;
+  max-height: 90vh;
+  overflow: auto;
 }
 
 @keyframes slideIn {
@@ -31,15 +33,15 @@
   }
 }
 
-.modal-content h2 {
-  margin-bottom: 20px;
+.cat-modal-content h2 {
+  margin-bottom: 12px;
   font-size: 22px;
   text-align: center;
 }
 
 .category-form label {
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 8px;
   font-weight: 500;
 }
 
@@ -92,3 +94,8 @@
   display: 'none';
   cursor: pointer;
 }
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused){  /*ck editor's in built class, we use to set max height of it*/
+  max-height: 12vh;
+}
+ 

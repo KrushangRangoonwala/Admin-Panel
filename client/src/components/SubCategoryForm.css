@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.modal-content {
+.subcat-modal-content {
   background-color: #fff;
   width: 400px;
   border-radius: 10px;
@@ -31,7 +31,7 @@
   }
 }
 
-.modal-content h2 {
+.subcat-modal-content h2 {
   margin-bottom: 20px;
   font-size: 22px;
   text-align: center;
@@ -85,4 +85,8 @@
 .cancel-btn {
   background-color: #e74c3c;
   color: white;
+}
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused){  /*ck editor's in built class, we use to set max height of it*/
+  max-height: 12vh;
 }

@@ -3,8 +3,10 @@ import { useFormik } from 'formik';
 import './CategoryForm.css';
 import api from '../axiosConfig';
 import imageReader from '../helpers/imageReader';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => {
+const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatData }) => {
   const [imagePreview, setImagePreview] = useState('');
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [isRemoveImg, setIsRemoveImg] = useState(false);  // send via api for `informing backend whether to remove image or not`
@@ -42,7 +44,8 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
       console.error('Error submitting category form:', error);
     }
 
-    handleClose();
+    onSubmit();
+    onClose();
   }
 
   useEffect(() => {
@@ -54,10 +57,10 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
     }
   }, [])
 
-  function handleClose() {
-    if (setEditCatData) setEditCatData(null);
-    onClose();
-  }
+  // function handleClose() {
+  //   if (setEditCatData) setEditCatData(null);
+  //   onClose();
+  // }
 
   function handleCancelImgUpload() {
     formik.setFieldValue('image', '');
@@ -108,6 +111,13 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
     formik.setFieldValue('slug', slug);
   }
 
+  function handleSlugChange(e) {
+    const changedSlug = generateSlug(e.target.value);
+    console.log("changedSlug", changedSlug);
+    formik.setFieldValue('slug', changedSlug);
+    // formik.handleChange(e);
+  }
+
   const formik = useFormik({
     initialValues: {
       name: editCatData?.name || '',
@@ -117,12 +127,13 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
     },
     onSubmit: async (values) => {
       handleFormikSubmit(values);
+      console.log('values.desc', values.desc);
     }
   })
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="cat-modal-content">
         <h2>{editCatData?._id ? 'Edit Category' : 'Add New Category'}</h2>
 
         <form onSubmit={formik.handleSubmit} className="category-form">
@@ -138,12 +149,13 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
               name="slug"
               value={formik.values.slug}
               onChange={formik.handleChange}
-              disabled
+              onBlur={handleSlugChange}
+              // disabled
               required
             />
           </label>
 
-          <label>
+          <label style={{ marginBottom: '7px' }}>
             Image:
           </label>
           {imagePreview && <img src={imagePreview} alt="preview" className="img" />}
@@ -166,20 +178,21 @@ const CategoryForm = ({ isOpen, onClose, editCatData = {}, setEditCatData }) => 
             onChange={handleImageChange}
           />
 
-          <label>
-            Description:
-            <textarea
-              name="desc"
-              rows="4"
-              value={formik.values.desc}
-              onChange={formik.handleChange}
-              required
-            ></textarea>
+          <label style={{ marginTop: '10px' }}>
+            <div style={{ marginBottom: '6px' }}>Description:</div>
+            <CKEditor
+              editor={ClassicEditor}
+              data={formik.values.desc}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                formik.setFieldValue('desc', data);
+              }}
+            />
           </label>
 
           <div className="form-actions">
             <button type="submit">Submit</button>
-            <button type="button" className="cancel-btn" onClick={handleClose}>
+            <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
             </button>
           </div>

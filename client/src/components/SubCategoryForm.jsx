@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import './SubCategoryForm.css';
 import api from '../axiosConfig';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const SubCategoryForm = ({ isOpen, onClose, categoryId, editSubCatData,setEditSubCatData }) => {
+const SubCategoryForm = ({ isOpen, onSubmit, onClose, categoryId, editSubCatData, setEditSubCatData }) => {
   const [allCategory, setAllCategory] = useState([]);
 
   useEffect(() => {
@@ -34,6 +36,7 @@ const SubCategoryForm = ({ isOpen, onClose, categoryId, editSubCatData,setEditSu
         const response = await api.post('/subCategory', values);
         console.log('Subcategory created:', response.data);
       }
+      onSubmit();
       onClose();
     } catch (error) {
       console.log('Error creating subcategory:', error);
@@ -55,7 +58,7 @@ const SubCategoryForm = ({ isOpen, onClose, categoryId, editSubCatData,setEditSu
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="subcat-modal-content">
         <h2>Add New SubCategory</h2>
         <form onSubmit={formik.handleSubmit} className="subcategory-form">
           <label>
@@ -81,15 +84,16 @@ const SubCategoryForm = ({ isOpen, onClose, categoryId, editSubCatData,setEditSu
             />
           </label>
 
-          <label>
-            Description:
-            <textarea
-              name="desc"
-              rows="4"
-              value={formik.values.desc}
-              onChange={formik.handleChange}
-              required
-            ></textarea>
+          <label style={{ marginTop: '10px' }}>
+            <div style={{ marginBottom: '6px' }}>Description:</div>
+            <CKEditor
+              editor={ClassicEditor}
+              data={formik.values.desc}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                formik.setFieldValue('desc', data);
+              }}
+            />
           </label>
 
           <div className="form-actions">

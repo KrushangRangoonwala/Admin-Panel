@@ -2,10 +2,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #1e293b; /* Slate dark */
+  background-color: #1e293b;
+  /* Slate dark */
   color: white;
   padding: 10px 20px;
   font-family: Arial, sans-serif;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 2;
 }
 
 .navbar-left {
@@ -14,7 +20,8 @@
 
 .navbar-right .logout-btn {
   padding: 8px 16px;
-  background-color: #ef4444; /* red-500 */
+  background-color: #ef4444;
+  /* red-500 */
   color: white;
   border: none;
   border-radius: 6px;
@@ -23,7 +30,8 @@
 }
 
 .navbar-right .logout-btn:hover {
-  background-color: #dc2626; /* red-600 */
+  background-color: #dc2626;
+  /* red-600 */
 }
 
 .navbar-center {
@@ -34,7 +42,8 @@
 
 .show-btn {
   padding: 8px 16px;
-  background-color: #3b82f6; /* blue-500 */
+  background-color: #3b82f6;
+  /* blue-500 */
   color: white;
   border: none;
   border-radius: 6px;
@@ -43,18 +52,39 @@
 }
 
 .show-btn:hover {
-  background-color: #2563eb; /* blue-600 */
+  background-color: #2563eb;
+  /* blue-600 */
 }
 
-.left-nav-container{
+.left-nav-container {
   display: flex;
   gap: 20px;
 }
 
-.home{
+.home {
   cursor: pointer;
 }
 
-.home:hover{
+.home:hover {
   color: #3b82f6;
+}
+
+.nav-gap {
+  width: 100%;
+  height: 1vh;
+  /* opacity: 0; */
+  position: fixed;
+  top: 51px;
+  z-index: 20;
+  background-color: #f4f7fa;
+}
+
+.welcome-text {
+  font-size: x-large;
+  font-family: math;
+}
+
+.nav-space{
+  width: 100%;
+  height: 57px;
 }

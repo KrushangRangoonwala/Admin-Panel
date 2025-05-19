@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useFormik } from 'formik';
 import './ProductForm.css';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import api from '../axiosConfig';
 import imageReader, { multipleImageReader } from '../helpers/imageReader';
 import Navbar from '../components/Navbar';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import SubCategoryForm from '../components/SubCategoryForm';
+import CategoryForm from '../components/CategoryForm';
 
 const ProductForm = () => {
+  const navigate = useNavigate();
   const { productId } = useParams();
   const { categoryId, subCategoryId } = useParams();
   const [category, setcategory] = useState([])
@@ -20,6 +25,14 @@ const ProductForm = () => {
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [imgIcon, setImgIcon] = useState('');
   const [isRemoveMainImg, setIsRemoveMainImg] = useState(false)
+
+  const [isSubCatListOpen, setIsSubCatListOpen] = useState(false);
+  const [selectedSubCat, setSelectedSubCat] = useState([]);
+
+  const [isCatFormOpen, setIsCatFormOpen] = useState(false);
+  const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
+
+  // function
 
   async function getAllCategory() {
     try {
@@ -157,6 +170,7 @@ const ProductForm = () => {
     e.target.value && getSubCatByCat(e.target.value);
     formik.setFieldValue('categoryId', e.target.value);
     formik.setFieldValue('subCategoryId', '');
+    setSelectedSubCat([]);
   };
 
   async function handleSubImgChange(e) {
@@ -210,50 +224,123 @@ const ProductForm = () => {
     setPreviewMainImgUrl('');
   }
 
+  function handleSubCatClick(subCat) {
+    const exists = selectedSubCat.some(item => item.id === subCat.id);
+
+    if (exists) {
+      setSelectedSubCat(prev => prev.filter(item => item.id !== subCat.id));
+    } else {
+      setSelectedSubCat(prev => [...prev, subCat]);
+    }
+  }
+
+  function removeSelectedSubCat(id) {
+    setSelectedSubCat(prev => prev.filter(item => item.id !== id));
+  }
+
   // useEffect(() => {
   //   console.log('previewSubImageUrls', previewSubImageUrls);
   // }, [previewSubImageUrls])
 
+
+
   return (
     <>
       <Navbar />
+
+      {isCatFormOpen && (
+        <CategoryForm
+          isOpen={isCatFormOpen}
+          onSubmit={getAllCategory}
+          onClose={() => setIsCatFormOpen(false)}
+        />
+      )}
+
+      {isSubCatFormOpen && (
+        <SubCategoryForm
+          isOpen={isSubCatFormOpen}
+          onSubmit={() => getSubCatByCat(formik.values.categoryId)}
+          onClose={() => setIsSubCatFormOpen(false)}
+        />
+      )}
 
       <div className="product-form-container">
         <h2>Add Product</h2>
         <form onSubmit={formik.handleSubmit} className="product-form">
           <label>
             Select Category:
-            <select
-              name="categoryId"
-              value={formik.values.categoryId}
-              onChange={handleCategoryChange}
-              required
-            >
-              <option value="">-- Select Category --</option>
-              {category.map((cat, index) => (
-                <option key={index} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+            <div className="add-select">
+              <select
+                name="categoryId"
+                value={formik.values.categoryId}
+                onChange={handleCategoryChange}
+                style={{ width: '63%' }}
+                required
+              >
+                <option value="">-- Select Category --</option>
+                {category.map((cat, index) => (
+                  <option key={index} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <button type='button'
+                className="add-category-button"
+                onClick={() => setIsCatFormOpen(true)}
+                // style={{ maxHeight: '20px' }}
+                style={{ minWidth: '175px' }}
+              >
+                <i className="bi bi-plus-lg"></i> Add Category
+              </button>
+            </div>
           </label>
 
-          <label>
-            Select SubCategory:
-            <select
-              name="subCategoryId"
-              value={formik.values.subCategoryId}
-              onChange={formik.handleChange}
-              required
-            >
-              <option value="">-- Select SubCategory --</option>
-              {subCategory.map((sub, index) => (
-                <option key={index} value={sub._id}>
-                  {sub.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ marginBlock: '5px' }}>
+              Select SubCategory:
+            </label>
+
+            <div className="selected-subcat-chip">
+              {selectedSubCat?.map((val, idx) => {
+                return <div className="chip" key={idx}>
+                  {val.name}  {<span className="closebtn" onClick={() => removeSelectedSubCat(val.id)}>&times;</span>}
+                </div>
+              })}
+            </div>
+
+            <div className="add-select">
+              <div className="subcat-dropdown-container">
+
+                <div className="subcat-dropdown-header" onClick={() => setIsSubCatListOpen(!isSubCatListOpen)}>
+                  {isSubCatListOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
+                  -- Select SubCategory --
+                </div>
+                {isSubCatListOpen && (
+                  <ul className="subcat-dropdown-list">
+                    {subCategory.length <= 0 && <li className='no-record'>No Sub Category Found</li>}
+                    {subCategory?.map((sub, index) => (
+                      <li key={index} onClick={() => handleSubCatClick({ id: sub._id, name: sub.name })}>
+                        <span>{sub.name}</span>
+                        {selectedSubCat.some(item => item.id === sub._id) &&
+                          <i className="bi bi-check-lg" style={{ color: 'green' }}></i>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <button type='button'
+                className="add-category-button"
+                onClick={() => {  // when i clicked on this <div className="subcat-dropdown-header" onClick={() => setIsSubCatListOpen(!isSubCatListOpen)}> , button's click event also runs
+                  console.log('add sub cat clicked')
+                  setIsSubCatFormOpen(true)
+                }}
+                style={{ minWidth: '175px' }}
+              >
+                <i className="bi bi-plus-lg"></i> Add Sub Category
+              </button>
+            </div>
+          </div>
 
           <label>
             Product Name:
@@ -384,15 +471,16 @@ const ProductForm = () => {
             />
           </label>
 
-          <label>
-            Description:
-            <textarea
-              name="desc"
-              rows="4"
-              value={formik.values.desc}
-              onChange={formik.handleChange}
-              required
-            ></textarea>
+          <label style={{ marginTop: '10px' }}>
+            <div style={{ marginBottom: '6px' }}>Description:</div>
+            <CKEditor
+              editor={ClassicEditor}
+              data={formik.values.desc}
+              onChange={(event, editor) => {
+                const data = editor.getData();
+                formik.setFieldValue('desc', data);
+              }}
+            />
           </label>
 
           <div className="form-actions">
