@@ -83,6 +83,7 @@ export async function updateProduct(req, res) {
         ...req.body,
     }
     delete newProduct.isRemoveMainImg;
+    delete newProduct.indexToRemoveSubImg;
     const isRemoveMainImg = req.body.isRemoveMainImg;
     console.log(' newProduct', newProduct);
     console.log('\n\n\n\nreq.files', req.files);
@@ -96,13 +97,51 @@ export async function updateProduct(req, res) {
             originalName: req.files.mainImage[0].originalname,
         };
     }
+
+    const indexToRemoveSubImg = req.body.indexToRemoveSubImg;
+    console.log('indexToRemoveSubImg', indexToRemoveSubImg)
+    var oldSubImg = [];
+    let updatedOldSubImg = [];
+    var record;
+    if (indexToRemoveSubImg?.length > 0 || Array.isArray(indexToRemoveSubImg)) {
+        try {
+            record = await product.findById(id);
+            // console.log("record.data.subImages", record.subImages);
+            oldSubImg = record.subImages;
+
+            if (Array.isArray(indexToRemoveSubImg)) {
+                indexToRemoveSubImg.forEach((val) => oldSubImg[val] = null);
+            } else {
+                oldSubImg[indexToRemoveSubImg] = null;
+            }
+
+            updatedOldSubImg = oldSubImg.filter(val => val !== null);
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+
+    let newSubImg = [];
     if (req.files.subImages) {
-        newProduct.subImages = req.files.subImages.map((file) => ({
+        newSubImg = req.files.subImages.map((file) => ({
             data: file.buffer,
             contentType: file.mimetype,
             originalName: file.originalname,
         }));
     }
+
+    const updateSub = updatedOldSubImg.length;
+    const newSub = newSubImg.length;
+
+    if (updateSub > 0 && newSub > 0) {
+        newProduct.subImages = [...updatedOldSubImg, ...newSubImg]
+    } else if (updateSub > 0) {
+        newProduct.subImages = [...updatedOldSubImg]
+    } else if (newSub > 0) {
+        console.log('oldSubImg', oldSubImg);
+        newProduct.subImages = [...oldSubImg, ...newSubImg]
+    }
+
     try {
         const record = await product.findByIdAndUpdate(id, newProduct);
         res.status(200).send({
@@ -207,7 +246,7 @@ export async function downloadCsv(req, res) {
         });
 
         const options = {
-            keys: ['_id','productName', 'quantity', 'price', 'weight', 'desc'],
+            keys: ['_id', 'productName', 'quantity', 'price', 'weight', 'desc'],
             rename: {
                 _id: 'Id',
                 desc: 'Description',

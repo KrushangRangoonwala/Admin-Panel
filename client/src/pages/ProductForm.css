@@ -63,8 +63,8 @@
 
 .form-actions {
   display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+  justify-content:end ;
+  margin-top: 40px;
 }
 
 .product-form button {
@@ -85,14 +85,16 @@
   color: white;
 }
 
-.dollar-class {
+.rs-class {
   position: absolute;
   left: 10px;
-  top: 35px;
+  top: 10px;
 }
 
 .price-label {
   position: relative;
+  right: 25px;
+  width: 65%;
 }
 
 .price-input {

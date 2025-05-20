@@ -23,12 +23,13 @@ const productSchema = Schema({
     required: true,
   },
   subCategoryId: {
-    type: Schema.Types.ObjectId,
+    type: [Schema.Types.ObjectId],
     ref: 'subCategory', // reference to the subCategory model
     required: true,
   },
   size: {
-    type: String,
+    type: [Schema.Types.ObjectId],
+    ref: 'sizes',
     required: true,
   },
   quantity: {
@@ -48,9 +49,19 @@ const productSchema = Schema({
   //     },
   //   }
   // ],
-  price: {
+  // price: {
+  //   type: Number,
+  //   required: true,
+  // },
+
+  priceType: {
+    type: String,
+    enum: ['MRP', 'salePrice'],
+    required: true
+  },
+  priceValue: {
     type: Number,
-    required: true,
+    required: true
   },
   status: {
     type: String,

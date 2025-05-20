@@ -9,6 +9,8 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import SubCategoryForm from '../components/SubCategoryForm';
 import CategoryForm from '../components/CategoryForm';
+import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import Popup from '../components/Popup';
 
 const ProductForm = () => {
   const navigate = useNavigate();
@@ -20,19 +22,27 @@ const ProductForm = () => {
   const [editProductData, setEditProductData] = useState(null);
 
   const [previewMainImgUrl, setPreviewMainImgUrl] = useState('');
+
   const [previewSubImageUrls, setPreviewSubImageUrls] = useState([]);
-  const [uploadedSubImageUrl, setUploadedSubImageUrl] = useState([]);
+  const [previewSubImgData, setPreviewSubImgData] = useState([]);
+  const [newlySelectedSubImg, setNewlySelectedSubImg] = useState([]);
+  const [uploadedSubImgData, setUploadedSubImgData] = useState([]);
+  const [indexesToRemoveSubImg, setIndexesToRemoveSubImg] = useState([]);
+
+  // const [uploadedSubImageUrl, setUploadedSubImageUrl] = useState([]);
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [imgIcon, setImgIcon] = useState('');
   const [isRemoveMainImg, setIsRemoveMainImg] = useState(false)
 
   const [isSubCatListOpen, setIsSubCatListOpen] = useState(false);
   const [selectedSubCat, setSelectedSubCat] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [isSizeListOpen, setIsSizeListOpen] = useState(false);
+  const [popupContent, setPopupContent] = useState('');
+  const [isPriceTypeOpen, setIsPriceTypeOpen] = useState(false);
 
   const [isCatFormOpen, setIsCatFormOpen] = useState(false);
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
-
-  // function
 
   async function getAllCategory() {
     try {
@@ -57,21 +67,43 @@ const ProductForm = () => {
   async function getAllSize() {
     try {
       const response = await api.get("/size");
-      console.log("Sizes:", response.data);
+      // console.log("Sizes:", response.data);
       setAllSize(response.data);
     } catch (error) {
       console.error("Error:", error);
     }
   }
 
+  async function getSizeById(id) {
+    try {
+      const response = await api.get(`/size/id/${id}`);
+      // console.log('response.data.data', response.data.data);
+      return response.data.data;
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+  async function getSubcatById(id) {
+    try {
+      const response = await api.get(`/subCategory/id/${id}`);
+      // console.log('response.data.data', response.data.data);
+      return response.data.data;
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
   useEffect(() => {
     async function setCatandSubCat(categoryId, subCategoryId) {
       await getAllCategory();
+      await getAllSize();
       if (categoryId) {
         formik.setFieldValue('categoryId', categoryId);
         await getSubCatByCat(categoryId);
       }
       subCategoryId && formik.setFieldValue('subCategoryId', subCategoryId);
+      // console.log('subCategoryId in useEffcet', subCategoryId)
     }
     setCatandSubCat(categoryId, subCategoryId);
 
@@ -85,15 +117,43 @@ const ProductForm = () => {
         console.log('productData', productData)
         await getSubCatByCat(productData.categoryId);
         setEditProductData(productData);
-        formik.setValues(productData);
+        // formik.setValues(productData);
+        formik.setFieldValue('categoryId', productData.categoryId);
+        formik.setFieldValue('productName', productData.productName);
+        formik.setFieldValue('quantity', productData.quantity);
+        formik.setFieldValue('priceType', productData.priceType);
+        formik.setFieldValue('priceValue', productData.priceValue);
+        formik.setFieldValue('status', productData.status);
+        formik.setFieldValue('weight', productData.weight);
+        formik.setFieldValue('desc', productData.desc);
         formik.setFieldValue('mainImage', null);
-        formik.setFieldValue('subImages', [null]);
+        // formik.setFieldValue('subImages', [null]);
 
-        setUploadedImageUrl(imageReader(productData, "mainImage"));
-        setPreviewMainImgUrl(imageReader(productData, "mainImage"));
+        const prevSelectedSubCat = [];
+        const prevSelectedSize = [];
+
+        productData.subCategoryId.forEach(async (id) => {
+          const sub = await getSubcatById(id);
+          prevSelectedSubCat.push({ id: sub._id, name: sub.name })
+        })
+
+        productData.size.forEach(async (id) => {
+          const size = await getSizeById(id);
+          prevSelectedSize.push({ id: size._id, name: size.name, shortName: size.shortName })
+        })
+
+        setSelectedSubCat(prevSelectedSubCat);
+        setSelectedSizes(prevSelectedSize);
+
+        setUploadedSubImgData(productData.subImages);
+        const mainImg = imageReader(productData, "mainImage");
+        const subImg = multipleImageReader(productData.subImages);
+        setUploadedImageUrl(mainImg);
+        setPreviewMainImgUrl(mainImg);
         productData.mainImage && setImgIcon('trash');
-        setUploadedSubImageUrl(multipleImageReader(productData.subImages));
-        setPreviewSubImageUrls(multipleImageReader(productData.subImages));
+        // setUploadedSubImageUrl(multipleImageReader(productData.subImages));
+        setPreviewSubImageUrls(subImg);
+        setPreviewSubImgData(productData.subImages);
       } catch (error) {
         console.error("Error:", error);
       }
@@ -107,18 +167,22 @@ const ProductForm = () => {
     // append values in formData
     const formData = new FormData();
     for (const key in values) {
-      if (key === 'subImages') {
-        for (let file of values.subImages) {
-          values.subImages[0] && formData.append('subImages', file);
-        }
-      } else if (key === 'mainImage') {
+      if (key === 'mainImage') {
         console.log('values.mainImage', values.mainImage);
         values.mainImage && formData.append('mainImage', values.mainImage);
       } else {
+        console.log('key', key);
         formData.append(key, values[key]);
       }
     }
 
+    selectedSubCat.forEach((val) => formData.append('subCategoryId', val.id));
+    selectedSizes.forEach((val) => formData.append('size', val.id));
+
+    newlySelectedSubImg.forEach((val) => formData.append('subImages', val));
+    console.log('indexesToRemoveSubImg', indexesToRemoveSubImg);
+    indexesToRemoveSubImg.forEach((val) => formData.append('indexToRemoveSubImg', val));
+    // formData.append('indexToRemoveSubImg', indexesToRemoveSubImg)
     try {
       if (editProductData) {
         formData.append('isRemoveMainImg', isRemoveMainImg);
@@ -135,62 +199,88 @@ const ProductForm = () => {
           },
         });
         console.log('Product created successfully:', response.data);
-        formik.resetForm(); // resets form to its initialValues.
-        setPreviewSubImageUrls([]);
-        setPreviewMainImgUrl('');
-        setImgIcon('');
+        // formik.resetForm(); // resets form to its initialValues.
+        // setPreviewSubImageUrls([]);
+        // setPreviewMainImgUrl('');
+        // setImgIcon('');
+        // setSelectedSubCat([]);
+        // setSelectedSizes([]);
       }
+      // window.location.reload();  
     } catch (error) {
       console.error('Error submitting product form:', error);
-    } finally {
-      window.location.reload();
     }
   }
 
   const formik = useFormik({
     initialValues: {
       categoryId: '',  // categoryId in backend
-      subCategoryId: '',  // subCategoryId in backend
+      // subCategoryId: '',  // subCategoryId in backend
       productName: '',
       mainImage: null,
-      subImages: [],
-      size: '',
+      // subImages: [],
+      // size: '',
       quantity: '',
-      price: '',
+      // price: '',
+      priceValue: '',
+      priceValue: '',
       status: '',
       weight: '',
       desc: ''
     },
     onSubmit: (values) => {
-      handleSubmit(values);
-    },
+      if (selectedSubCat.length <= 0) {
+        setPopupContent('emptySubCat');
+      } else if (selectedSizes.length <= 0) {
+        setPopupContent('emptySize')
+      } else {
+        handleSubmit(values)
+      }
+    }
   });
 
   const handleCategoryChange = (e) => {
     e.target.value && getSubCatByCat(e.target.value);
     formik.setFieldValue('categoryId', e.target.value);
-    formik.setFieldValue('subCategoryId', '');
+    // formik.setFieldValue('subCategoryId', '');
     setSelectedSubCat([]);
   };
 
   async function handleSubImgChange(e) {
     const files = e.currentTarget.files;
+    console.log(' e.currentTarget.files', files);
     const fileArray = Array.from(files);
-    formik.setFieldValue('subImages', fileArray);
+    // formik.setFieldValue('subImages', fileArray);
+    setPreviewSubImgData(prev => [...prev, ...fileArray]);
+    setNewlySelectedSubImg(prev => [...prev, ...fileArray]);
+
     const previewUrls = fileArray.map(file => URL.createObjectURL(file));
-    setPreviewSubImageUrls(previewUrls);
+    setPreviewSubImageUrls(prev => [...prev, ...previewUrls]);
   }
 
-  function handleRemoveSubImgUpload(index) {
-    // remove img from `formik.values`
-    const updatedSubImages = [...formik.values.subImages];
+  function handleRemoveSubImgUpload(index, orgName) {
+    console.log(' previewSubImgData',  previewSubImgData);
+    console.log('previewSubImgData[index].originalName', previewSubImgData[index].originalName);
+    const updatedSubImages = [...previewSubImgData];
     updatedSubImages.splice(index, 1);
-    formik.setFieldValue('subImages', updatedSubImages);
+    setPreviewSubImgData(updatedSubImages);
 
-    //remove img from `previewSubImageUrls`
     const updatedPreviewUrls = [...previewSubImageUrls];
     updatedPreviewUrls.splice(index, 1);
     setPreviewSubImageUrls(updatedPreviewUrls);
+
+    setNewlySelectedSubImg(prev => prev.filter(val => val.orginalName !== orgName))
+    console.log('orgName', orgName);
+    if (productId) {
+      const uploadedSubImgIndex = uploadedSubImgData.findIndex((val, idx) => {
+        console.log('val', val);
+        return val.originalName === orgName;
+      })
+      console.log('uploadedSubImgIndex', uploadedSubImgIndex);
+      if (uploadedSubImgIndex !== -1) {
+        setIndexesToRemoveSubImg(prev => [...prev, uploadedSubImgIndex])
+      }
+    }
   }
 
   async function handleMainImgChange(e) {
@@ -234,8 +324,22 @@ const ProductForm = () => {
     }
   }
 
+  function handleSizeClick(size) {
+    const exists = selectedSizes.some(item => item.id === size.id);
+
+    if (exists) {
+      setSelectedSizes(prev => prev.filter(item => item.id !== size.id));
+    } else {
+      setSelectedSizes(prev => [...prev, size]);
+    }
+  }
+
   function removeSelectedSubCat(id) {
     setSelectedSubCat(prev => prev.filter(item => item.id !== id));
+  }
+
+  function removeSelectedSize(id) {
+    setSelectedSizes(prev => prev.filter(item => item.id !== id));
   }
 
   // useEffect(() => {
@@ -247,6 +351,13 @@ const ProductForm = () => {
   return (
     <>
       <Navbar />
+      {/* <DeleteConfirmDialog /> */}
+      {popupContent &&
+        <Popup message={popupContent === 'emptySubCat' ?
+          'Please Select atleast one Sub category'
+          : popupContent === 'emptySize' && 'Please Select atleast one Available size'
+        }
+          onClose={() => setPopupContent('')} />}
 
       {isCatFormOpen && (
         <CategoryForm
@@ -265,7 +376,7 @@ const ProductForm = () => {
       )}
 
       <div className="product-form-container">
-        <h2>Add Product</h2>
+        <h2>{editProductData ? 'Update ' : 'Add '} Product</h2>
         <form onSubmit={formik.handleSubmit} className="product-form">
           <label>
             Select Category:
@@ -383,10 +494,10 @@ const ProductForm = () => {
           {previewSubImageUrls?.map((img, index) => (
             <React.Fragment key={index}>
               <img key={index} src={img} alt={`preview-${index}`} className="img" />
-              {/* <i
-              className="bi bi-trash-fill img-upload-icon"
-              onClick={() => handleRemoveSubImgUpload(index)}
-            ></i> */}
+              <i
+                className="bi bi-x-circle img-upload-icon"
+                onClick={() => handleRemoveSubImgUpload(index, previewSubImgData[index].originalName)}
+              ></i>
             </React.Fragment>
           ))}
           <label>
@@ -399,28 +510,44 @@ const ProductForm = () => {
             />
           </label>
 
-          <label className="price-label">
+          <label style={{ marginBlock: '0px' }}>
             Price:
-            <input
-              type="number"
-              name="price"
-              min="0"
-              step="any"
-              style={{ paddingLeft: '30px', width: '93%' }}
-              value={formik.values.price}
-              onChange={formik.handleChange}
-              required
-            />
-            <i className="bi bi-currency-dollar dollar-class"></i>
           </label>
+          <div className="add-select">
+            <select
+              name="priceType"
+              value={formik.values.priceType}
+              onChange={formik.handleChange}
+              style={{ width: '27%', margin: '11px 0px' }}
+              required
+            >
+              <option value="">-- Price Type --</option>
+              <option value={'MRP'}> MRP </option>
+              <option value={'salePrice'}> Sale Price </option>
+            </select>
 
-          <label>
+            <div className="price-label">
+              <input
+                type="number"
+                name="priceValue"
+                min="0"
+                step="any"
+                style={{ paddingLeft: '40px', width: '93%', marginTop: '0px' }}
+                value={formik.values.priceValue}
+                onChange={formik.handleChange}
+                required
+              />
+              <span className='rs-class'>Rs</span>
+            </div>
+
+          </div>
+          {/* <label>
             Select Size:
             <select
               name="size"
               value={formik.values.size}
               onChange={formik.handleChange}
-              onFocus={getAllSize}
+              // onFocus={getAllSize}
               required
             >
               <option value="">-- Select Size --</option>
@@ -430,7 +557,46 @@ const ProductForm = () => {
                 </option>
               ))}
             </select>
-          </label>
+          </label> */}
+
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ marginBlock: '5px' }}>
+              Select Size:
+            </label>
+
+            <div className="selected-subcat-chip">
+              {selectedSizes?.map((val, idx) => {
+                return <div className="chip" key={idx}>
+                  {val.shortName} {<span className="closebtn" onClick={() => removeSelectedSize(val.id)}>&times;</span>}
+                </div>
+              })}
+            </div>
+
+            <div className="add-select">
+              <div className="subcat-dropdown-container">
+
+                <div className="subcat-dropdown-header" onClick={() => setIsSizeListOpen(!isSizeListOpen)}>
+                  {isSizeListOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
+                  -- Select Size --
+                </div>
+
+                {isSizeListOpen && (
+                  <ul className="subcat-dropdown-list">
+                    {allSize.length <= 0 && <li className='no-record'>No Size Available</li>}
+
+                    {allSize?.map((size, index) => (
+                      <li key={index} onClick={() => handleSizeClick({ id: size._id, name: size.name, shortName: size.shortName })}>
+                        <span>{size.shortName} {" - "} {size.name}</span>
+                        {selectedSizes.some(item => item.id === size._id) &&
+                          <i className="bi bi-check-lg" style={{ color: 'green' }}></i>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
 
           <label>
             Select Status:
@@ -484,10 +650,10 @@ const ProductForm = () => {
           </label>
 
           <div className="form-actions">
-            <button type="submit">Add Product</button>
-            <button type="button" className="cancel-btn">
+            <button type="submit">{editProductData ? 'Update ' : 'Add '}</button>
+            {/* <button type="button" className="cancel-btn">
               Cancel
-            </button>
+            </button> */}
           </div>
         </form>
       </div>
