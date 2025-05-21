@@ -1,10 +1,10 @@
 import express from 'express';
-import { addProduct, deleteProduct, downloadCsv, getAllProduct, getBySearchText, getProductByCategory, getProductById, getProductBySubCategory, updateProduct } from '../controllers/productController.js';
+import { addProduct, deleteProduct, downloadCsv, getProductByPage, getBySearchText, getProductByCategory, getProductById, getProductBySubCategory, updateProduct } from '../controllers/productController.js';
 import { uploadProductImages } from '../middleware/uploadFiles.js';
 
 const router = express.Router();
 
-router.route('/').get(getAllProduct).post(uploadProductImages,addProduct);
+router.route('/').get(getProductByPage).post(uploadProductImages,addProduct);
 
 router.route('/id/:id')
 .get(getProductById)

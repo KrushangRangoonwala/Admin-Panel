@@ -1,14 +1,60 @@
 .all-product-container {
-    margin-left: 50px;
+    margin: 0vh 2vw;
+    /* background-color: #e74c3c; */
+}
+
+.product-lis {
+    /* display: flex;
+    flex-wrap: wrap; */
+    grid-template-columns: repeat(auto-fit, minmax(160px, max-width));
+    gap: 27px 17px;
+    margin-top: 12px;
+    /* justify-content: center; */
+    margin: 10vh 2vw 6vh 2vw;
 }
 
 .product-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin-top: 12px;
+    display: grid;
+    gap: 35px 26px;
     justify-content: center;
+    /* Center cards when row has fewer items */
+    padding: 16px;
+    margin: 10vh 2vw 6vh 2vw;
 }
+
+/* Default: 1 column */
+.product-list {
+    grid-template-columns: repeat(1, 183px);
+}
+
+/* Small screens (≥ 480px): 2 columns */
+@media (min-width: 480px) {
+    .product-list {
+        grid-template-columns: repeat(2, 183px);
+    }
+}
+
+/* Medium screens (≥ 768px): 3 columns */
+@media (min-width: 768px) {
+    .product-list {
+        grid-template-columns: repeat(3, 183px);
+    }
+}
+
+/* Large screens (≥ 1024px): 4 columns */
+@media (min-width: 1024px) {
+    .product-list {
+        grid-template-columns: repeat(4, 183px);
+    }
+}
+
+/* Extra large screens (≥ 1280px): 5 columns */
+@media (min-width: 1280px) {
+    .product-list {
+        grid-template-columns: repeat(5, 183px);
+    }
+}
+
 
 .product-card {
     width: 160px;
@@ -27,15 +73,26 @@
     border-radius: 6px;
 }
 
+.empty {
+    width: 160px;
+    padding: 10px;
+    border: 1px;
+}
+
 .product-info {
     margin-top: 10px;
     text-align: center;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100%;
 }
 
 .product-info h6 {
     margin: 5px 0;
     font-size: 15px;
+    padding-left: 20px;
 }
 
 .product-info p {
@@ -75,10 +132,10 @@
     padding: 8px 14px;
 }
 
-.product-checkbox{
+.product-checkbox {
     position: absolute;
     left: 0px;
-    top: 3px;
+    top: 9px;
 }
 
 .search-filter {
@@ -104,6 +161,7 @@
 
 .product-list-title {
     text-align: center;
+    margin-top: 7vh;
 }
 
 .bi-filter {
@@ -111,8 +169,28 @@
     font-size: 22px;
 }
 
-.above-product{
+.above-product {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.selected-all {
+    position: absolute;
+    top: -43px;
+    left: -17px;
+}
+
+.first-product {
+    position: relative;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, max-content));
+    gap: 16px;
+    justify-content: center;
+    /* ⬅️ This centers the whole grid content */
+    padding: 16px;
+
 }

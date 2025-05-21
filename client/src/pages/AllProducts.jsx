@@ -1,93 +1,118 @@
-import React, { use, useEffect, useRef, useState } from 'react'
-import './AllProducts.css'
-import imageReader from '../helpers/imageReader'
-import api from '../axiosConfig';
-import { useNavigate } from 'react-router';
-import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
-import SearchBox from '../components/SearchBox';
-import FilterModal from '../components/FilterModal';
-import Navbar from '../components/Navbar';
+import React, { use, useEffect, useRef, useState } from "react";
+import "./AllProducts.css";
+import imageReader from "../helpers/imageReader";
+import api from "../axiosConfig";
+import { useNavigate } from "react-router";
+import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
+import SearchBox from "../components/SearchBox";
+import FilterModal from "../components/FilterModal";
+import Navbar from "../components/Navbar";
+import Pagination from "../components/Pagination";
 
-const AllProducts = ({ productsList, isproductListReady, subCategoryId, categoryId }) => {
+const AllProducts = ({
+    productsList,
+    isproductListReady,
+    subCategoryId,
+    categoryId,
+}) => {
+    const navigate = useNavigate();
     const [renderProducts, setRenderProducts] = useState([]);
     const [deleteDialog, setDeleteDialog] = useState(false);
-    const [deletePropmt, setDeletePropmt] = useState('');
-    const [deleteProductid, setDeleteProductid] = useState('');
-    const [showRenderProduct, setShowRenderProduct] = useState(false);
+    const [deletePropmt, setDeletePropmt] = useState("");
+    const [deleteProductid, setDeleteProductid] = useState("");
+    const [deleteSingleOrMulti, setDeleteSingleOrMulti] = useState(null);
+
+    const [searchText, setSearchText] = useState('');
+    const [clearSearch, setClearSearch] = useState(false);
+
+    // const [showRenderProduct, setShowRenderProduct] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const [isRenderedFirstTime, setIsRenderedFirstTime] = useState(true);
     const [allCategories, setAllCategories] = useState([]);
     const [allSubcategories, setAllSubcategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedSubcategory, setSelectedSubcategory] = useState('');
-    const [isSearchBtnDisable, setIsSearchBtnDisable] = useState(true);
-    const SearchBtn = useRef(null);
-    const navigate = useNavigate();
+    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
-    const [selectedProducts, setSelectedProducts] = useState([])
+    const [selectedProductOfAllPage, setSelectedProductOfAllPage] = useState([]);
+    const [isAllProdSelected, setIsAllProdSelected] = useState(false);
+
+    const [totalProduct, setTotalProduct] = useState();
+    const [pageNo, setPageNo] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+
+    useEffect(() => {
+        getProducts();
+    }, [pageNo, pageSize]);
 
     async function handleDeleteProduct(id) {
         try {
             const response = await api.delete(`/product/id/${id}`);
             console.log(response);
-            getAllProducts();
+            getProducts();
         } catch (error) {
-            console.log('error in deleting product', error)
+            console.log("error in deleting product", error);
         }
     }
 
-    async function getAllProducts() {
-        // console.log('enetred/....')
+    async function getProducts() {
         try {
-            const response = await api.get('/product');
-            console.log('response.data', response.data);
+            const response = await api.get(
+                `/product?pageNo=${pageNo - 1}&pageSize=${pageSize}`
+            );
+            // console.log("response.data", response.data);
             setRenderProducts(response.data.allProduct);
+            setTotalProduct(response.data.totalProduct);
+            // handleIsAllProdSelected();
+            // setSelectedProductOfAllPage([]);
         } catch (error) {
-            console.log('Error in get all product', error)
+            console.log("Error in get all product", error);
         }
     }
+
+    useEffect(() => {
+        handleIsAllProdSelected();
+    }, [renderProducts])
+
 
     async function deleteIconClicked(e, prod) {
         e.stopPropagation(); // stop event bubbling, when clicked in delete icon eventually also clicked on product's div
-        setDeletePropmt(`Are you sure you want to delete ${prod.productName} product?`);
-        setDeleteProductid(prod._id)
+        setDeleteSingleOrMulti("single");
+        setDeletePropmt(
+            `Are you sure you want to delete ${prod.productName} product?`
+        );
+        setDeleteProductid(prod._id);
         setDeleteDialog(true);
     }
 
     useEffect(() => {
         async function setProducts() {
-            if (isproductListReady) {
-                console.log('setting productsList');
-                console.log('from allproduct productList', productsList);
-                setRenderProducts(productsList);
-            } else {
-                console.log('getAllProducts();');
-                getAllProducts();
-            }
+            //   if (isproductListReady) {
+            //     console.log("setting productsList");
+            //     console.log("from allproduct productList", productsList);
+            //     setRenderProducts(productsList);
+            //   } else {
+            // console.log("getProducts();");
+            getProducts();
+            //   }
         }
-        setProducts();
-    }, [])
-
-    useEffect(() => {
-        console.log('renderProducts', renderProducts);
-        setShowRenderProduct(true);
-    }, [renderProducts])
+        // setProducts();
+    }, []);
 
     async function getCatAndSubCat() {
         try {
-            const response = await api.get('/category');
-            console.log('response.data', response.data);
+            const response = await api.get("/category");
+            console.log("response.data", response.data);
             setAllCategories(response.data.allCategory);
         } catch (error) {
-            console.log('Error in get category', error)
+            console.log("Error in get category", error);
         }
 
         try {
-            const response = await api.get('/subCategory');
-            console.log('response.data', response.data);
+            const response = await api.get("/subCategory");
+            console.log("response.data", response.data);
             setAllSubcategories(response.data.allSubCategory);
         } catch (error) {
-            console.log('Error in get subcategory', error)
+            console.log("Error in get subcategory", error);
         }
     }
 
@@ -98,53 +123,138 @@ const AllProducts = ({ productsList, isproductListReady, subCategoryId, category
         }
     }, [isFilterOpen]);
 
-    function onSearchInputChange() {
-        SearchBtn.current.value.length > 0 ? setIsSearchBtnDisable(false) : setIsSearchBtnDisable(true);
+    async function getProductBySearchText() {
+        setPageNo(1);
+        async function callApi() {
+            try {
+                const searchedProducts = await api.get(`/product/searchBy/${searchText}`);
+                setRenderProducts(searchedProducts.data.data);
+                setClearSearch(true);
+
+                setIsAllProdSelected(false);
+                setSelectedProductOfAllPage([]);
+
+                setTotalProduct(searchedProducts.data.totalProduct);
+            } catch (error) {
+                console.log("error in search api", error);
+            }
+        }
+        setTimeout(() => callApi(), 300);  // setTiemOut for `setPageNo(1)` is async
     }
 
-    async function handleSearchText() {
-        try {
-
-        } catch (error) {
-            console.log('error in search api')
-        }
+    function handleCloseSearch() {
+        setPageNo(1);
+        setClearSearch(false);
+        setSearchText('');
+        setTimeout(() => getProducts(), 300); // setPageNo(1) takes time
     }
 
     function handleCheckBoxClick(e) {
         e.stopPropagation();
         const { value, checked } = e.target;
-        checked ?
-            setSelectedProducts(prev => [...prev, value])
-            : setSelectedProducts(prev => prev.filter(v => v !== value));
+        checked
+            ? setSelectedProductOfAllPage((prev) => [...prev, value])
+            : setSelectedProductOfAllPage((prev) => prev.filter((v) => v !== value));
+    }
+
+    useEffect(() => {
+        handleIsAllProdSelected();
+    }, [selectedProductOfAllPage])
+
+    function handleIsAllProdSelected() {
+        if (selectedProductOfAllPage.length > 0) {
+            const flag = renderProducts.every((prod) => selectedProductOfAllPage.includes(prod._id));
+            setIsAllProdSelected(flag);
+        }
+        // setIsAllProdSelected(false);
+    }
+
+    function handleAllCheckBoxClicked(e) {
+        e.stopPropagation();
+
+        const arr = selectedProductOfAllPage;
+        if (isAllProdSelected) {
+            renderProducts.forEach((prod) => {
+                const idx = selectedProductOfAllPage.findIndex((id) => id === prod._id);
+                // console.log('idx', idx);
+                arr.splice(idx, 1);
+            });
+            setSelectedProductOfAllPage(arr);
+            setIsAllProdSelected(false);
+        } else {
+            const arr = renderProducts.map((prod) => prod._id);
+            setSelectedProductOfAllPage((prev) => [...prev, ...arr]);
+        }
     }
 
     async function handleDownloadCsv() {
-        console.log('selectedProducts.length', selectedProducts.length);
-        if (selectedProducts.length > 0) {
+        console.log(
+            "selectedProductOfAllPage.length",
+            selectedProductOfAllPage.length
+        );
+        if (selectedProductOfAllPage.length > 0) {
             try {
-                const response = await api.post('/product/downloadCsv', { selectedIds: selectedProducts }, {
-                    responseType: 'Blob' //  important for file download
-                })
+                const response = await api.post(
+                    "/product/downloadCsv",
+                    { selectedIds: selectedProductOfAllPage },
+                    {
+                        responseType: "Blob", //  important for file download
+                    }
+                );
 
-                const blob = new Blob([response.data],{ type: 'text/csv' })
+                const blob = new Blob([response.data], { type: "text/csv" });
                 const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
+                const link = document.createElement("a");
                 link.href = url;
-                link.setAttribute('download', 'selected_Products.csv'); // or .csv
+                link.setAttribute("download", "selected_Products.csv"); // or .csv
                 document.body.appendChild(link);
                 link.click();
             } catch (error) {
-                console.log('error in download CSV', error);
+                console.log("error in download CSV", error);
             }
         }
+    }
+
+    function handleDeleteBtnClicked() {
+        setDeleteSingleOrMulti("multiple");
+        setDeleteDialog(true);
+        setDeletePropmt(
+            `Are you sure you want to delete All  ${selectedProductOfAllPage.length} Selcted product?`
+        );
+    }
+
+    function handleDeleteAllSelected() {
+        selectedProductOfAllPage.forEach(async (id) => {
+            await handleDeleteProduct(id);
+        });
     }
 
     return (
         <>
             <Navbar />
 
-            {/* <div className='all-product-container'> */}
-            <DeleteConfirmDialog isOpen={deleteDialog} propmt={deletePropmt} id={deleteProductid} onConfirm={handleDeleteProduct} onCancel={() => setDeleteDialog(false)} />
+            {deleteSingleOrMulti === "single" && (
+                <DeleteConfirmDialog
+                    isOpen={deleteDialog}
+                    propmt={deletePropmt}
+                    id={deleteProductid}
+                    onConfirm={handleDeleteProduct}
+                    onCancel={() => setDeleteDialog(false)}
+                />
+            )}
+
+            {deleteSingleOrMulti === "multiple" && (
+                <DeleteConfirmDialog
+                    isOpen={deleteDialog}
+                    propmt={deletePropmt}
+                    onConfirm={handleDeleteAllSelected}
+                    onCancel={() => {
+                        setDeleteDialog(false);
+                        setDeleteSingleOrMulti(null);
+                        // setSelectedProductOfAllPage([]);
+                    }}
+                />
+            )}
 
             <FilterModal
                 isOpen={isFilterOpen}
@@ -159,79 +269,148 @@ const AllProducts = ({ productsList, isproductListReady, subCategoryId, category
                 setSelectedSubcategory={setSelectedSubcategory}
             />
 
-            <div className="add-prod-btn">
-                <div className='search-filter'>
-                    <button className="filter-btn" onClick={() => setIsFilterOpen(true)}>
-                        <i class="bi bi-filter" ></i>Filter
-                    </button>
-                    {/* <SearchBox /> */}
-                    <div className="search-box">
-                        {/* <FaSearch className="search-icon" /> */}
-                        <i class="bi bi-search search-icon"></i>
-                        <input
-                            ref={SearchBtn}
-                            type="text"
-                            // value={value}
-                            onChange={onSearchInputChange}
-                            placeholder={'Search..'}
-                            className="search-input"
-                        />
+            <div className="all-product-container">
+                <div className="add-prod-btn">
+                    <div className="search-filter">
+                        <button
+                            className="filter-btn"
+                            onClick={() => setIsFilterOpen(true)}
+                        >
+                            <i class="bi bi-filter"></i>Filter
+                        </button>
+                        {/* <SearchBox /> */}
+                        <div className="search-box">
+                            {/* <FaSearch className="search-icon" /> */}
+                            <i class="bi bi-search search-icon"></i>
+                            <input
+                                type="text"
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                placeholder={"Search.."}
+                                className="search-input"
+                                style={{ border: clearSearch && '4px solid #00aaff' }}
+                            />
+                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleCloseSearch}></i>}
+                        </div>
+                        <button
+                            className="add-category-button"
+                            style={{
+                                padding: "10px 14px",
+                                borderRadius: "20px",
+                                opacity: searchText.length <= 0 ? 0.5 : 1,
+                                cursor: searchText.length <= 0 && "no-drop",
+                            }}
+                            onClick={getProductBySearchText}
+                        >
+                            Search
+                        </button>
                     </div>
                     <button
                         className="add-category-button"
-                        style={{
-                            padding: '10px 14px',
-                            borderRadius: '20px',
-                            opacity: isSearchBtnDisable ? 0.5 : 1,
-                            cursor: isSearchBtnDisable && 'no-drop'
-                        }}
-                        onClick={handleSearchText}
+                        onClick={() => navigate(`/addProduct`)}
                     >
-                        Search
+                        <i className="bi bi-plus-lg"></i> Add Product
                     </button>
                 </div>
-                <button
-                    className="add-category-button"
-                    onClick={() => navigate(`/addProduct`)}
-                >
-                    <i className="bi bi-plus-lg"></i> Add Product
-                </button>
-            </div>
-            <h2 className='product-list-title'>All Products</h2>
-            {showRenderProduct && renderProducts.length === 0 && <p className='no-record'>No Product Found</p>}
+                <h2 className="product-list-title">All Products</h2>
+                {renderProducts.length === 0 && (
+                    <p className="no-record">No Product Found</p>
+                )}
 
-            <div className="above-product">
-                {showRenderProduct && renderProducts.length > 0 && <p className='total-record'>Total {renderProducts.length} Products</p>}
-                <button className="show-btn"
-                    onClick={handleDownloadCsv}
-                    style={{
-                        height: '30px',
-                        opacity: selectedProducts.length <= 0 && '0.5',
-                        cursor: selectedProducts.length <= 0 && 'no-drop'
-                    }}>
-                    download CSV
-                </button>
-            </div>
-            <div className="product-list">
-                {showRenderProduct && renderProducts.map((prod, i) => (
-                    <div key={i} className="product-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${prod._id}`)}>
-                        {/* {console.log('prod', prod)} */}
-                        <img src={imageReader(prod, "mainImage")} alt={prod.name} />
-                        <div className="product-info">
-                            <input type="checkbox" className='product-checkbox' value={prod._id} onClick={(e) => handleCheckBoxClick(e)} />
-                            <h6>{prod.productName}</h6>
-                            <div className="actions">
-                                <i className="bi bi-pencil-fill edit-icon"></i>
-                                <p>${prod.price}</p>
-                                <i className="bi bi-trash3-fill delete-icon" onClick={(e) => deleteIconClicked(e, prod)}></i>
-                            </div>
+                <div className="above-product">
+                    {renderProducts.length > 0 && (
+                        <p className="total-record">Total {totalProduct} Products</p>
+                    )}
+                    <div style={{ display: "flex", gap: "14px" }}>
+                        <button
+                            className={`show-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
+                                }`}
+                            onClick={handleDownloadCsv}
+                            style={{ height: "35px" }}
+                        >
+                            download CSV
+                        </button>
+
+                        <div className="delete-div">
+                            <button
+                                type="button"
+                                className={`btn delete-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
+                                    }`}
+                                onClick={
+                                    selectedProductOfAllPage.length > 0
+                                        ? handleDeleteBtnClicked
+                                        : null
+                                }
+                            >
+                                <i
+                                    className="bi bi-trash3-fill"
+                                    style={{ marginRight: "4px" }}
+                                ></i>
+                                Delete
+                            </button>
                         </div>
                     </div>
-                ))}
-            </div>
-            {/* </div> */}
-        </>
-    )
-}
+                </div>
 
-export default AllProducts
+                {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
+                <div className="product-list">
+                    {/* {console.log('is array ',  renderProducts.isArray())} */}
+                    {console.log('renderProducts', renderProducts)}
+                    {renderProducts?.map((prod, i) => (
+                        <div
+                            key={i}
+                            className={`product-card ${i === 0 && "first-product"}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => navigate(`/product/${prod._id}`)}
+                        >
+                            {i === 0 && (
+                                <div className="selected-all">
+                                    <input
+                                        type="checkbox"
+                                        style={{ marginRight: "7px" }}
+                                        onClick={(e) => handleAllCheckBoxClicked(e)}
+                                        checked={isAllProdSelected}
+                                    />
+                                    <span onClick={(e) => handleAllCheckBoxClicked(e)}>
+                                        Select All Product
+                                    </span>
+                                </div>
+                            )}
+                            <img src={imageReader(prod, "mainImage")} alt={prod.name} />
+                            <div className="product-info">
+                                <input
+                                    type="checkbox"
+                                    className="product-checkbox"
+                                    value={prod._id}
+                                    checked={selectedProductOfAllPage.includes(prod._id)}
+                                    onClick={(e) => handleCheckBoxClick(e)}
+                                />
+                                <h6>{prod.productName}</h6>
+                                <div className="actions">
+                                    <i className="bi bi-pencil-fill edit-icon"></i>
+                                    <p>${prod.price}</p>
+                                    <i
+                                        className="bi bi-trash3-fill delete-icon"
+                                        onClick={(e) => deleteIconClicked(e, prod)}
+                                    ></i>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                {/* </div> */}
+            </div>
+            <Pagination
+                totalItems={totalProduct}
+                pageSizeOptions={[5, 10, 20, 50]}
+                setPageNo={setPageNo}
+                setPageSize={setPageSize}
+                pageNo={pageNo}
+                pageSize={pageSize}
+            // getProducts={getProducts}
+            />
+        </>
+    );
+};
+
+export default AllProducts;

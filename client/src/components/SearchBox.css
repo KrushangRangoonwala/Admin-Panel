@@ -7,13 +7,16 @@
 
 .search-input {
   /* width: 100%; */
-  height: -webkit-fill-available;  /* parent element's length */
-  padding: 10px 12px 10px 36px;
+  height: -webkit-fill-available;
+  /* parent element's length */
+  padding: 10px 26px 10px 36px;
   font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 8px;
   outline: none;
   transition: border-color 0.2s;
+  max-width: 235px;
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -27,4 +30,14 @@
   transform: translateY(-50%);
   color: #888;
   font-size: 16px;
+}
+
+.cross-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
 }

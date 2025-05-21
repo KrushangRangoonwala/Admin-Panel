@@ -24,7 +24,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="navbar-center">
-                    <button className="show-btn" onClick={() => navigate('/allProducts')}>
+                    <button className="show-btn center" onClick={() => navigate('/allProducts')}>
                         Show All Product
                     </button>
                 </div>

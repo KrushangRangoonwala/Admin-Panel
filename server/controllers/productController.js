@@ -1,19 +1,31 @@
 import product from "../models/productSchema.js";
 import { json2csv } from 'json-2-csv'
 
-export async function getAllProduct(req, res) {
+export async function getProductByPage(req, res) {
+    const pageNo = parseInt(req.query.pageNo) ?? 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    console.log('#pageNo', pageNo);
+    console.log('#pageSize', pageSize);
+    const skipProduct = pageNo * pageSize;
     try {
-        const allProduct = await product.find({})
-        console.log('allProduct', allProduct);
+        const totalProduct = await product.countDocuments({});
+        if (skipProduct > totalProduct) {
+            console.log('joijfisjfskfsfls;f');
+            res.status(400).send({ success: false, message: 'page out of the range' })
+        }
+
+        const allProduct = await product.find({}).skip(skipProduct).limit(pageSize);
 
         res.send({
             success: true,
             allProduct,
+            totalProduct,
         })
     } catch (error) {
+        console.log('##error', error);
         res.status(404).send({
             success: false,
-            message: 'Error in getAllProduct API',
+            message: 'Error in fetching Product API',
             error,
         })
         console.log('error', error)
@@ -121,6 +133,8 @@ export async function updateProduct(req, res) {
         }
     }
 
+
+
     let newSubImg = [];
     if (req.files.subImages) {
         newSubImg = req.files.subImages.map((file) => ({
@@ -214,15 +228,33 @@ export async function getProductByCategory(req, res) {
 
 export async function getBySearchText(req, res) {
     const searchText = req.params.searchText || '';
-    console.log('searchText', searchText);
+    const pageNo = parseInt(req.query.pageNo) ?? 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const skipProduct = pageNo * pageSize;
+
     try {
+        const totalProduct = await product.countDocuments({
+            $or: [
+                { productName: { $regex: searchText, $options: 'i' } },
+                { desc: { $regex: searchText, $options: 'i' } }
+            ]
+        });
+
+        if (skipProduct > totalProduct) {
+            res.status(400).send({ success: false, message: 'page out of the range' })
+        }
+
         const response = await product.find({
-            productName: { $regex: searchText, $options: 'i' }
-        })
-        console.log('response', response);
-        res.json({
+            $or: [
+                { productName: { $regex: searchText, $options: 'i' } },
+                { desc: { $regex: searchText, $options: 'i' } }
+            ]
+        }).skip(skipProduct).limit(pageSize);
+
+        res.send({
             success: true,
-            data: response
+            data: response,
+            totalProduct,
         });
     } catch (error) {
         console.log('error', error)

@@ -56,6 +56,11 @@
   /* blue-600 */
 }
 
+.center {
+  position: relative;
+  right: 7vw;
+}
+
 .left-nav-container {
   display: flex;
   gap: 20px;
@@ -84,7 +89,7 @@
   font-family: math;
 }
 
-.nav-space{
+.nav-space {
   width: 100%;
   height: 57px;
 }
