@@ -134,8 +134,16 @@
 
 .product-checkbox {
     position: absolute;
-    left: 0px;
-    top: 9px;
+    left: -13px;
+    top: 0px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.product-checkbox input[type='checkbox'] {
+    position: relative;
+    top: 10px;
 }
 
 .search-filter {
@@ -193,4 +201,34 @@
     /* ⬅️ This centers the whole grid content */
     padding: 16px;
 
+}
+
+.upload-csv-btn-wrapper {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.upload-csv-btn {
+  background-color: #5cb85c;
+  color: #fff;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-csv-btn:hover {
+  background-color: #449d44;
+}
+
+.upload-icon {
+  font-size: 1.2em;
+  vertical-align: middle;
 }

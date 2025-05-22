@@ -41,7 +41,7 @@ const AllProducts = ({
     const [pageSize, setPageSize] = useState(5);
 
     useEffect(() => {
-        getProducts();
+        clearSearch ? getProductBySearchText() : getProducts();
     }, [pageNo, pageSize]);
 
     async function handleDeleteProduct(id) {
@@ -84,19 +84,19 @@ const AllProducts = ({
         setDeleteDialog(true);
     }
 
-    useEffect(() => {
-        async function setProducts() {
-            //   if (isproductListReady) {
-            //     console.log("setting productsList");
-            //     console.log("from allproduct productList", productsList);
-            //     setRenderProducts(productsList);
-            //   } else {
-            // console.log("getProducts();");
-            getProducts();
-            //   }
-        }
-        // setProducts();
-    }, []);
+    // useEffect(() => {
+    //     async function setProducts() {
+    //         //   if (isproductListReady) {
+    //         //     console.log("setting productsList");
+    //         //     console.log("from allproduct productList", productsList);
+    //         //     setRenderProducts(productsList);
+    //         //   } else {
+    //         // console.log("getProducts();");
+    //         getProducts();
+    //         //   }
+    //     }
+    //     // setProducts();
+    // }, []);
 
     async function getCatAndSubCat() {
         try {
@@ -124,15 +124,16 @@ const AllProducts = ({
     }, [isFilterOpen]);
 
     async function getProductBySearchText() {
-        setPageNo(1);
+        if (!clearSearch) {
+            setPageNo(1);
+            setIsAllProdSelected(false);
+            setSelectedProductOfAllPage([]);
+        }
         async function callApi() {
             try {
-                const searchedProducts = await api.get(`/product/searchBy/${searchText}`);
+                const searchedProducts = await api.get(`/product/searchBy/${searchText}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);
                 setRenderProducts(searchedProducts.data.data);
                 setClearSearch(true);
-
-                setIsAllProdSelected(false);
-                setSelectedProductOfAllPage([]);
 
                 setTotalProduct(searchedProducts.data.totalProduct);
             } catch (error) {
@@ -142,11 +143,17 @@ const AllProducts = ({
         setTimeout(() => callApi(), 300);  // setTiemOut for `setPageNo(1)` is async
     }
 
-    function handleCloseSearch() {
-        setPageNo(1);
+    function handleClearSearch() {
         setClearSearch(false);
         setSearchText('');
+        setIsAllProdSelected(false);
+        setSelectedProductOfAllPage([]);
+        setPageNo(1);
         setTimeout(() => getProducts(), 300); // setPageNo(1) takes time
+    }
+
+    function handleCheckboxDivClicked() {
+
     }
 
     function handleCheckBoxClick(e) {
@@ -156,10 +163,6 @@ const AllProducts = ({
             ? setSelectedProductOfAllPage((prev) => [...prev, value])
             : setSelectedProductOfAllPage((prev) => prev.filter((v) => v !== value));
     }
-
-    useEffect(() => {
-        handleIsAllProdSelected();
-    }, [selectedProductOfAllPage])
 
     function handleIsAllProdSelected() {
         if (selectedProductOfAllPage.length > 0) {
@@ -172,8 +175,8 @@ const AllProducts = ({
     function handleAllCheckBoxClicked(e) {
         e.stopPropagation();
 
-        const arr = selectedProductOfAllPage;
         if (isAllProdSelected) {
+            const arr = selectedProductOfAllPage;
             renderProducts.forEach((prod) => {
                 const idx = selectedProductOfAllPage.findIndex((id) => id === prod._id);
                 // console.log('idx', idx);
@@ -182,10 +185,18 @@ const AllProducts = ({
             setSelectedProductOfAllPage(arr);
             setIsAllProdSelected(false);
         } else {
-            const arr = renderProducts.map((prod) => prod._id);
+            const prodObj = renderProducts.filter((prod) => !selectedProductOfAllPage.includes(prod._id));
+            const arr = prodObj.map(prod => prod._id);
+            console.log('arr2', arr);
             setSelectedProductOfAllPage((prev) => [...prev, ...arr]);
+            setIsAllProdSelected(true);
         }
     }
+
+    useEffect(() => {
+        handleIsAllProdSelected();
+        console.log('selectedProductOfAllPage', selectedProductOfAllPage)
+    }, [selectedProductOfAllPage])
 
     async function handleDownloadCsv() {
         console.log(
@@ -290,7 +301,7 @@ const AllProducts = ({
                                 className="search-input"
                                 style={{ border: clearSearch && '4px solid #00aaff' }}
                             />
-                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleCloseSearch}></i>}
+                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleClearSearch}></i>}
                         </div>
                         <button
                             className="add-category-button"
@@ -349,13 +360,30 @@ const AllProducts = ({
                                 Delete
                             </button>
                         </div>
+                        {/* <div className="upload-csv-btn-wrapper">
+                            <button
+                                className="upload-csv-btn"
+                                // onClick={handleButtonClick}
+                                type="button"
+                            >
+                                <span role="img" aria-label="upload" className="upload-icon">⬆️</span>
+                                Upload CSV and update Data
+                            </button>
+                            <input
+                                type="file"
+                                accept=".csv"
+                                // ref={fileInputRef}
+                                // onChange={handleFileChange}
+                                style={{ display: "none" }}
+                            />
+                        </div> */}
                     </div>
                 </div>
 
                 {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
                 <div className="product-list">
                     {/* {console.log('is array ',  renderProducts.isArray())} */}
-                    {console.log('renderProducts', renderProducts)}
+                    {/* console.log('renderProducts', renderProducts) */}
                     {renderProducts?.map((prod, i) => (
                         <div
                             key={i}
@@ -378,13 +406,16 @@ const AllProducts = ({
                             )}
                             <img src={imageReader(prod, "mainImage")} alt={prod.name} />
                             <div className="product-info">
-                                <input
-                                    type="checkbox"
-                                    className="product-checkbox"
-                                    value={prod._id}
-                                    checked={selectedProductOfAllPage.includes(prod._id)}
-                                    onClick={(e) => handleCheckBoxClick(e)}
-                                />
+
+                                <label className="product-checkbox" onClick={e => e.stopPropagation()}>
+                                    <input
+                                        type="checkbox"
+                                        className=""
+                                        value={prod._id}
+                                        checked={selectedProductOfAllPage.includes(prod._id)}
+                                        onClick={(e) => handleCheckBoxClick(e)}
+                                    />
+                                </label>
                                 <h6>{prod.productName}</h6>
                                 <div className="actions">
                                     <i className="bi bi-pencil-fill edit-icon"></i>

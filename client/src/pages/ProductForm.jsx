@@ -36,13 +36,19 @@ const ProductForm = () => {
 
   const [isSubCatListOpen, setIsSubCatListOpen] = useState(false);
   const [selectedSubCat, setSelectedSubCat] = useState([]);
+  const [isSelectedSubCatSet, setIsSelectedSubCatSet] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [isSizeListOpen, setIsSizeListOpen] = useState(false);
   const [popupContent, setPopupContent] = useState('');
-  const [isPriceTypeOpen, setIsPriceTypeOpen] = useState(false);
+  const [isImgLarger, setIsImgLarger] = useState(false)
 
   const [isCatFormOpen, setIsCatFormOpen] = useState(false);
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
+
+  // useEffect(() => {
+  //   setIsSelectedSubCatSet(true);
+  //   console.log('###selectedSubCat', selectedSubCat);
+  // }, [selectedSubCat])
 
   async function getAllCategory() {
     try {
@@ -142,8 +148,10 @@ const ProductForm = () => {
           prevSelectedSize.push({ id: size._id, name: size.name, shortName: size.shortName })
         })
 
-        setSelectedSubCat(prevSelectedSubCat);
-        setSelectedSizes(prevSelectedSize);
+        setTimeout(() => {
+          setSelectedSubCat(prevSelectedSubCat);
+          setSelectedSizes(prevSelectedSize);
+        }, 500);
 
         setUploadedSubImgData(productData.subImages);
         const mainImg = imageReader(productData, "mainImage");
@@ -153,6 +161,7 @@ const ProductForm = () => {
         productData.mainImage && setImgIcon('trash');
         // setUploadedSubImageUrl(multipleImageReader(productData.subImages));
         setPreviewSubImageUrls(subImg);
+        // console.log('productData.subImages', productData.subImages)
         setPreviewSubImgData(productData.subImages);
       } catch (error) {
         console.error("Error:", error);
@@ -222,7 +231,7 @@ const ProductForm = () => {
       // size: '',
       quantity: '',
       // price: '',
-      priceValue: '',
+      priceType: '',
       priceValue: '',
       status: '',
       weight: '',
@@ -246,20 +255,62 @@ const ProductForm = () => {
     setSelectedSubCat([]);
   };
 
+  // function waitForClick(element) {
+  //   return new Promise(resolve => {
+  //     const handler = (event) => {
+  //       element.removeEventListener('click', handler);
+  //       resolve(event);
+  //     };
+  //     element.addEventListener('click', handler);
+  //   });
+  // }
+
+  // async function handleSubImgChange(e) {
+  //   const files = e.currentTarget.files;
+  //   console.log(' e.currentTarget.files', files);
+  //   const fileArray = Array.from(files);
+  //   const filteredFiles = await fileArray.map(async (file) => {
+  //     if (file.size > 400 * 1024) {
+  //       setIsImgLarger(file.name);
+  //       const btn = document.getElementById('userConfirm')
+  //       await waitForClick(btn);  // await gives error of async, but i have written async
+  //       console.log('User clicked! Continue code...');
+  //     } else {
+  //       setPreviewSubImgData(prev => [...prev, file]);
+  //       setNewlySelectedSubImg(prev => [...prev, file]);
+  //       return file;
+  //     }
+  //   })
+
+  //   setPreviewSubImgData(prev => [...prev, ...filteredFiles]);
+  //   setNewlySelectedSubImg(prev => [...prev, ...filteredFiles]);
+
+  //   const previewUrls = filteredFiles.map(file => URL.createObjectURL(file));
+  //   setPreviewSubImageUrls(prev => [...prev, ...previewUrls]);
+  // }
+
+
   async function handleSubImgChange(e) {
     const files = e.currentTarget.files;
-    console.log(' e.currentTarget.files', files);
     const fileArray = Array.from(files);
-    // formik.setFieldValue('subImages', fileArray);
-    setPreviewSubImgData(prev => [...prev, ...fileArray]);
-    setNewlySelectedSubImg(prev => [...prev, ...fileArray]);
+    const filteredFiles = [];
 
-    const previewUrls = fileArray.map(file => URL.createObjectURL(file));
+    fileArray.forEach((file) => {
+      if (file.size > 400 * 1024) {
+        !isImgLarger && setIsImgLarger(true);
+      } else {
+        setPreviewSubImgData(prev => [...prev, file]);
+        setNewlySelectedSubImg(prev => [...prev, file]);
+        filteredFiles.push(file)
+      }
+    })
+
+    const previewUrls = filteredFiles.map(file => URL.createObjectURL(file));  //line no 307
     setPreviewSubImageUrls(prev => [...prev, ...previewUrls]);
   }
 
   function handleRemoveSubImgUpload(index, orgName) {
-    console.log(' previewSubImgData',  previewSubImgData);
+    console.log(' previewSubImgData', previewSubImgData);
     console.log('previewSubImgData[index].originalName', previewSubImgData[index].originalName);
     const updatedSubImages = [...previewSubImgData];
     updatedSubImages.splice(index, 1);
@@ -286,10 +337,14 @@ const ProductForm = () => {
   async function handleMainImgChange(e) {
     const file = e.currentTarget.files[0];
     if (file) {
-      setIsRemoveMainImg(false);
-      formik.setFieldValue('mainImage', file);
-      setPreviewMainImgUrl(URL.createObjectURL(file));
-      setImgIcon('cross');
+      if (file.size < 400 * 1024) {
+        setIsRemoveMainImg(false);
+        formik.setFieldValue('mainImage', file);
+        setPreviewMainImgUrl(URL.createObjectURL(file));
+        setImgIcon('cross');
+      } else {
+        setIsImgLarger(true);
+      }
     }
   }
 
@@ -359,6 +414,10 @@ const ProductForm = () => {
         }
           onClose={() => setPopupContent('')} />}
 
+      {isImgLarger &&
+        <Popup message={`Files greater then 400kb can't upload!\nThat will be excluded.`}
+          onClose={() => setIsImgLarger(false)} />}
+
       {isCatFormOpen && (
         <CategoryForm
           isOpen={isCatFormOpen}
@@ -412,7 +471,7 @@ const ProductForm = () => {
             </label>
 
             <div className="selected-subcat-chip">
-              {selectedSubCat?.map((val, idx) => {
+              {selectedSubCat.map((val, idx) => {
                 return <div className="chip" key={idx}>
                   {val.name}  {<span className="closebtn" onClick={() => removeSelectedSubCat(val.id)}>&times;</span>}
                 </div>
@@ -492,13 +551,13 @@ const ProductForm = () => {
           Select Sub Images:
           {/* </label> */}
           {previewSubImageUrls?.map((img, index) => (
-            <React.Fragment key={index}>
-              <img key={index} src={img} alt={`preview-${index}`} className="img" />
+            <div key={index} className='subImg-div'>
+              <img key={index} src={img} alt={`preview-${index}`} />
               <i
                 className="bi bi-x-circle img-upload-icon"
                 onClick={() => handleRemoveSubImgUpload(index, previewSubImgData[index].originalName)}
               ></i>
-            </React.Fragment>
+            </div>
           ))}
           <label>
             <input

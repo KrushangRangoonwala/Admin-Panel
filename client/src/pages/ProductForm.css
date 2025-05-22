@@ -63,7 +63,7 @@
 
 .form-actions {
   display: flex;
-  justify-content:end ;
+  justify-content: end;
   margin-top: 40px;
 }
 
@@ -226,4 +226,21 @@
 
 .closebtn:hover {
   color: #000;
+}
+
+.subImg-div {
+  position: relative;
+  display: inline;
+}
+
+.subImg-div i {
+  position: absolute;
+  right: -1px;
+  background-color: white;
+  border-radius: 100%;
+}
+
+.subImg-div img {
+  height: 100px;
+  margin: 0px 11px;
 }

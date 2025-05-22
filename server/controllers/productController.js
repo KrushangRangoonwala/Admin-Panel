@@ -97,8 +97,10 @@ export async function updateProduct(req, res) {
     delete newProduct.isRemoveMainImg;
     delete newProduct.indexToRemoveSubImg;
     const isRemoveMainImg = req.body.isRemoveMainImg;
-    console.log(' newProduct', newProduct);
-    console.log('\n\n\n\nreq.files', req.files);
+    const indexToRemoveSubImg = req.body.indexToRemoveSubImg;
+    // console.log(' newProduct', newProduct);
+    // console.log('\n\n\n\nreq.files', req.files);
+    // console.log('indexToRemoveSubImg', indexToRemoveSubImg)
 
     if (isRemoveMainImg === 'true') {
         newProduct.mainImage = null;
@@ -110,27 +112,26 @@ export async function updateProduct(req, res) {
         };
     }
 
-    const indexToRemoveSubImg = req.body.indexToRemoveSubImg;
-    console.log('indexToRemoveSubImg', indexToRemoveSubImg)
     var oldSubImg = [];
     let updatedOldSubImg = [];
     var record;
+
+    try {
+        record = await product.findById(id);
+        // console.log("record.data.subImages", record.subImages);
+        oldSubImg = record.subImages;
+        // console.log('insider oldSubImg', oldSubImg);
+    } catch (error) {
+        console.log('error', error);
+    }
+
     if (indexToRemoveSubImg?.length > 0 || Array.isArray(indexToRemoveSubImg)) {
-        try {
-            record = await product.findById(id);
-            // console.log("record.data.subImages", record.subImages);
-            oldSubImg = record.subImages;
-
-            if (Array.isArray(indexToRemoveSubImg)) {
-                indexToRemoveSubImg.forEach((val) => oldSubImg[val] = null);
-            } else {
-                oldSubImg[indexToRemoveSubImg] = null;
-            }
-
-            updatedOldSubImg = oldSubImg.filter(val => val !== null);
-        } catch (error) {
-            console.log('error', error);
+        if (Array.isArray(indexToRemoveSubImg)) {
+            indexToRemoveSubImg.forEach((val) => oldSubImg[val] = null);
+        } else {
+            oldSubImg[indexToRemoveSubImg] = null;
         }
+        updatedOldSubImg = oldSubImg.filter(val => val !== null);
     }
 
 
@@ -152,7 +153,7 @@ export async function updateProduct(req, res) {
     } else if (updateSub > 0) {
         newProduct.subImages = [...updatedOldSubImg]
     } else if (newSub > 0) {
-        console.log('oldSubImg', oldSubImg);
+        // console.log('oldSubImg', oldSubImg);
         newProduct.subImages = [...oldSubImg, ...newSubImg]
     }
 
@@ -196,7 +197,7 @@ export async function getProductBySubCategory(req, res) {
         const record = await product.find({ subCategoryId: subCategoryId });
         res.send({
             success: true,
-            message: 'Product found',
+            message: 'Products found',
             data: record,
         })
     } catch (error) {
@@ -231,6 +232,8 @@ export async function getBySearchText(req, res) {
     const pageNo = parseInt(req.query.pageNo) ?? 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
     const skipProduct = pageNo * pageSize;
+    console.log('req.query.pageSize', req.query.pageSize);
+    console.log('req.query.pageNo', req.query.pageNo);
 
     try {
         const totalProduct = await product.countDocuments({
@@ -244,12 +247,14 @@ export async function getBySearchText(req, res) {
             res.status(400).send({ success: false, message: 'page out of the range' })
         }
 
+        console.log('skipProduct', skipProduct);
+        console.log('pageSize', pageSize);
         const response = await product.find({
             $or: [
                 { productName: { $regex: searchText, $options: 'i' } },
                 { desc: { $regex: searchText, $options: 'i' } }
             ]
-        }).skip(skipProduct).limit(pageSize);
+        }).skip(skipProduct).limit(pageSize);  // limit is not working
 
         res.send({
             success: true,
