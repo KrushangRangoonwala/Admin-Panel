@@ -1,0 +1,233 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.dashboard-container {
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7fa;
+    min-height: 140vh;
+
+}
+
+.summary-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+}
+
+.summary-boxes {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    max-width: fit-content;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+}
+
+.summary-box {
+    flex: 1;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.summary-box:hover {
+    transform: translateY(-5px);
+}
+
+.summary-box h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.summary-box p {
+    margin-top: 0.5rem;
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #007BFF;
+}
+
+.category-table-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+    max-width: 700px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding-bottom: 55px;
+}
+
+.category-table-container h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.category-table th,
+.category-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.category-table th {
+    background-color: #f0f2f5;
+    font-weight: 600;
+    color: #555;
+}
+
+.category-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.category-row {
+    /* cursor: pointer; */
+    transition: background-color 0.2s;
+}
+
+.category-text {
+    cursor: pointer;
+}
+
+
+.category-row:hover {
+    background-color: #f3f6fb;
+}
+
+/* .subcategory-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.subcategory-details {
+  padding: 12px 16px;
+  background: #f0f0f0;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0 0 6px 6px;
+} */
+
+
+.subcategory-roww td {
+    background-color: #fcfcfc;
+    /* padding-left: 3rem; */
+    font-style: italic;
+    color: #666;
+}
+
+.subcategory-cell {
+    font-size: 0.95rem;
+    padding-left: 10%;
+}
+
+input[type="checkbox"] {
+    width: 15px;
+    /* height: 20px; */
+    transform: scale(1.5);
+    /* Optional for further scaling */
+    cursor: pointer;
+}
+
+.icon {
+    font-size: larger;
+    cursor: pointer;
+}
+
+.eyeIcon:hover {
+    color: #007BFF;
+}
+
+.pencilIcon:hover {
+    color: #28A745;
+}
+
+.trashIcon:hover {
+    color: #e74c3c;
+}
+
+.add-category-button {
+    /* position: absolute;
+    right: 1.5rem;
+    top: 6.5rem; */
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-subcategory-button {
+    background-color: #379f4e;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    /* font-weight: bold; */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-button:hover {
+    background-color: #218838;
+}
+
+.bi-plus-lg {
+    -webkit-text-stroke: 1px;
+    margin-right: 2px;
+}
+
+.link {
+    text-decoration: underline;
+    color: #007BFF;
+}
+
+.add-btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.6rem 0px;
+}
+
+.add-product-by-subcategory-btn {
+    padding: 7px 8px;
+    font-size: 11px;
+}
+
+
+.disableDelete {
+    cursor: no-drop;
+    opacity: 0.5;
+}
+
+.delete-div {
+    display: flex;
+    justify-content: end;
+    margin-bottom: 0.8rem;
+}

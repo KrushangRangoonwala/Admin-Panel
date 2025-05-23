@@ -1,0 +1,4 @@
+_id,productName,quantity,priceValue,priceType,weight,desc
+"""68272ec2e5ec36bc57650876""",Online saree Product ,10,2333,MRP,1,<p>Online saree Product </p>
+"""682c23df575121f979478204""",test 2123123 Product ,20,3000,MRP,2,<p><i><strong>test 2123123 Product </strong></i></p>
+"""682c2456575121f97947820c""",test 222222222 Product ,30,3000,MRP,3,<h2>test 222222222 Product </h2>

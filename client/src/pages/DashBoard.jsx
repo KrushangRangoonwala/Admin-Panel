@@ -25,6 +25,7 @@ const DashboardPage = () => {
   const [editCatData, setEditCatData] = useState();
 
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [isAllCheckBoxSelected, setIsAllCheckBoxSelected] = useState(false);
 
   const navigate = useNavigate();
 
@@ -116,6 +117,29 @@ const DashboardPage = () => {
       setSelectedCategory(prev => [...prev, value]);
     } else {
       setSelectedCategory(prev => prev.filter(item => item !== value));
+    }
+  }
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      // console.log('selectedCategory', selectedCategory)
+      const isAllSelected = categories.every(cat => selectedCategory.includes(cat._id));
+      // console.log('isAllSelected', isAllSelected);
+      isAllSelected ? setIsAllCheckBoxSelected(true) : setIsAllCheckBoxSelected(false);
+    }
+  }, [selectedCategory])
+
+  function handleAllCheckBoxClicked() {
+    // const isAllSelected = categories.filter(cat => selectedCategory.includes(cat._id));
+    if (isAllCheckBoxSelected) {
+      setSelectedCategory([]);
+      setIsAllCheckBoxSelected(false);
+    } else {
+      setIsAllCheckBoxSelected(true);
+      setSelectedCategory([]);
+      const tempArr = [];
+      categories.forEach((cat) => tempArr.push(cat._id));
+      setSelectedCategory(tempArr);
     }
   }
 
@@ -235,7 +259,7 @@ const DashboardPage = () => {
             <thead>
               <tr>
                 <th style={{ width: "10%" }}>
-                  <input type="checkbox" />
+                  <input type="checkbox" checked={isAllCheckBoxSelected} onChange={handleAllCheckBoxClicked} />
                 </th>
                 <th>Category Name</th>
                 <th>Slug</th>
@@ -250,7 +274,10 @@ const DashboardPage = () => {
                   <tr className="category-row">
                     <td>
                       {/* {expandedCategoryId === cat.id ? null : ( */}
-                      <input type="checkbox" value={cat._id} onChange={handleCheckboxChange} />
+                      <input type="checkbox"
+                        value={cat._id}
+                        onChange={handleCheckboxChange}
+                        checked={selectedCategory.includes(cat._id)} />
                       {/* )} */}
                     </td>
                     <td
@@ -300,12 +327,12 @@ const DashboardPage = () => {
                           </td>
                           {/* <td></td> */}
                           <td colSpan="3" style={{ textAlign: "end" }}>
-                            <button
+                            {/* <button
                               className="add-category-button add-product-by-subcategory-btn"
                               onClick={() => navigate(`/addProduct/${cat._id}/${subCat._id}`)}
                             >
                               <i className="bi bi-plus-lg"></i> Product
-                            </button>
+                            </button> */}
                           </td>
                           {/* <td></td> */}
                         </tr>

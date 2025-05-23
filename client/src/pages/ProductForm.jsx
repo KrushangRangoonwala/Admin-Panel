@@ -201,6 +201,7 @@ const ProductForm = () => {
           },
         });
         console.log('Product edited successfully:', response.data);
+        navigate(-1);
       } else {
         const response = await api.post('/product', formData, {
           headers: {
@@ -215,7 +216,12 @@ const ProductForm = () => {
         // setSelectedSubCat([]);
         // setSelectedSizes([]);
       }
-      // window.location.reload();  
+      // setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 300)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      // window.location.reload();
+      setTimeout(() => {
+        window.location.reload(); 
+      }, 300);
     } catch (error) {
       console.error('Error submitting product form:', error);
     }
@@ -708,7 +714,7 @@ const ProductForm = () => {
             />
           </label>
 
-          <div className="form-actions">
+          <div className="product-form-actions">
             <button type="submit">{editProductData ? 'Update ' : 'Add '}</button>
             {/* <button type="button" className="cancel-btn">
               Cancel

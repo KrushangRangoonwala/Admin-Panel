@@ -8,6 +8,7 @@ import SearchBox from "../components/SearchBox";
 import FilterModal from "../components/FilterModal";
 import Navbar from "../components/Navbar";
 import Pagination from "../components/Pagination";
+import UploadCsvModal from "../components/UploadCsvModal";
 
 const AllProducts = ({
     productsList,
@@ -21,6 +22,7 @@ const AllProducts = ({
     const [deletePropmt, setDeletePropmt] = useState("");
     const [deleteProductid, setDeleteProductid] = useState("");
     const [deleteSingleOrMulti, setDeleteSingleOrMulti] = useState(null);
+    const [isUploadCsvModalOpen, setIsUploadCsvModalOpen] = useState(false);
 
     const [searchText, setSearchText] = useState('');
     const [clearSearch, setClearSearch] = useState(false);
@@ -240,9 +242,19 @@ const AllProducts = ({
         });
     }
 
+    function handlecsvUpload() {
+        setIsUploadCsvModalOpen(true);
+    }
+
     return (
         <>
             <Navbar />
+
+            {isUploadCsvModalOpen &&
+                <UploadCsvModal
+                    isOpen={isUploadCsvModalOpen}
+                    onClose={() => setIsUploadCsvModalOpen(false)}
+                    onSubmit={getProducts} />}
 
             {deleteSingleOrMulti === "single" && (
                 <DeleteConfirmDialog
@@ -379,11 +391,13 @@ const AllProducts = ({
                         </div> */}
                     </div>
                 </div>
+                <div className="upload-csv-div">
+                    <span onClick={handlecsvUpload}>Upload .csv file and update data</span>
+                </div>
 
                 {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
                 <div className="product-list">
-                    {/* {console.log('is array ',  renderProducts.isArray())} */}
-                    {/* console.log('renderProducts', renderProducts) */}
+                    {renderProducts.length <= 0 && <p className="no-record">No Record Found</p>}
                     {renderProducts?.map((prod, i) => (
                         <div
                             key={i}
@@ -419,7 +433,7 @@ const AllProducts = ({
                                 <h6>{prod.productName}</h6>
                                 <div className="actions">
                                     <i className="bi bi-pencil-fill edit-icon"></i>
-                                    <p>${prod.price}</p>
+                                    <p>Rs {' '} {prod.priceValue}</p>
                                     <i
                                         className="bi bi-trash3-fill delete-icon"
                                         onClick={(e) => deleteIconClicked(e, prod)}

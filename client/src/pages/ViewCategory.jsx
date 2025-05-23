@@ -35,9 +35,9 @@ const ViewCategory = () => {
   }
 
   useEffect(() => {
-    setTimeout(() => {
-      setIsproductListReady(true)
-    }, 2000);
+    // setTimeout(() => {
+    //   setIsproductListReady(true)
+    // }, 2000);
   }, [productsList]);
 
   const toggleSubCategory = (subId, subDesc) => {
@@ -207,7 +207,7 @@ const ViewCategory = () => {
                       <div><strong>Description:</strong>
                         <div className="desc-add-product">
                           <div ref={subCatDescRef} style={{ marginLeft: '40px', marginTop: '8px' }}></div>
-                          <button
+                          {/* <button
                             className="add-category-button"
                             onClick={() => navigate(`/addProduct/${categoryId}/${sub._id}`)}
                             style={{
@@ -218,24 +218,30 @@ const ViewCategory = () => {
                             }}
                           >
                             <i className="bi bi-plus-lg"></i> Add Product
-                          </button>
+                          </button> */}
                         </div>
                       </div>
 
-                      <div className="product-list">
+                      <div className="product-listt">
                         {productsList.length <= 0 && <p className='no-record'>No Product Found</p>}
                         {productsList.map((prod, i) => (
-                          <div key={i} className="product-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/product/${prod._id}`)}>
-                            {/* {console.log('prod', prod)} */}
+                          <div
+                            key={i}
+                            className="product-card"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => navigate(`/product/${prod._id}`)}>
                             <img src={imageReader(prod, "mainImage")} alt={prod.name} />
+                            
                             <div className="product-info">
-                              <input type="checkbox" className='product-checkbox' value={prod._id} onClick={(e) => handleCheckBoxClick(e)} />
-                              <h6>{prod.productName}</h6>
-                              <div className="actions">
-                                <i className="bi bi-pencil-fill edit-icon"></i>
-                                <p>${prod.price}</p>
-                                <i className="bi bi-trash3-fill delete-icon" onClick={(e) => deleteIconClicked(e, prod)}></i>
-                              </div>
+                              <label className='product-checkbox' style={{left:'-3px'}} onClick={e => e.stopPropagation()}>
+                                <input type="checkbox" value={prod._id} onClick={(e) => handleCheckBoxClick(e)} />
+                              </label>
+                                <h6>{prod.productName}</h6>
+                                <div className="actions">
+                                  <i className="bi bi-pencil-fill edit-icon"></i>
+                                  <p>Rs{' '}{prod.priceValue}</p>
+                                  <i className="bi bi-trash3-fill delete-icon" onClick={(e) => deleteIconClicked(e, prod)}></i>
+                                </div>
                             </div>
                           </div>
                         ))}

@@ -3,7 +3,7 @@ import './Size.css';
 import api from '../axiosConfig';
 import AddSizeForm from './AddSizeForm';
 
-const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize,getAllSize }) => {
+const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize, getAllSize }) => {
     // const [allSize, setAllSize] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -15,15 +15,15 @@ const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize,getAllSiz
         setIsOpen(!isOpen);
     };
 
-    // async function getAllSize() {
-    //     try {
-    //         const response = await api.get('/size');
-    //         console.log('Sizes:', response.data);
-    //         setAllSize(response.data);
-    //     } catch (error) {
-    //         console.error("Error:", error);
-    //     }
-    // }
+    async function getAllSize() {
+        try {
+            const response = await api.get('/size');
+            console.log('Sizes:', response.data);
+            setAllSize(response.data);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
 
     async function handleDeleteSize(id) {
         try {

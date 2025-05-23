@@ -1,5 +1,6 @@
 import product from "../models/productSchema.js";
-import { json2csv } from 'json-2-csv'
+import { csv2json, json2csv } from 'json-2-csv'
+import csvtojson from 'csvtojson'
 
 export async function getProductByPage(req, res) {
     const pageNo = parseInt(req.query.pageNo) ?? 1;
@@ -283,12 +284,14 @@ export async function downloadCsv(req, res) {
         });
 
         const options = {
-            keys: ['_id', 'productName', 'quantity', 'price', 'weight', 'desc'],
+            keys: ['_id', 'productName', 'quantity', 'priceValue', 'priceType', 'weight', 'desc'],
             rename: {
                 _id: 'Id',
                 desc: 'Description',
                 weight: "Weight",
-                price: "Price",
+                // price: "Price",
+                PriceType: "price Type",
+                PriceValue: "price Value",
                 quantity: "Quantity",
                 productName: "Product Name",
             }
@@ -306,6 +309,37 @@ export async function downloadCsv(req, res) {
         res.status(400).send({
             success: false,
             error,
+        })
+    }
+}
+
+export async function uploadCsv(req, res) {
+    try {
+        // console.log('req.file', req.file);
+        const jsonOfcsv = await csvtojson().fromFile(req.file.path);
+        // console.log('jsonOfcsv', jsonOfcsv);
+
+        for (const item of jsonOfcsv) {
+            const idStr = item._id;  // "682c2456575121f97947820c"
+            const id = idStr.slice(1, idStr.length - 1)
+            console.log('id', id);
+            delete item._id;
+            try {
+                await product.findByIdAndUpdate(id, item)
+            } catch (error) {
+                console.log('error in ', id, item.productName);
+                console.log('error', error);
+            }
+        }
+
+        res.send({
+            success: true,
+            message: 'data Updated.'
+        })
+    } catch (error) {
+        console.log('error in csv file upload', error);
+        res.status(500).send({
+            success: false,
         })
     }
 }
