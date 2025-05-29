@@ -27,39 +27,24 @@ const productSchema = Schema({
     ref: 'subCategory', // reference to the subCategory model
     required: true,
   },
-  size: {
-    type: [Schema.Types.ObjectId],
-    ref: 'sizes',
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  // sizes: [
-  //   {
-  //     size: {
-  //       type: String,
-  //       enum: ['S', 'M', 'L', 'XL', 'XXL'],
-  //       required: true,
-  //     },
-  //     quantity: {
-  //       type: Number,
-  //       required: true,
-  //     },
-  //   }
-  // ],
-  // price: {
+  // size: {
+  //   type: [Schema.Types.ObjectId],
+  //   ref: 'sizes',
+  //   required: true,
+  // },
+  // quantity: {
   //   type: Number,
   //   required: true,
   // },
-
-  priceType: {
-    type: String,
-    enum: ['MRP', 'salePrice'],
+  stockBySize: [{
+    size: { type: String, required: true },
+    quantity: { type: Number, required: true },
+  }],
+  mrpPrice: {
+    type: Number,
     required: true
   },
-  priceValue: {
+  salePrice: {
     type: Number,
     required: true
   },

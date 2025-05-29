@@ -30,6 +30,7 @@
   width: 96%;
   padding: 10px;
   margin-top: 5px;
+  /* background-color: #4caf50; */
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 14px;
@@ -88,13 +89,19 @@
 .rs-class {
   position: absolute;
   left: 10px;
-  top: 10px;
+  bottom: 10px;
+}
+
+.rs-input {
+  padding-left: 40px;
+  width: 81%;
+  margin-top: 0px;
 }
 
 .price-label {
   position: relative;
-  right: 25px;
-  width: 65%;
+  /* right: 25px;
+  width: 65%; */
 }
 
 .price-input {
@@ -243,4 +250,9 @@
 .subImg-div img {
   height: 100px;
   margin: 0px 11px;
+}
+
+.price-field-con {
+  display: flex;
+  gap: 30px;
 }

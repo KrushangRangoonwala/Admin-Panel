@@ -48,7 +48,7 @@ const AllProducts = ({
 
     async function handleDeleteProduct(id) {
         try {
-            const response = await api.delete(`/product/id/${id}`);
+            const response = await api.delete(`/product/id/${id}`);  // product api
             console.log(response);
             getProducts();
         } catch (error) {
@@ -60,7 +60,7 @@ const AllProducts = ({
         try {
             const response = await api.get(
                 `/product?pageNo=${pageNo - 1}&pageSize=${pageSize}`
-            );
+            );  // product api
             // console.log("response.data", response.data);
             setRenderProducts(response.data.allProduct);
             setTotalProduct(response.data.totalProduct);
@@ -102,7 +102,7 @@ const AllProducts = ({
 
     async function getCatAndSubCat() {
         try {
-            const response = await api.get("/category");
+            const response = await api.get("/category");  // product api
             console.log("response.data", response.data);
             setAllCategories(response.data.allCategory);
         } catch (error) {
@@ -110,7 +110,7 @@ const AllProducts = ({
         }
 
         try {
-            const response = await api.get("/subCategory");
+            const response = await api.get("/subCategory");  // product api
             console.log("response.data", response.data);
             setAllSubcategories(response.data.allSubCategory);
         } catch (error) {
@@ -133,7 +133,7 @@ const AllProducts = ({
         }
         async function callApi() {
             try {
-                const searchedProducts = await api.get(`/product/searchBy/${searchText}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);
+                const searchedProducts = await api.get(`/product/searchBy/${searchText}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);  // product api
                 setRenderProducts(searchedProducts.data.data);
                 setClearSearch(true);
 
@@ -213,7 +213,7 @@ const AllProducts = ({
                     {
                         responseType: "Blob", //  important for file download
                     }
-                );
+                );  // product api
 
                 const blob = new Blob([response.data], { type: "text/csv" });
                 const url = window.URL.createObjectURL(blob);
@@ -263,6 +263,9 @@ const AllProducts = ({
                     id={deleteProductid}
                     onConfirm={handleDeleteProduct}
                     onCancel={() => setDeleteDialog(false)}
+                    titleTxt={'Confirm Delete'}
+                    cancelTxt={'Cancel'}
+                    doneTxt={'Delete'}
                 />
             )}
 
@@ -276,6 +279,8 @@ const AllProducts = ({
                         setDeleteSingleOrMulti(null);
                         // setSelectedProductOfAllPage([]);
                     }}
+                    cancelTxt={'Cancel'}
+                    doneTxt={selectedProductOfAllPage.length > 1 ? 'Delete All' : 'Delete'}
                 />
             )}
 
@@ -313,7 +318,7 @@ const AllProducts = ({
                                 className="search-input"
                                 style={{ border: clearSearch && '4px solid #00aaff' }}
                             />
-                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleClearSearch}></i>}
+                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleClearSearch} style={{color: '#00aaff'}}></i>}
                         </div>
                         <button
                             className="add-category-button"
@@ -433,7 +438,7 @@ const AllProducts = ({
                                 <h6>{prod.productName}</h6>
                                 <div className="actions">
                                     <i className="bi bi-pencil-fill edit-icon"></i>
-                                    <p>Rs {' '} {prod.priceValue}</p>
+                                    <p>Rs {' '} {prod.salePrice}</p>
                                     <i
                                         className="bi bi-trash3-fill delete-icon"
                                         onClick={(e) => deleteIconClicked(e, prod)}

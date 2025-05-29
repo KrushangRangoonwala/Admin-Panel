@@ -1,0 +1,12 @@
+_id,productName,quantity,mrpPrice,salePrice,weight,desc
+"""682702d8a538f6384def042d""",Denim,1,2000,1500,21,<p>Denim jeans description</p>
+"""68272ec2e5ec36bc57650876""",Product Online saree,0,4000,3000,1,<p>Online saree Product</p>
+"""682c23df575121f979478204""",test 2123123 Product,0,2500,2000,2,<p><i><strong>test 2123123 Product </strong></i></p>
+"""682c2456575121f97947820c""",test 222222222 Product,0,2000,1500,3,<h2>test 222222222 Product </h2>
+"""682c49d067847a43fbbaf846""",Product test 123,0,3000,3500,1,<h3><i>xcxxvzxvxcvxcv</i></h3>
+"""682c4f9c67847a43fbbaf993""",product MMM,44,2800,2500,3,<h3><i><strong>SDFSFSDFSDFS</strong></i></h3>
+"""682c552767847a43fbbafbd9""",product WWW,55,2700,2300,4,
+"""682ffe2e19f4d4c42f7c9edf""",Product test 2,22,3800,3400,2,<h2><i><strong>adadadadaaa</strong></i></h2>
+"""68302666bde76b37d6be0ad4""",WWWWWWWWWWWAAAAA,30,2400,2100,3,<h3><i>ASsdadsd</i></h3>
+"""683026d0bde76b37d6be0adf""",GGGG,30,4800,4300,3,<p><i><strong>asdasdadadaasdaddewde</strong></i></p>
+"""6836c2cce6a443c92044379e""",WELCOME TO SAREE,9,6100,5500,1,<p>sas</p>

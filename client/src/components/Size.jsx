@@ -17,7 +17,7 @@ const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize, getAllSi
 
     async function getAllSize() {
         try {
-            const response = await api.get('/size');
+            const response = await api.get('/size');  // size api
             console.log('Sizes:', response.data);
             setAllSize(response.data);
         } catch (error) {
@@ -27,7 +27,7 @@ const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize, getAllSi
 
     async function handleDeleteSize(id) {
         try {
-            const response = await api.delete(`/size/id/${id}`);
+            const response = await api.delete(`/size/id/${id}`);  // size api
             console.log('Size deleted:', response.data);
             getAllSize();
         } catch (error) {

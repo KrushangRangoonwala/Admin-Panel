@@ -26,7 +26,7 @@ const ViewCategory = () => {
   async function getProductBySubCategory(subId) {
     // setProductsList([]);
     try {
-      const response = await api.get(`/product/productBySubCategory/${subId}`);
+      const response = await api.get(`/product/productBySubCategory/${subId}`);  // product api
       console.log('response.data', response.data);
       response.data.success && setProductsList(response.data.data);
     } catch (error) {
@@ -71,7 +71,7 @@ const ViewCategory = () => {
 
   async function handleDeleteSubCat(id) {
     try {
-      await api.delete(`/subCategory/id/${id}`);
+      await api.delete(`/subCategory/id/${id}`);  // subCategory api
     } catch (error) {
       console.log('Error deleting subcategory:', error);
     }
@@ -85,7 +85,7 @@ const ViewCategory = () => {
 
   async function getCategoryData() {
     try {
-      const response = await api.get(`/category/id/${categoryId}`);
+      const response = await api.get(`/category/id/${categoryId}`);  // category api
       // console.log('Category Data:', response.data);
       setCategoryData(response.data.data);
       catDescRef.current.innerHTML = response.data.data.desc;
@@ -95,7 +95,7 @@ const ViewCategory = () => {
   }
   async function getSubCategoryData() {
     try {
-      const response = await api.get(`/subCategory/subCategoryByCategory/${categoryId}`);
+      const response = await api.get(`/subCategory/subCategoryByCategory/${categoryId}`);  // subCategory api
       // console.log('Subcategories:', response.data);
       setSubcategories(response.data.data);
     } catch (error) {
@@ -239,7 +239,7 @@ const ViewCategory = () => {
                                 <h6>{prod.productName}</h6>
                                 <div className="actions">
                                   <i className="bi bi-pencil-fill edit-icon"></i>
-                                  <p>Rs{' '}{prod.priceValue}</p>
+                                  <p>Rs{' '}{prod.salePrice}</p>
                                   <i className="bi bi-trash3-fill delete-icon" onClick={(e) => deleteIconClicked(e, prod)}></i>
                                 </div>
                             </div>

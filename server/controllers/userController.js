@@ -25,7 +25,7 @@ export async function handleLogin(req, res) {
     } else {
         res.status(404).send({
             success: false,
-            message: 'Username or Password is Invalide.',
+            message: 'email id or Password is Invalide.',
         });
     }
 

@@ -17,7 +17,7 @@ const UploadCsvModal = ({ isOpen, onClose,onSubmit }) => {
 
             try {
                 const headers = { 'Content-Type': 'multipart/form-data' };
-                const response = await api.post('/product/uploadCsv', formData);
+                const response = await api.post('/product/uploadCsv', formData);  // product api
                 console.log('response', response);
             } catch (error) {
                 console.error('Error in uploading .csv file:', error);

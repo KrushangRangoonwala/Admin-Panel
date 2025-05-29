@@ -7,6 +7,7 @@ import Cookies from 'js-cookie';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const token = Cookies.get('userToken');
@@ -19,7 +20,7 @@ const Login = () => {
 
     async function handleLogin() {
         try {
-            const response = await api.post('/login', {
+            const response = await api.post('/login', {  // category api
                 name: formik.values.name,
                 password: formik.values.password
             });
@@ -28,6 +29,7 @@ const Login = () => {
             navigate('/');
         } catch (error) {
             console.error('Login error:', error);
+            setError(error.response?.data?.message || 'Login failed. Please try again.');
         }
     }
 
@@ -78,6 +80,8 @@ const Login = () => {
                         </span>
                     </div>
                 </div>
+
+                {error.length > 0 && <p className='login-error'>*{' '}{error}</p>}
 
                 <button type="submit" className="login-btn">Login</button>
 

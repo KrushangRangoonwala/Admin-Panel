@@ -6,10 +6,12 @@ const sizeSchema = Schema({
         type: String,
         required: true,
         trim: true,
+        unique: true, // is this correct property
     },
     shortName: {
         type: String,
         required: true,
+        unique: true,
     },
 })
 

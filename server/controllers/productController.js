@@ -284,14 +284,13 @@ export async function downloadCsv(req, res) {
         });
 
         const options = {
-            keys: ['_id', 'productName', 'quantity', 'priceValue', 'priceType', 'weight', 'desc'],
+            keys: ['_id', 'productName', 'quantity', 'mrpPrice', 'salePrice', 'weight', 'desc'],
             rename: {
                 _id: 'Id',
                 desc: 'Description',
                 weight: "Weight",
-                // price: "Price",
-                PriceType: "price Type",
-                PriceValue: "price Value",
+                salePrice: "price Value",
+                mrpPrice: "price Type",
                 quantity: "Quantity",
                 productName: "Product Name",
             }

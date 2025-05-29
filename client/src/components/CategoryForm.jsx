@@ -36,9 +36,9 @@ const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatD
       const headers = { 'Content-Type': 'multipart/form-data' };
 
       if (editCatData?._id) {
-        const response = await api.put(`/category/id/${editCatData._id}`, formData, { headers });
+        const response = await api.put(`/category/id/${editCatData._id}`, formData, { headers });  // category api
       } else {
-        const response = await api.post('/category', formData, { headers });
+        const response = await api.post('/category', formData, { headers });  // category api
       }
     } catch (error) {
       console.error('Error submitting category form:', error);

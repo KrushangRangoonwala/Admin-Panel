@@ -31,7 +31,7 @@ const DashboardPage = () => {
 
   async function getCategoryData() {
     try {
-      const response = await api.get("/category");
+      const response = await api.get("/category");  // category api
       console.log("Categories:", response.data);
       setCategories(response.data.allCategory);
     } catch (error) {
@@ -41,7 +41,7 @@ const DashboardPage = () => {
 
   async function getDashboardData() {
     try {
-      const response = await api.get("/");
+      const response = await api.get("/");  // category api
       // console.log("Dashboard Data:", response.data);
       const { categoryCount, subCategoryCount, productCount } = response.data;
       setDashboardData({ categoryCount, subCategoryCount, productCount });
@@ -57,7 +57,7 @@ const DashboardPage = () => {
 
   async function getSubCategoryData() {
     try {
-      const response = await api.get(
+      const response = await api.get(  // subCategory api
         `/subCategory/subCategoryByCategory/${expandedCategoryId}`
       );
       console.log("Subcategories:", response.data);
@@ -85,7 +85,7 @@ const DashboardPage = () => {
 
   async function getAllSize() {
     try {
-      const response = await api.get("/size");
+      const response = await api.get("/size");  // size api
       console.log("Sizes:", response.data);
       setAllSize(response.data);
     } catch (error) {
@@ -96,7 +96,7 @@ const DashboardPage = () => {
   async function handleAddSize(values) {
     setIsSizeFormOpen(false);
     try {
-      const response = await api.post("/size", values);
+      const response = await api.post("/size", values);  // size api
       console.log("Size added:", response.data);
       getAllSize();
     } catch (error) {
@@ -145,7 +145,7 @@ const DashboardPage = () => {
 
   async function handleDeleteCategory(id) {
     try {
-      const response = await api.delete(`/category/id/${id}`);
+      const response = await api.delete(`/category/id/${id}`);  // category api
       console.log("Response", response.data);
     } catch (error) {
       console.log('error', error)

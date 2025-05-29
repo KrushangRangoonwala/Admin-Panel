@@ -11,7 +11,7 @@ const SubCategoryForm = ({ isOpen, onSubmit, onClose, categoryId, editSubCatData
   useEffect(() => {
     async function getCategories() {
       try {
-        const response = await api.get('/category');
+        const response = await api.get('/category');  // category api
         console.log('response.data.allCategory', response.data.allCategory);
         setAllCategory(response.data.allCategory);
       } catch (error) {
@@ -30,10 +30,10 @@ const SubCategoryForm = ({ isOpen, onSubmit, onClose, categoryId, editSubCatData
   async function handleSubmit(values) {
     try {
       if (editSubCatData) {
-        const response = await api.put(`/subCategory/id/${editSubCatData._id}`, values);
+        const response = await api.put(`/subCategory/id/${editSubCatData._id}`, values);  // subCategory api
         console.log('Subcategory created:', response.data);
       } else {
-        const response = await api.post('/subCategory', values);
+        const response = await api.post('/subCategory', values);  // subCategory api
         console.log('Subcategory created:', response.data);
       }
       onSubmit();

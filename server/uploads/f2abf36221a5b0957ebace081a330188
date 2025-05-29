@@ -1,0 +1,6 @@
+_id,productName,quantity,priceValue,priceType,weight,desc
+"""682702d8a538f6384def042d""",Denim,1,3333,MRP,21,<p>Denim jeans description</p>
+"""68272ec2e5ec36bc57650876""",Product Online saree,0,2333,MRP,1,<p>Online saree Product</p>
+"""682c23df575121f979478204""",test 2123123 Product,0,3000,MRP,2,<p><i><strong>test 2123123 Product </strong></i></p>
+"""682c2456575121f97947820c""",test 222222222 Product,0,3000,MRP,3,<h2>test 222222222 Product </h2>
+"""682c49d067847a43fbbaf846""",Product test 123,0,119,MRP,1,<h3><i>xcxxvzxvxcvxcv</i></h3>
