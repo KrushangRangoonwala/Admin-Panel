@@ -38,6 +38,12 @@ export async function addProduct(req, res) {
     const newProduct = {
         ...req.body,
     }
+    console.log(' newProduct.stockSize', newProduct.stockSize);
+
+    (Array.isArray(newProduct?.stockSize)) ?
+        newProduct.stockSize = newProduct.stockSize.map((val) => JSON.parse(val))  // line: 42
+        : newProduct.stockSize = JSON.parse(newProduct.stockSize);
+    // const newProduct = JSON.parse(strProductData);
     // console.log('\n\n\n\nreq.files', req.files);
     if (req.files.mainImage) {
         newProduct.mainImage = {
@@ -95,6 +101,14 @@ export async function updateProduct(req, res) {
     const newProduct = {
         ...req.body,
     }
+
+        (Array.isArray(newProduct.stockSize)) ?
+        newProduct.stockSize = newProduct.stockSize.map((val) => JSON.parse(val))
+        : newProduct.stockSize = JSON.parse(newProduct.stockSize);
+
+    console.log('\n\n\n\n@@@@@@@@@@@@@@@@\n\n\n\n');
+    console.log('typeof newProduct.stockSize[0]', typeof newProduct.stockSize[0])
+    console.log('newProduct.stockSize', newProduct.stockSize);
     delete newProduct.isRemoveMainImg;
     delete newProduct.indexToRemoveSubImg;
     const isRemoveMainImg = req.body.isRemoveMainImg;
@@ -296,6 +310,9 @@ export async function downloadCsv(req, res) {
             }
         }
 
+        const tempObj = [...response]
+        console.log("Object.keys(tempObj[0]) ", Object.keys(tempObj[0]))
+        console.log("tempObj", tempObj)
         const csv = await json2csv(response, options);
 
         res.setHeader('Content-Disposition', 'attachment; filename=selected_item123123s.csv');

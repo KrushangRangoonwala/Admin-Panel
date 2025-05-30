@@ -36,9 +36,9 @@ const productSchema = Schema({
   //   type: Number,
   //   required: true,
   // },
-  stockBySize: [{
+  stockSize: [{
     size: { type: String, required: true },
-    quantity: { type: Number, required: true },
+    stock: { type: Number, required: true },
   }],
   mrpPrice: {
     type: Number,

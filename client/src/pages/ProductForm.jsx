@@ -42,8 +42,8 @@ const ProductForm = () => {
   const [selectedSubCat, setSelectedSubCat] = useState([]);
   const [isSelectedSubCatSet, setIsSelectedSubCatSet] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState([]);
-  const [stockBySizeList, setStockBySizeList] = useState([{ size: '', stock: '' }]);
-  // setStockBySizeList(prev => [...prev, { size: 'aabc', stock: 21   }])
+  const [stockSizeList, setStockSizeList] = useState([{ size: '', stock: '' }]);
+  // setStockSizeList(prev => [...prev, { size: 'aabc', stock: 21   }])
   const [remainingSizes, setRemainingSizes] = useState([]);
   const addStockBtn = useRef(null);
 
@@ -55,7 +55,7 @@ const ProductForm = () => {
   const [isSubCatFormOpen, setIsSubCatFormOpen] = useState(false);
 
   let str;
-  
+
   // useEffect(() => {
   //   setIsSelectedSubCatSet(true);
   //   console.log('###selectedSubCat', selectedSubCat);
@@ -145,24 +145,26 @@ const ProductForm = () => {
         formik.setFieldValue('weight', productData.weight);
         formik.setFieldValue('desc', productData.desc);
         formik.setFieldValue('mainImage', null);
+        setStockSizeList(productData.stockSize)
         // formik.setFieldValue('subImages', [null]);
 
         const prevSelectedSubCat = [];
-        const prevSelectedSize = [];
+        // const prevSelectedSize = [];
 
         productData.subCategoryId.forEach(async (id) => {
           const sub = await getSubcatById(id);
           prevSelectedSubCat.push({ id: sub._id, name: sub.name })
         })
 
-        productData.size.forEach(async (id) => {
-          const size = await getSizeById(id);
-          prevSelectedSize.push({ id: size._id, name: size.name, shortName: size.shortName })
-        })
+        // productData.size.forEach(async (id) => {
+        //   const size = await getSizeById(id);
+        //   prevSelectedSize.push({ id: size._id, name: size.name, shortName: size.shortName })
+        // })
 
         setTimeout(() => {
+          console.log('prevSelectedSubCat', prevSelectedSubCat);
           setSelectedSubCat(prevSelectedSubCat);
-          setSelectedSizes(prevSelectedSize);
+          // setSelectedSizes(prevSelectedSize);
         }, 500);
 
         setUploadedSubImgData(productData.subImages);
@@ -182,6 +184,10 @@ const ProductForm = () => {
     productId && getProductById();
   }, []);
 
+  useEffect(() => {
+    console.log('selectedSubCat', selectedSubCat);
+  }, [selectedSubCat])
+
   async function handleSubmit(values) {
     console.log('Form Values:', values);
 
@@ -198,7 +204,8 @@ const ProductForm = () => {
     }
 
     selectedSubCat.forEach((val) => formData.append('subCategoryId', val.id));
-    selectedSizes.forEach((val) => formData.append('size', val.id));
+    stockSizeList.forEach((val) => formData.append('stockSize', JSON.stringify(val)));
+    // selectedSizes.forEach((val) => formData.append('size', val.id));
 
     newlySelectedSubImg.forEach((val) => formData.append('subImages', val));
     console.log('indexesToRemoveSubImg', indexesToRemoveSubImg);
@@ -239,6 +246,10 @@ const ProductForm = () => {
     }
   }
 
+  // function isAtleastOneSizeprovided() {
+
+  // }
+
   const formik = useFormik({
     initialValues: {
       categoryId: '',  // categoryId in backend
@@ -255,9 +266,11 @@ const ProductForm = () => {
     onSubmit: (values) => {
       if (selectedSubCat.length <= 0) {
         setPopupContent('emptySubCat');
-      } else if (selectedSizes.length <= 0) {
-        setPopupContent('emptySize')
-      } else {
+      }
+      // else if (selectedSizes.length <= 0) {
+      //   setPopupContent('emptySize')
+      // } 
+      else {
         handleSubmit(values)
       }
     }
@@ -413,37 +426,40 @@ const ProductForm = () => {
   }
 
   function handleAddStockBtnClicked() {
-    console.log('handleAddStockBtnClicked..')
+    // console.log('handleAddStockBtnClicked..')
     const obj = { size: '', stock: '' };
-    setStockBySizeList(prev => [...prev, obj])
+    setStockSizeList(prev => [...prev, obj])
   }
 
-  function handleStockBySizeChange(idx, field, value) {
-    console.log('before stockBySizeList', stockBySizeList);  // before afters are give same output ,why?
-    console.log('handleStockBySizeChange..');
-    const tempArr = [...stockBySizeList];
+  function handleStockSizeChange(idx, field, value) {
+    // console.log('before stockSizeList', stockSizeList);  // before afters are give same output ,why?
+    // console.log('handleStockSizeChange..');
+    const tempArr = [...stockSizeList];
     tempArr[idx] = { ...tempArr[idx], [field]: value }
 
-    setStockBySizeList(tempArr);
-    console.log('after stockBySizeList', stockBySizeList);
+    setStockSizeList(tempArr);
+    // console.log('after stockSizeList', stockSizeList);
   }
 
-  function handleDeleteStockBySize(idx) {
-    console.log('handleDeleteStockBySize..')
-    const tempArr = stockBySizeList;
-    tempArr.splice(idx, 1)
-
-    console.log('tempArr', tempArr);
-    setStockBySizeList(tempArr);
+  function handleDeleteStockSize(idx) {
+    // console.log('handleDeleteStockSize..')
+    if (stockSizeList.length <= 1) {
+      setPopupContent('emptySize');
+    } else {
+      const tempArr = [...stockSizeList];
+      tempArr.splice(idx, 1)
+      setStockSizeList(tempArr);
+      console.log('tempArr', tempArr);
+    }
   }
 
   function setRemainingSizeList() {
     const arr = allSize.filter(val => {
-      return stockBySizeList.every(x => {
+      return stockSizeList.every(x => {
         return x.size !== val._id
       })
     })
-    console.log('arr', arr);
+    // console.log('arr', arr);
     setRemainingSizes(arr);
   }
 
@@ -454,10 +470,10 @@ const ProductForm = () => {
   // }, [remainingSizes])
 
   useEffect(() => {
-    console.log('inside useeffect')
-    console.log('stockBySizeList', stockBySizeList);
+    // console.log('inside useeffect')
+    // console.log('stockSizeList', stockSizeList);
     setRemainingSizeList();
-  }, [stockBySizeList]);
+  }, [stockSizeList]);
 
   useEffect(() => {
     setRemainingSizeList();
@@ -552,7 +568,7 @@ const ProductForm = () => {
       {popupContent &&
         <Popup message={popupContent === 'emptySubCat' ?
           'Please Select atleast one Sub category'
-          : popupContent === 'emptySize' && 'Please Select atleast one Available size'
+          : popupContent === 'emptySize' && 'Please Select atleast one Available Size and its Stock'
         }
           onClose={() => setPopupContent('')} />}
 
@@ -674,7 +690,7 @@ const ProductForm = () => {
             {/* <label> */}
             Select Main Image:
             {/* </label> */}
-            {previewMainImgUrl && <img src={previewMainImgUrl} alt="preview" className="img" />}
+            {previewMainImgUrl && <div className='subImg-div' style={{width:'120px'}}><img src={previewMainImgUrl} alt="preview" className="img" /></div>}
 
             {imgIcon === 'cross' &&
               <i className="bi bi-x-circle img-upload-icon"
@@ -698,12 +714,20 @@ const ProductForm = () => {
             {/* <label> */}
             Select Sub Images:
             {/* </label> */}
-            {previewSubImageUrls?.map((img, index) => (
-              <div key={index} className='subImg-div'>
-                <img key={index} src={img} alt={`preview-${index}`} />
-                <i className="bi bi-x-circle img-upload-icon" onClick={() => handleRemoveSubImgUpload(index, previewSubImgData[index].originalName)}></i>
-              </div>
-            ))}
+            <div className="grid-containerr">
+              {previewSubImageUrls?.map((img, index) => (
+                <div key={index} className="subImg-div">
+                  <img src={img} alt={`preview-${index}`} />
+                  <i
+                    className="bi bi-x-circle img-upload-icon"
+                    onClick={() =>
+                      handleRemoveSubImgUpload(index, previewSubImgData[index].originalName)
+                    }
+                  ></i>
+                </div>
+              ))}
+            </div>
+
 
             <label>
               <input
@@ -762,7 +786,7 @@ const ProductForm = () => {
           </label> */}
 
 
-            <div style={{ marginBottom: '15px' }}>
+            {/* <div style={{ marginBottom: '15px' }}>
               <label style={{ marginBlock: '5px' }}>
                 Select Size:
               </label>
@@ -798,72 +822,50 @@ const ProductForm = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            <div>
+            <div style={{ marginBottom: '15px' }}>
               Add Stock by Size
 
-              {/* {stockBySizeList.map((val, idx) => {
-                const sizeObj = allSize.find(x => x._id === val.size);
-                const showSizeObj = sizeObj && (
-                  <option key="qweqweqwe" value={sizeObj._id} style={{ display: 'none' }}>
-                    {sizeObj.shortName} - {sizeObj.name}
-                  </option>
-                );
-
-                return (
-                  <div key={idx}>
-                    <label>
-                      Select size:
-                      <select value={val.size} onChange={(e) => handleStockBySizeChange(idx, 'size', e.target.value)}>
-                        <option value="">-- Select Size --</option>
-                        {remainingSizes.map((size, idx2) => (
-                          <option key={size._id} value={size._id}>
-                            {size.shortName} - {size.name}
-                          </option>
-                        ))}
-                        {showSizeObj}
-                      </select>
-                    </label>
-
-                    <input
-                      type="number"
-                      value={val.stock}
-                      onChange={(e) => handleStockBySizeChange(idx, 'stock', e.target.value)}
-                    />
-
-                    <i
-                      className="bi bi-trash3-fill"
-                      onClick={() => handleDeleteStockBySize(idx)}
-                      style={{ marginRight: "4px" }}
-                    ></i>
-                  </div>
-                );
-              })} */}
-
-              {stockBySizeList.map((val, idx) => {
+              {stockSizeList.map((val, idx) => {
                 const sizeObj = allSize.find(x => x._id === val.size)
                 const selectedOp = sizeObj && <option key={'qweqweqwe'} value={sizeObj._id} style={{ display: 'none' }}> {sizeObj.shortName} {" - "} {sizeObj.name} </option>
 
                 return (
-                  <div key={idx}>
-                    <label>
-                      select size
-                      <select value={val.size} onChange={(e) => handleStockBySizeChange(idx, 'size', e.target.value)}>
-                        <option value="">-- Select Size --</option>
-                        {remainingSizes.map((size) => (
-                          <option key={size._id} value={size._id} className=''> {size.shortName} {" - "} {size.name}</option>
-                        ))}
-                        {selectedOp}
-                      </select>
-                    </label>
+                  <div key={idx} className="stockSize">
+                    <select
+                      value={val.size}
+                      onChange={(e) => handleStockSizeChange(idx, 'size', e.target.value)}
+                      className="stockSelect"
+                      required
+                    >
+                      <option value="">-- Select Size --</option>
+                      {remainingSizes.map((size) => (
+                        <option key={size._id} value={size._id}>
+                          {size.shortName} - {size.name}
+                        </option>
+                      ))}
+                      {selectedOp}
+                    </select>
 
-                    <input type='number' value={val.stock} onChange={(e) => handleStockBySizeChange(idx, 'stock', e.target.value)} className='' />
-                    <i className="bi bi-trash3-fill" onClick={(idx) => handleDeleteStockBySize(idx)} style={{ marginRight: "4px" }}></i>
-                  </div>)
+                    <input
+                      type="number"
+                      value={val.stock}
+                      onChange={(e) => handleStockSizeChange(idx, 'stock', e.target.value)}
+                      className="stockInput"
+                      placeholder="Available Quantity"
+                      required
+                    />
+
+                    <i
+                      className="bi bi-trash3-fill deleteIcon"
+                      onClick={() => handleDeleteStockSize(idx)}
+                    ></i>
+                  </div>
+                )
               })}
-
-              <button type='button' ref={addStockBtn} onClick={handleAddStockBtnClicked}>+ Add</button>
+              <button type='button' ref={addStockBtn} onClick={handleAddStockBtnClicked}>
+                <i className="bi bi-plus-lg"></i> Add Size</button>
             </div>
 
             <label>
@@ -878,18 +880,6 @@ const ProductForm = () => {
                 <option value="ReadyToShip">Ready To Ship</option>
                 <option value="onBooking">On Booking</option>
               </select>
-            </label>
-
-            <label>
-              No of Product in Stock:
-              <input
-                type="number"
-                name="quantity"
-                min="0"
-                value={formik.values.quantity}
-                onChange={formik.handleChange}
-                required
-              />
             </label>
 
             <label>

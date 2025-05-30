@@ -175,6 +175,7 @@ if (popupRef.current && !popupRef.current.contains(event.target))
    - .contains() returns true if the clicked element is inside the popup — so !contains(...) means it's outside.
 
 ## # Incorrect : assignment of varible inside JSX Return
+
 ```js
 arr.map((val, idx) => (
   <div>
@@ -196,18 +197,48 @@ arr.map((val, idx) => {
 });
 ```
 
-
 ## # Incorrect : copy array state into a varible
-```js
-  const [stateArr, setStateArr] = useState([{ size: '', stock: '' }]);
 
-// in some function
-function someFunc(){
-  const tempArr = stateArr;  
+```js
+const [arrayState, setArrayState] = useState(["val-1", "val-2"]);
+
+// in some where
+function someFunc() {
+  console.log("Before arrayState", arrayState);
+  // output : Before arrayState ['val-1','val-2','val-n']
+  const tempArr = arrayState;
+  let x = "Val-n";
+  tempArr.push(x);
+  console.log("After arrayState", arrayState);
+  // output : After arrayState ['val-1','val-2','val-n']
+}
+
+console.log("arrayState", arrayState);
+// output : arrayState ['val-1','val-2']
+somefunc();
+
+useEffect(() => {
+  // by calling someFunc(), this useEffect will not triggered
+  console.log("arrayState useEffect Triggered");
+}, [arrayState]);
+```
+
+- In above code, `tempArr = arrayState`
+  ,this create refference to `arrayState`
+- Means, tempArr not just have value of `arrayState` but its has also its refference
+- Means, If we change value of `tempArr` it will directly change value of `arrayState`.
+- Still `arrayState` is a **useState** , so by updating it, it should trigger **useEffect** hook.
+- But by updating state by this way , **useEffect will not triggered**.
+
+### Correct Way
+
+```js
+function someFunc() {
+  const x = "val-n";
+  const newArray = [...arrayState];
+  newArray.push(x);
+  setArrayState(newArray); // triggers re-render and useEffect
 }
 ```
 
-- Above is incorrect `tempArr = stateArr`
-- we cannot assing state array direct to variable
-- `tempArr` is now reffernce of `stateArr`
-- ...
+
