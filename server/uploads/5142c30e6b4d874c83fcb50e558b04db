@@ -1,0 +1,3 @@
+_id,productName,quantity,mrpPrice,salePrice,weight,desc,Extra Large,Medium,Small,Extra Small
+"""682702d8a538f6384def042d""",Denim,1,2000,1500,4.4,<p>Denim jeans description</p>,0,22,33,44
+"""682c23df575121f979478204""",test 2123123 Product,0,2500,2000,2,<p><i><strong>test 2123123 Product</strong></i></p>,90,50,22,0

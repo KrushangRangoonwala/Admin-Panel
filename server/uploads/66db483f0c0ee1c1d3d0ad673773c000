@@ -1,0 +1,6 @@
+_id,productName,quantity,mrpPrice,salePrice,weight,desc,Extra Large,Medium,Small,Extra Small
+"""682702d8a538f6384def042d""",Denim,1,2000,1500,4.4,<p>Denim jeans description</p>,0,0,11,44
+"""68272ec2e5ec36bc57650876""",Product Online saree,1,4000,3000,5.5,<p>Online saree Product</p>,10,20,30,40
+"""682c23df575121f979478204""",test 2123123 Product,1,2500,2000,2,<p><i><strong>test 2123123 Product</strong></i></p>,0,50,22,0
+"""682c2456575121f97947820c""",test 222222222 Product,1,2000,1500,3,<h2>test 222222222 Product</h2>,20,0,10,0
+"""682c49d067847a43fbbaf846""",Product test 123,1,3000,3500,1,<h3><i>xcxxvzxvxcvxcv</i></h3>,11,21,0, 

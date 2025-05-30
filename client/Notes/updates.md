@@ -1,4 +1,4 @@
-## 27/06/2025 : What is remaining in this project ?
+## What is remaining in this project ?
 
 - put api at single place
 - error handling and showing error to user
@@ -12,3 +12,17 @@
 - no of product in stock according to size (ex., L, M, S, XL,..)
 
 **Suggetion** : UI is not proper
+
+<br>
+
+-----------
+
+- toasts
+- errors
+    + toast
+    + red display text 
+
+#### Toasts
+- **When to use ?**
+    + success message :
+        - On post of Any thing

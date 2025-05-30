@@ -1,6 +1,7 @@
 import product from "../models/productSchema.js";
 import { csv2json, json2csv } from 'json-2-csv'
 import csvtojson from 'csvtojson'
+import Size from "../models/sizeSchema.js";
 
 export async function getProductByPage(req, res) {
     const pageNo = parseInt(req.query.pageNo) ?? 1;
@@ -101,8 +102,9 @@ export async function updateProduct(req, res) {
     const newProduct = {
         ...req.body,
     }
+    console.log(' newProduct.stockSize', newProduct.stockSize);
 
-        (Array.isArray(newProduct.stockSize)) ?
+    (Array.isArray(newProduct.stockSize)) ?
         newProduct.stockSize = newProduct.stockSize.map((val) => JSON.parse(val))
         : newProduct.stockSize = JSON.parse(newProduct.stockSize);
 
@@ -286,38 +288,84 @@ export async function getBySearchText(req, res) {
     }
 }
 
+function getSizeNameFromId(id, allSize) {
+    for (const val of allSize) {
+        if (val._id == id) {
+            // console.log('val.name', val.name);
+            return val.name;
+        }
+    }
+}
+
+function getSizeIdFromName(name, allSize) {
+    allSize.forEach((val) => {
+        if (val.name === name) {
+            return val._id;
+        }
+    })
+}
+
+async function getAllSize() {
+    try {
+        const allSize = await Size.find({});
+        return allSize;
+    } catch (error) {
+        console.log('error in getAllSize Function', error);
+    }
+}
+
 export async function downloadCsv(req, res) {
     const { selectedIds } = req.body;
 
     try {
         const response = await product.find({ _id: { $in: selectedIds } });
-        // console.log('response', response);
-        response.forEach(prod => {
+        const allSize = await getAllSize();
+        const sizeNameArr = allSize.map((val) => val.name);
+        const sizeNameObj = {};
+        sizeNameArr.forEach((val) => sizeNameObj[val] = val);
+
+        // `response` is not js object, so we cannot perform js object operation like `delete prod.mainImage` and `delete prod.subImages`.
+        // So, first turn response to js objectby below line `prod.toObject()`
+        const jsObjResponse = response.map(prod => prod.toObject());
+        jsObjResponse.forEach(prod => {
             delete prod.mainImage;
             delete prod.subImages;
         });
+        // console.log('### jsObjResponse', jsObjResponse); // in this output, i get mainImgage and subImgage property
 
         const options = {
-            keys: ['_id', 'productName', 'quantity', 'mrpPrice', 'salePrice', 'weight', 'desc'],
+            keys: ['_id', 'productName', 'mrpPrice', 'salePrice', 'weight', 'desc', ...sizeNameArr],
             rename: {
                 _id: 'Id',
                 desc: 'Description',
                 weight: "Weight",
                 salePrice: "price Value",
                 mrpPrice: "price Type",
-                quantity: "Quantity",
                 productName: "Product Name",
+                ...sizeNameObj
             }
         }
 
-        const tempObj = [...response]
-        console.log("Object.keys(tempObj[0]) ", Object.keys(tempObj[0]))
-        console.log("tempObj", tempObj)
-        const csv = await json2csv(response, options);
+        const cleanedObj = [...jsObjResponse];
+
+        cleanedObj.forEach((prod) => {
+            allSize.forEach((size) => prod[size.name] = 0)
+        })
+
+        cleanedObj.forEach((prod) => {
+            prod.stockSize.forEach((val) => {
+                const sizeName = getSizeNameFromId(val.size, allSize);
+                console.log('%%% sizeName', sizeName);
+                prod[sizeName] = val.stock;
+            })
+        })
+
+        console.log('### cleanedObj', cleanedObj);
+
+        const csv = await json2csv(cleanedObj, options);
 
         res.setHeader('Content-Disposition', 'attachment; filename=selected_item123123s.csv');
         res.setHeader('Content-Type', 'text/csv');
-
 
         res.status(200).send(csv)
     } catch (error) {
@@ -329,19 +377,42 @@ export async function downloadCsv(req, res) {
     }
 }
 
+function setSizeForDB(item, allSize) {
+    console.log('item', item);
+    const stockSize = [];
+    for (const key in item) {
+        const size = allSize.find(val => val.name === key);
+        if (size) {
+            const stock = Number(item[key]);
+            console.log('&&&&& Number.isInteger(stock)', Number.isInteger(stock));
+            if (stock && Number.isInteger(stock) && stock > 0) {
+                const x = { size: size._id, stock: stock }
+                stockSize.push(x);
+            }
+            delete item[key];
+        }
+    }
+    item.stockSize = stockSize;
+    console.log('item in setSizeForDB', item);
+    return item;
+}
+
 export async function uploadCsv(req, res) {
     try {
         // console.log('req.file', req.file);
         const jsonOfcsv = await csvtojson().fromFile(req.file.path);
+        const allSize = await getAllSize();
         // console.log('jsonOfcsv', jsonOfcsv);
 
         for (const item of jsonOfcsv) {
-            const idStr = item._id;  // "682c2456575121f97947820c"
-            const id = idStr.slice(1, idStr.length - 1)
+            // console.log('item', item);
+            const idStr = item._id;  // "682702d8a538f6384def042d"
+            const id = idStr.slice(1, idStr.length - 1);
             console.log('id', id);
             delete item._id;
+            const prod = setSizeForDB(item, allSize);
             try {
-                await product.findByIdAndUpdate(id, item)
+                await product.findByIdAndUpdate(id, prod)
             } catch (error) {
                 console.log('error in ', id, item.productName);
                 console.log('error', error);

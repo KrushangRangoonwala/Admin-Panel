@@ -241,4 +241,49 @@ function someFunc() {
 }
 ```
 
+## forEach() return will not work .
 
+```js
+function someFunc(name, arr) {
+  arr.forEach((val) => {
+    if (val.name === name) {
+      return val; // even if condition match, return of forEach will not work.
+    }
+  });
+}
+
+const valObj = someFunc("John", dataList);
+```
+
+**Solution :** use `for...of` loop.
+
+## mongoose response query is not JS object.
+
+```js
+const response = await Emp.find({ name: "EmpName" });
+
+console.log(Obejct.keys(response).include("salary")); // true
+
+delete response.salary; // this JS object operation will not work,
+
+console.log(Obejct.keys(response).include("salary")); // true
+```
+
+- JS Object operations or function will not directly work on mongoose `response`
+- dataType of mongoose `response` is **mongoose ducoment not JS Object**
+
+**Solution :**
+
+```js
+const response = await Emp.find({ name: "EmpName" });
+console.log(Obejct.keys(response).include("salary")); // true
+
+const cleaned_Response = reponse.toObject();
+
+delete cleaned_Response.salary; // now, it will run
+
+console.log(Obejct.keys(cleaned_Response).include("salary")); // false
+```
+
+## VS code sticky Scroll
+![alt text](image-4.png)
