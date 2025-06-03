@@ -4,22 +4,23 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(30, 41, 59, 0.75); /* darker bg */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
 
-.cat-modal-content {
-  background-color: #fff;
-  width: 360px;
-  border-radius: 10px;
-  padding: 20px 25px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease-out;
+.modal-container {
+  background-color: #ffffff;
+  width: 420px;
   max-height: 90vh;
-  overflow: auto;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+  animation: slideIn 0.3s ease-out;
+  font-family: "Segoe UI", sans-serif;
 }
 
 @keyframes slideIn {
@@ -33,31 +34,65 @@
   }
 }
 
-.cat-modal-content h2 {
-  margin-bottom: 12px;
-  font-size: 22px;
+.modal-container h2 {
+  font-size: 20px;
   text-align: center;
+  margin-bottom: 20px;
+  color: #1f2937;
 }
 
 .category-form label {
-  display: block;
-  margin-bottom: 8px;
+  font-size: 14px;
   font-weight: 500;
+  display: block;
+  margin: 14px 0 6px;
+  color: #374151;
 }
 
 .category-form input[type="text"],
-.category-form input[type="file"],
-.category-form textarea {
-  width: 94%;
+.category-form input[type="file"] {
+  width: 100%;
   padding: 10px;
-  margin-top: 5px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #cbd5e1;
   font-size: 14px;
+  box-sizing: border-box;
+  margin-top: 7px;
 }
 
-.category-form textarea {
-  resize: none;
+.image-preview {
+  margin-top: 10px;
+  position: relative;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.cancel-icon,
+.remove-icon {
+  position: absolute;
+  top: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #f97316;
+}
+
+.cancel-icon {
+  right: 36px;
+}
+
+.remove-icon {
+  right: 8px;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+  min-height: 80px;
+  max-height: 180px;
 }
 
 .form-actions {
@@ -66,36 +101,24 @@
   margin-top: 20px;
 }
 
-.category-form button {
-  padding: 10px 20px;
+.submit-btn {
+  background-color: #10b981;
+  color: white;
+  padding: 10px 18px;
   border: none;
   border-radius: 6px;
-  font-weight: bold;
   cursor: pointer;
 }
 
-.category-form button[type='submit'] {
-  background-color: #4caf50;
-  color: white;
+.submit-btn:hover{
+  background-color: #0e9e6e;
 }
 
 .cancel-btn {
-  background-color: #e74c3c;
+  background-color: #ef4444;
   color: white;
-}
-
-.img{
-  height: 100px;
-}
-
-.img-upload-icon{
-  margin-left: 6px;
-  margin-right: 13px;
-  display: 'none';
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
-
-.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused){  /*ck editor's in built class, we use to set max height of it*/
-  max-height: 12vh;
-}
- 

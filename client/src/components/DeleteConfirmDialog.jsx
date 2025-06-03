@@ -15,7 +15,7 @@ const DeleteConfirmDialog = ({ isOpen, propmt, id, onConfirm, onCancel, cancelTx
         <h3 className="modal-title">{titleTxt}</h3>
         <p className="modal-text">{propmt}</p>
         <div className="modal-actions">
-          <button className="cancel-btnn" onClick={onCancel}>
+          <button className="cancel-btnn"  onClick={onCancel}>
             {cancelTxt}
           </button>
           <button className="btn delete-btn" onClick={handleOkClick}>

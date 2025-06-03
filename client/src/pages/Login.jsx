@@ -21,8 +21,8 @@ const Login = () => {
     async function handleLogin() {
         try {
             const response = await api.post('/login', {  // category api
-                name: formik.values.name,
-                password: formik.values.password
+                name: formik.values.name.trim(),
+                password: formik.values.password.trim()
             });
             console.log('Login response:', response);
             localStorage.setItem('UserName', formik.values.name);
@@ -75,7 +75,7 @@ const Login = () => {
                             onChange={formik.handleChange}
                             required
                         />
-                        <span onClick={() => setShowPassword(!showPassword)} className="toggle-icon">
+                        <span onClick={() => setShowPassword(!showPassword)} className="eye-toggle-icon">
                             <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
                         </span>
                     </div>

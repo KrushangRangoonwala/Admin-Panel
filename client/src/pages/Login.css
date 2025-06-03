@@ -85,7 +85,7 @@
   padding-right: 40px; /* space for icon */
 }
 
-.toggle-icon {
+.eye-toggle-icon {
   position: absolute;
   right: 12px;
   cursor: pointer;

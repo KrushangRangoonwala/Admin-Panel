@@ -1,3 +1,4 @@
+// AddSizeForm.jsx
 import React from 'react';
 import { useFormik } from 'formik';
 import './AddSizeForm.css';
@@ -19,11 +20,11 @@ const AddSizeForm = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="size-modal-content">
-        <h2>Add Size</h2>
-        <form onSubmit={formik.handleSubmit}>
+      <div className="modal-container">
+        <h2>Add New Size</h2>
+        <form onSubmit={formik.handleSubmit} className="size-form">
           <label>
-            Size Name:
+            Full Name
             <input
               type="text"
               name="name"
@@ -34,7 +35,7 @@ const AddSizeForm = ({ isOpen, onClose, onSubmit }) => {
           </label>
 
           <label>
-            Short Name:
+            Short Name
             <input
               type="text"
               name="shortName"
@@ -44,11 +45,9 @@ const AddSizeForm = ({ isOpen, onClose, onSubmit }) => {
             />
           </label>
 
-          <div className="modal-actions">
-            <button type="submit">Add</button>
-            <button type="button" className="cancel-btn" onClick={onClose}>
-              Cancel
-            </button>
+          <div className="form-actions">
+            <button type="submit" className="submit-btn">Add</button>
+            <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
           </div>
         </form>
       </div>

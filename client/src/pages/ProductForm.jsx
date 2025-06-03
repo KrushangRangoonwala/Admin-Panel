@@ -908,7 +908,7 @@ const ProductForm = () => {
             </label>
 
             <div className="product-form-actions">
-              <button type="submit">{editProductData ? 'Update ' : 'Add '}</button>
+              <button type="submit">{editProductData ? 'Update Product' : 'Add Product'}</button>
               {/* <button type="button" className="cancel-btn">
               Cancel
             </button> */}

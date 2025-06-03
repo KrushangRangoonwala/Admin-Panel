@@ -77,8 +77,13 @@
 }
 
 .product-form button[type='submit'] {
-  background-color: #4caf50;
+  background-color: #10b981;
   color: white;
+}
+
+.product-form button[type='submit']:hover {
+  background-color: #0e9e6e;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .cancel-btn {
@@ -234,6 +239,7 @@
 .closebtn:hover {
   color: #000;
 }
+
 /* 
 .subImg-div {
   position: relative;
@@ -299,11 +305,14 @@
 
 .deleteIcon {
   font-size: 20px;
-  color: #d83939;
+  color: slategray;
   cursor: pointer;
   margin-left: 4px;
 }
 
+.deleteIcon:hover{
+  color:#dc2626;
+}
 
 .grid-containerr {
   display: grid;
@@ -318,7 +327,7 @@
 .subImg-div {
   position: relative;
   width: 100%;
-   /* width: 90px;
+  /* width: 90px;
   height: 90px; */
   aspect-ratio: 1 / 1;
   overflow: hidden;

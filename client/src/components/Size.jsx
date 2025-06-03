@@ -1,34 +1,23 @@
+// Size.jsx
 import React, { useEffect, useState } from 'react';
 import './Size.css';
 import api from '../axiosConfig';
 import AddSizeForm from './AddSizeForm';
 
 const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize, getAllSize }) => {
-    // const [allSize, setAllSize] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         isOpen && getAllSize();
-    }, [isOpen])
+    }, [isOpen]);
 
     const handleToggle = () => {
         setIsOpen(!isOpen);
     };
 
-    async function getAllSize() {
-        try {
-            const response = await api.get('/size');  // size api
-            console.log('Sizes:', response.data);
-            setAllSize(response.data);
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
     async function handleDeleteSize(id) {
         try {
-            const response = await api.delete(`/size/id/${id}`);  // size api
-            console.log('Size deleted:', response.data);
+            await api.delete(`/size/id/${id}`);
             getAllSize();
         } catch (error) {
             console.error("Error:", error);
@@ -37,25 +26,33 @@ const Size = ({ isSizeFormOpen, setIsSizeFormOpen, allSize, setAllSize, getAllSi
 
     return (
         <>
-            <div className="dropdown-container">
-                <div className="dropdown-header" onClick={handleToggle}>
-                    {isOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
-                    Available Sizes
-                    <i className="bi bi-plus-circle add-size" onClick={() => setIsSizeFormOpen(true)}></i>
-                    {/* <span className={`arrow ${isOpen ? 'open' : ''}`}>&#9662;</span> */}
+            <div className="size-dropdown-container">
+                <div className="size-dropdown-header" onClick={handleToggle}>
+                    <span className="size-title">Available Sizes</span>
+                    <i className={`bi ${isOpen ? 'bi-chevron-up' : 'bi-chevron-down'} toggle-icon`}></i>
                 </div>
+
                 {isOpen && (
-                    <ul className="dropdown-list">
-                        {allSize.map((size, index) => (
-                            <li key={index}>
-                                <span style={{ width: '20px' }}>{size.shortName}</span>
-                                <span style={{ width: '100px' }}>{size.name}</span>
-                                <i className="bi bi-trash" onClick={() => handleDeleteSize(size._id)}></i>
-                            </li>
-                        ))}
-                    </ul>
+                    <>
+                        <div className="add-size-wrapper">
+                            <button className="add-size-button" onClick={() => setIsSizeFormOpen(true)}>
+                                <i className="bi bi-plus-circle"></i> Add Size
+                            </button>
+                        </div>
+
+                        <ul className="size-dropdown-list">
+                            {allSize.map((size, index) => (
+                                <li key={index} className="size-item">
+                                    <span className="short-name">{size.shortName}</span>
+                                    <span className="full-name">{size.name}</span>
+                                    <i className="bi bi-trash delete-icon" onClick={() => handleDeleteSize(size._id)}></i>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
                 )}
             </div>
+
         </>
     );
 };

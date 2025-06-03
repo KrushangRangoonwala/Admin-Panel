@@ -298,18 +298,20 @@ const AllProducts = ({
             />
 
             <div className="all-product-container">
+                <h2 className="product-list-title">All Products</h2>
+
                 <div className="add-prod-btn">
                     <div className="search-filter">
                         <button
                             className="filter-btn"
                             onClick={() => setIsFilterOpen(true)}
                         >
-                            <i class="bi bi-filter"></i>Filter
+                            <i className="bi bi-filter"></i>Filter
                         </button>
                         {/* <SearchBox /> */}
                         <div className="search-box">
                             {/* <FaSearch className="search-icon" /> */}
-                            <i class="bi bi-search search-icon"></i>
+                            <i className="bi bi-search search-icon"></i>
                             <input
                                 type="text"
                                 value={searchText}
@@ -318,10 +320,10 @@ const AllProducts = ({
                                 className="search-input"
                                 style={{ border: clearSearch && '4px solid #00aaff' }}
                             />
-                            {clearSearch && <i class="bi bi-x-lg cross-icon" onClick={handleClearSearch} style={{color: '#00aaff'}}></i>}
+                            {clearSearch && <i className="bi bi-x-lg cross-icon" onClick={handleClearSearch} style={{ color: '#00aaff' }}></i>}
                         </div>
                         <button
-                            className="add-category-button"
+                            className="submit-btn"
                             style={{
                                 padding: "10px 14px",
                                 borderRadius: "20px",
@@ -334,24 +336,20 @@ const AllProducts = ({
                         </button>
                     </div>
                     <button
-                        className="add-category-button"
+                        className="add-category-button primary"
                         onClick={() => navigate(`/addProduct`)}
                     >
                         <i className="bi bi-plus-lg"></i> Add Product
                     </button>
                 </div>
-                <h2 className="product-list-title">All Products</h2>
                 {renderProducts.length === 0 && (
                     <p className="no-record">No Product Found</p>
                 )}
 
                 <div className="above-product">
-                    {renderProducts.length > 0 && (
-                        <p className="total-record">Total {totalProduct} Products</p>
-                    )}
                     <div style={{ display: "flex", gap: "14px" }}>
                         <button
-                            className={`show-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
+                            className={`submit-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
                                 }`}
                             onClick={handleDownloadCsv}
                             style={{ height: "35px" }}
@@ -377,75 +375,70 @@ const AllProducts = ({
                                 Delete
                             </button>
                         </div>
-                        {/* <div className="upload-csv-btn-wrapper">
-                            <button
-                                className="upload-csv-btn"
-                                // onClick={handleButtonClick}
-                                type="button"
-                            >
-                                <span role="img" aria-label="upload" className="upload-icon">⬆️</span>
-                                Upload CSV and update Data
-                            </button>
-                            <input
-                                type="file"
-                                accept=".csv"
-                                // ref={fileInputRef}
-                                // onChange={handleFileChange}
-                                style={{ display: "none" }}
-                            />
-                        </div> */}
+                    </div>
+                    <div className="upload-csv-div">
+                        <span onClick={handlecsvUpload}>Upload .csv file and update data</span>
                     </div>
                 </div>
-                <div className="upload-csv-div">
-                    <span onClick={handlecsvUpload}>Upload .csv file and update data</span>
+
+                <div className="above-product-list containerr">
+                    <div className="">
+                        <input
+                            type="checkbox"
+                            className="product-checkboxx"
+                            style={{ marginRight: "7px" }}
+                            onClick={(e) => handleAllCheckBoxClicked(e)}
+                            checked={isAllProdSelected}
+                        />
+                        <span onClick={(e) => handleAllCheckBoxClicked(e)}>
+                            Select All Product
+                        </span>
+                    </div>
+                    {/* {renderProducts.length > 0 && ( */}
+                    <p className="">Total Products: {totalProduct}</p>
+                    {/* )} */}
                 </div>
+
 
                 {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
                 <div className="product-list">
                     {renderProducts.length <= 0 && <p className="no-record">No Record Found</p>}
-                    {renderProducts?.map((prod, i) => (
-                        <div
-                            key={i}
-                            className={`product-card ${i === 0 && "first-product"}`}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => navigate(`/product/${prod._id}`)}
-                        >
-                            {i === 0 && (
-                                <div className="selected-all">
-                                    <input
-                                        type="checkbox"
-                                        style={{ marginRight: "7px" }}
-                                        onClick={(e) => handleAllCheckBoxClicked(e)}
-                                        checked={isAllProdSelected}
-                                    />
-                                    <span onClick={(e) => handleAllCheckBoxClicked(e)}>
-                                        Select All Product
-                                    </span>
-                                </div>
-                            )}
-                            <img src={imageReader(prod, "mainImage")} alt={prod.name} />
-                            <div className="product-info">
 
-                                <label className="product-checkbox" onClick={e => e.stopPropagation()}>
-                                    <input
-                                        type="checkbox"
-                                        className=""
-                                        value={prod._id}
-                                        checked={selectedProductOfAllPage.includes(prod._id)}
-                                        onClick={(e) => handleCheckBoxClick(e)}
-                                    />
-                                </label>
-                                <h6>{prod.productName}</h6>
-                                <div className="actions">
-                                    <i className="bi bi-pencil-fill edit-icon"></i>
-                                    <p>Rs {' '} {prod.salePrice}</p>
-                                    <i
-                                        className="bi bi-trash3-fill delete-icon"
-                                        onClick={(e) => deleteIconClicked(e, prod)}
-                                    ></i>
+                    {renderProducts?.map((prod, i) => (
+                        <>
+                            <div
+                                key={i}
+                                className={`product-card ${i === 0 && "first-product"}`}
+                                style={{ cursor: "pointer" }}
+                                onClick={() => navigate(`/product/${prod._id}`)}
+                            >
+                                <img src={imageReader(prod, "mainImage")} alt={prod.name} />
+                                <div className="product-info">
+                                    <div className="product-name">
+                                        <label className="" onClick={e => e.stopPropagation()}>
+                                            <input
+                                                type="checkbox"
+                                                className="product-checkboxx"
+                                                value={prod._id}
+                                                checked={selectedProductOfAllPage.includes(prod._id)}
+                                                onClick={(e) => handleCheckBoxClick(e)}
+                                            />
+                                        </label>
+                                        <div className="act-btn">
+                                            <h6> {prod.productName}</h6>
+                                            <div className="actions">
+                                                {/* <i className="bi bi-pencil-fill edit-icon"></i> */}
+                                                <p>Rs {' '} {prod.salePrice}</p>
+                                                <i
+                                                    className="bi bi-trash3-fill delete-iconn"
+                                                    onClick={(e) => deleteIconClicked(e, prod)}
+                                                ></i>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </>
                     ))}
                 </div>
                 {/* </div> */}
