@@ -1,0 +1,87 @@
+.filter-modal {
+  position: fixed;
+  top: 0;
+  left: -375px; /* hidden by default */
+  width: 300px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: 2px 0 20px 4px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  transition: left 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  margin-top: 70px;
+  border-radius: 0px 20px;
+}
+
+.filter-modal.open {
+  left: 0; /* slide in */
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-button {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.filter-content label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 500;
+}
+
+.filter-content select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+/* .filter-content select:focus {
+  border-color: #007bff;
+} */
+
+.apply-button {
+  /* margin-top: 20px; */
+  padding: 10px;
+  /* width: 100%; */
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apply-button:hover {
+  background-color: #0056b3;
+}
+
+
+.reset-button {
+  /* margin-top: 10px; */
+  padding: 10px;
+  /* width: 100%; */
+  background-color: #f1f1f1;
+  color: #333;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.reset-button:hover {
+  background-color: #ddd;
+}

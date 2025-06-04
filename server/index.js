@@ -19,7 +19,7 @@ app.use(express.json()); // for parsing application/json format request data
 // app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(cookieParser());
 app.use(cors({
-  origin: 'http://localhost:5173', // your frontend origin
+  origin: ['http://localhost:5173', 'http://localhost:5174'],// your frontend origin
   credentials: true
 }));
 

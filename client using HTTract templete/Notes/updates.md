@@ -59,21 +59,3 @@
 
 
 - note: i want UI in jsx and css file, you don't need to implement logics of these features, you just have to make UI 
-
-
----------
-
-## AllProduct Table
-
-- use jsx and pure css
-- make tabular layout for feilds : productName, mainImage, categoryName, mrpPrice, salePrice, status, weight
-- one checkbox for each row, one checkbox for selecting all products
-- last edit and delete btn
-- if screen width is smaller then user can scroll horizontally to see product data
-- layout should be like it will be use for proffesonal purpose
-
-don't need to impletement state managemnet or any other react logic, 
-
-- add search btn, csv,delete all,Upload .csv file and update data, btn
-- Show ENTRIES AND SELECT page size are different
-- one checkbox for each row, one checkbox for selecting all products

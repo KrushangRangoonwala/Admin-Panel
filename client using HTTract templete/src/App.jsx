@@ -5,7 +5,6 @@ import Login from './pages/Login'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import CheckAuth from './CheckAuth'
 import AllProducts from './pages/AllProducts'
-import ProductTable from './pages/ProductTable'
 
 // import './App.css'
 
@@ -21,7 +20,6 @@ function App() {
           <Route path="/product/:productId" element={<CheckAuth><ProductForm /></CheckAuth>} />
           <Route path="/addProduct/:categoryId?/:subCategoryId?" element={<CheckAuth><ProductForm /></CheckAuth>} />
           <Route path="/allProducts" element={<CheckAuth><AllProducts /></CheckAuth>} />
-          <Route path="/table" element={<CheckAuth><ProductTable /></CheckAuth>} />
         </Routes>
       </BrowserRouter>
 

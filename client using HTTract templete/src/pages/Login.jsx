@@ -1,0 +1,94 @@
+import React, { useEffect, useState } from 'react';
+import { useFormik } from 'formik';
+import api from '../axiosConfig';
+import './Login.css';
+import { useNavigate } from 'react-router';
+import Cookies from 'js-cookie';
+
+const Login = () => {
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+
+    const token = Cookies.get('userToken');
+
+    useEffect(() => {
+        if (token?.length > 0) {
+            navigate('/');
+        }
+    }, [])
+
+    async function handleLogin() {
+        try {
+            const response = await api.post('/login', {  // category api
+                name: formik.values.name.trim(),
+                password: formik.values.password.trim()
+            });
+            console.log('Login response:', response);
+            localStorage.setItem('UserName', formik.values.name);
+            navigate('/');
+        } catch (error) {
+            console.error('Login error:', error);
+            setError(error.response?.data?.message || 'Login failed. Please try again.');
+        }
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            name: '',
+            password: ''
+        },
+        onSubmit: values => {
+            console.log('Form Data:', values);
+            handleLogin();
+            // add login logic here
+        }
+    });
+
+    return (
+        <div className="login-container">
+            <form className="login-box" onSubmit={formik.handleSubmit}>
+                <h2>Login</h2>
+
+                <div className="form-group">
+                    <label htmlFor="name">Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your Name"
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="form-group password-group">
+                    <label htmlFor="password">Password</label>
+                    <div className="password-wrapper">
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            value={formik.values.password}
+                            onChange={formik.handleChange}
+                            required
+                        />
+                        <span onClick={() => setShowPassword(!showPassword)} className="eye-toggle-icon">
+                            <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+                        </span>
+                    </div>
+                </div>
+
+                {error.length > 0 && <p className='login-error'>*{' '}{error}</p>}
+
+                <button type="submit" className="login-btn">Login</button>
+
+                {/* <p className="forgot">Forgot your password?</p> */}
+            </form>
+        </div>
+    );
+};
+
+export default Login;

@@ -2,7 +2,7 @@ import { model, Schema } from "mongoose";
 
 const productSchema = Schema({
   productName: {
-    type: String,
+    type: String, // productName, mainImage, categoryName, mrpPrice, salePrice, status, weight
     required: true,
     trim: true,
   },
@@ -12,46 +12,41 @@ const productSchema = Schema({
     contentType: String,
     originalName: String,
   },
-  subImages: [{
-    data: Buffer,
-    contentType: String,
-    originalName: String,
-  }],
+  subImages: [
+    {
+      data: Buffer,
+      contentType: String,
+      originalName: String,
+    },
+  ],
   categoryId: {
     type: Schema.Types.ObjectId,
-    ref: 'category', // reference to the category model
+    ref: "category", // reference to the category model
     required: true,
   },
   subCategoryId: {
     type: [Schema.Types.ObjectId],
-    ref: 'subCategory', // reference to the subCategory model
+    ref: "subCategory", // reference to the subCategory model
     required: true,
   },
-  // size: {
-  //   type: [Schema.Types.ObjectId],
-  //   ref: 'sizes',
-  //   required: true,
-  // },
-  // quantity: {
-  //   type: Number,
-  //   required: true,
-  // },
-  stockSize: [{
-    size: { type: String, required: true },
-    stock: { type: Number, required: true },
-  }],
+  stockSize: [
+    {
+      size: { type: String, required: true },
+      stock: { type: Number, required: true },
+    },
+  ],
   mrpPrice: {
     type: Number,
-    required: true
+    required: true,
   },
   salePrice: {
     type: Number,
-    required: true
+    required: true,
   },
   status: {
     type: String,
-    enum: ['ReadyToShip', 'onBooking'],
-    default: 'active',
+    enum: ["ReadyToShip", "onBooking"],
+    default: "active",
   },
   weight: {
     type: Number,
@@ -59,9 +54,9 @@ const productSchema = Schema({
   },
   desc: {
     type: String,
-  }
-})
+  },
+});
 
-const Products = model('products', productSchema);
+const Products = model("products", productSchema);
 
 export default Products;

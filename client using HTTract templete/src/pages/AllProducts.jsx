@@ -9,7 +9,11 @@ import FilterModal from "../components/FilterModal";
 import Navbar from "../components/Navbar";
 import Pagination from "../components/Pagination";
 import UploadCsvModal from "../components/UploadCsvModal";
-import ProductTable from "./ProductTable";
+import ProductGridTable from "../components/ProductGridTable";
+import '../assets/css/app.min.css'
+import '../assets/css/bootstrap.min.css'
+import '../assets/css/icons.min.css'
+import '../assets/mermaid.min.css'
 
 const AllProducts = ({
     productsList,
@@ -285,7 +289,7 @@ const AllProducts = ({
                 />
             )}
 
-            {/* <FilterModal
+            <FilterModal
                 isOpen={isFilterOpen}
                 onClose={() => setIsFilterOpen(false)}
                 allCategories={allCategories}
@@ -296,22 +300,22 @@ const AllProducts = ({
                 setSelectedCategory={setSelectedCategory}
                 // onSubcategoryChange={(e) => setSelectedSubcategory(e.target.value)}
                 setSelectedSubcategory={setSelectedSubcategory}
-            /> */}
+            />
 
-            {/* <div className="all-product-container"> */}
-
-            <div className="add-prod-btn">
+            <div className="all-product-container">
                 <h2 className="product-list-title">All Products</h2>
-                {/* <div className="search-filter">
+
+                <div className="add-prod-btn">
+                    <div className="search-filter">
                         <button
                             className="filter-btn"
                             onClick={() => setIsFilterOpen(true)}
                         >
                             <i className="bi bi-filter"></i>Filter
                         </button>
-                        
+                        {/* <SearchBox /> */}
                         <div className="search-box">
-                        
+                            {/* <FaSearch className="search-icon" /> */}
                             <i className="bi bi-search search-icon"></i>
                             <input
                                 type="text"
@@ -335,16 +339,19 @@ const AllProducts = ({
                         >
                             Search
                         </button>
-                    </div> */}
-                <button
-                    className="add-cat-btn primary"
-                    onClick={() => navigate(`/addProduct`)}
-                >
-                    <i className="bi bi-plus-lg"></i> Add Product
-                </button>
-            </div>
+                    </div>
+                    <button
+                        className="add-category-button primary"
+                        onClick={() => navigate(`/addProduct`)}
+                    >
+                        <i className="bi bi-plus-lg"></i> Add Product
+                    </button>
+                </div>
+                {renderProducts.length === 0 && (
+                    <p className="no-record">No Product Found</p>
+                )}
 
-            {/* <div className="above-product">
+                <div className="above-product">
                     <div style={{ display: "flex", gap: "14px" }}>
                         <button
                             className={`submit-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
@@ -377,9 +384,9 @@ const AllProducts = ({
                     <div className="upload-csv-div">
                         <span onClick={handlecsvUpload}>Upload .csv file and update data</span>
                     </div>
-                </div> */}
+                </div>
 
-            {/* <div className="above-product-list containerr">
+                <div className="above-product-list containerr">
                     <div className="">
                         <input
                             type="checkbox"
@@ -392,12 +399,14 @@ const AllProducts = ({
                             Select All Product
                         </span>
                     </div>
+                    {/* {renderProducts.length > 0 && ( */}
                     <p className="">Total Products: {totalProduct}</p>
-                </div> */}
+                    {/* )} */}
+                </div>
 
 
-            {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
-            {/* <div className="product-list">
+                {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
+                <div className="product-list">
                     {renderProducts.length <= 0 && <p className="no-record">No Record Found</p>}
 
                     {renderProducts?.map((prod, i) => (
@@ -435,14 +444,16 @@ const AllProducts = ({
                             </div>
                         </>
                     ))}
-                </div> */}
-            {/* </div> */}
+                </div>
+                    <ProductGridTable
+                        products={renderProducts}
+                        selectedProductOfAllPage={selectedProductOfAllPage}
+                        handleCheckBoxClick={(e) => handleCheckBoxClick(e)}
+                        imageReader={imageReader}
+                    />
 
-            {/* </div> */}
-            {renderProducts.length === 0 && (
-                <p className="no-record">No Product Found</p>
-            )}
-            <ProductTable />
+                {/* </div> */}
+            </div>
             <Pagination
                 totalItems={totalProduct}
                 pageSizeOptions={[5, 10, 20, 50]}
