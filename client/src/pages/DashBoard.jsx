@@ -242,7 +242,7 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="table-container">
+            {/* <div className="table-container"> */}
               <table className="category-table">
                 <thead>
                   <tr>
@@ -330,7 +330,7 @@ const DashboardPage = () => {
                   ))}
                 </tbody>
               </table>
-            </div>
+            {/* </div> */}
           </div>
 
           <Size

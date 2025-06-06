@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import "./Pagination.css";
 
 const Pagination = ({
-    totalItems = 100,
+    totalPages,
     pageSizeOptions = [5, 10, 20, 50],
     setPageNo,
     setPageSize,
@@ -10,7 +10,6 @@ const Pagination = ({
     pageSize,
     getProducts }) => {
 
-    const totalPages = Math.ceil(totalItems / pageSize);
 
     const handlePageSizeChange = (e) => {
         setPageSize(Number(e.target.value));
@@ -44,10 +43,50 @@ const Pagination = ({
     };
 
     return (
-        <div className="pagination-container">
-            <div className="page-size">
-                <label>Page Size:</label>
-                <select value={pageSize} onChange={handlePageSizeChange}>
+        // <div className="pagination-container">
+        //     <div className="page-size">
+        //         <label>Page Size:</label>
+        //         <select value={pageSize} onChange={handlePageSizeChange}>
+        //             {pageSizeOptions.map((size) => (
+        //                 <option key={size} value={size}>
+        //                     {size}
+        //                 </option>
+        //             ))}
+        //         </select>
+        //     </div>
+
+        //     <div className="pagination">
+        //         <button
+        //             className="nav-btn"
+        //             onClick={() => handleClick(pageNo - 1)}
+        //             disabled={pageNo === 1}
+        //         >
+        //             &laquo; Prev
+        //         </button>
+
+        //         {getPageNumbers().map((pageNum) => (
+        //             <button
+        //                 key={pageNum}
+        //                 className={`page-btn ${pageNo === pageNum ? "active" : ""}`}
+        //                 onClick={() => handleClick(pageNum)}
+        //             >
+        //                 {pageNum}
+        //             </button>
+        //         ))}
+
+        //         <button
+        //             className="page-link page"
+        //             onClick={() => handleClick(pageNo + 1)}
+        //             disabled={pageNo === totalPages}
+        //         >
+        //             Next &raquo;
+        //         </button>
+        //     </div>
+        // </div>
+        <div className='paginate'>
+            <div className="">
+                <label className='page-size page-link' style={{ border: 'none' }}>Page Size:</label>
+                <select value={pageSize} onChange={handlePageSizeChange} className='page-size page-link'>
                     {pageSizeOptions.map((size) => (
                         <option key={size} value={size}>
                             {size}
@@ -56,29 +95,25 @@ const Pagination = ({
                 </select>
             </div>
 
-            <div className="pagination">
+            <div className="page-container">
                 <button
-                    className="nav-btn"
-                    onClick={() => handleClick(pageNo - 1)}
                     disabled={pageNo === 1}
-                >
-                    &laquo; Prev
-                </button>
+                    className={`page-link ${pageNo === 1 && 'disabled'}`}
+                    onClick={() => handleClick(pageNo - 1)}
+                > &laquo; Prev</button>
 
                 {getPageNumbers().map((pageNum) => (
-                    <button
+                    <span
                         key={pageNum}
-                        className={`page-btn ${pageNo === pageNum ? "active" : ""}`}
                         onClick={() => handleClick(pageNum)}
-                    >
-                        {pageNum}
-                    </button>
+                        className={`page-number ${pageNo === pageNum ? "active" : ""}`}
+                    >{pageNum}</span>
                 ))}
 
                 <button
-                    className="nav-btn"
-                    onClick={() => handleClick(pageNo + 1)}
+                    className={`page-link ${pageNo === totalPages && 'disabled'}`}
                     disabled={pageNo === totalPages}
+                    onClick={() => handleClick(pageNo + 1)}
                 >
                     Next &raquo;
                 </button>
@@ -87,4 +122,4 @@ const Pagination = ({
     );
 };
 
-export default Pagination;
+export default memo(Pagination);

@@ -1,6 +1,10 @@
 .table-container {
-  padding: 1.5rem;
   background-color: #f9f9f9;
+  /* height: 95vw; */
+  padding: 1.5rem 1.5rem 3rem 1.5rem;
+  /* padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-top: 1.5rem; */
 }
 
 .table-box {
@@ -22,19 +26,33 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .search-bar {
   display: flex;
   gap: 0.5rem;
+  position: relative;
+}
+
+.search-icon{
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
 }
 
 .search-bar input {
-  padding: 0px 12px;
+  padding: 8px 10px 8px 33px; /* Adjusted padding for search icon */
+  width: 250px;
   border: 1px solid #ccc;
   border-radius: 4px;
   /* font-size: 14px; */
+}
+
+.search-bar input:focus-visible {
+  outline: 2px solid #00aaff;
 }
 /* 
 .btn {
@@ -55,7 +73,8 @@
 }
 
 .table-footer {
-  margin-bottom: 0.5rem;
+  margin: 1.5rem 0rem 0.4rem 0rem;
+  font-family: sans-serif;
 }
 
 .entries-select {
@@ -63,6 +82,8 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 14px;
+  color: #3870ebc7;
+  margin-bottom: 5px;
 }
 
 .entries-select select {
@@ -79,21 +100,33 @@
 .product-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px;
+  /* min-width: 900px; */
+}
+
+.product-table th {
+  color: #444;
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.sort-th {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.product-table td {
+  color: #202020;
 }
 
 .product-table th,
 .product-table td {
-  padding: 12px 10px;
+  padding: 12px 14px;
   text-align: left;
   font-size: 14px;
   border-top: 1px solid #eee;
   white-space: nowrap;
-}
-
-.product-table th {
-  background-color: #f5f5f5;
-  font-weight: 600;
 }
 
 .product-table img {
@@ -110,17 +143,23 @@
   border-radius: 4px;
   font-size: 13px;
   cursor: pointer;
-  margin-right: 5px;
 }
 
 .btn-edit {
   background-color: #3870eb;
   color: white;
+  margin-right: 8px;
 }
 
 .btn-delete {
   background-color: #e53e3e;
   color: white;
+}
+
+.action-btnn {
+  padding: 4px 8px;
+  margin-right: 10px;
+  display: inline;
 }
 
 /* .pagination {
@@ -134,10 +173,17 @@
 .page-link,
 .page-number {
   padding: 4px 10px;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   border-radius: 4px;
   color: #333;
+  font-family: sans-serif;
+  background-color: #f5f5f5;
+  border: none;
+}
+
+.page-link {
+  padding: 6px 6px;
 }
 
 .page-number.active {
@@ -148,7 +194,7 @@
 .paginate {
   display: flex;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 .deleteBtn {
@@ -169,6 +215,28 @@
   border: none;
 }
 
-.height{
+.height {
   height: 20px;
+}
+
+.page-size {
+  padding: 2px 7px;
+  display: inline;
+  background-color: white;
+  border: 1.5px solid black;
+}
+
+/* 
+.page:hover{
+      background-color: #f5f5f5;
+} */
+
+.page-container {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
