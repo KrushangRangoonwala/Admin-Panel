@@ -11,6 +11,7 @@ import SubCategoryForm from '../components/SubCategoryForm';
 import CategoryForm from '../components/CategoryForm';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 import Popup from '../components/Popup';
+import Select from '../try/Select';
 
 const ProductForm = () => {
   const navigate = useNavigate();
@@ -283,41 +284,6 @@ const ProductForm = () => {
     setSelectedSubCat([]);
   };
 
-  // function waitForClick(element) {
-  //   return new Promise(resolve => {
-  //     const handler = (event) => {
-  //       element.removeEventListener('click', handler);
-  //       resolve(event);
-  //     };
-  //     element.addEventListener('click', handler);
-  //   });
-  // }
-
-  // async function handleSubImgChange(e) {
-  //   const files = e.currentTarget.files;
-  //   console.log(' e.currentTarget.files', files);
-  //   const fileArray = Array.from(files);
-  //   const filteredFiles = await fileArray.map(async (file) => {
-  //     if (file.size > 400 * 1024) {
-  //       setIsImgLarger(file.name);
-  //       const btn = document.getElementById('userConfirm')
-  //       await waitForClick(btn);  // await gives error of async, but i have written async
-  //       console.log('User clicked! Continue code...');
-  //     } else {
-  //       setPreviewSubImgData(prev => [...prev, file]);
-  //       setNewlySelectedSubImg(prev => [...prev, file]);
-  //       return file;
-  //     }
-  //   })
-
-  //   setPreviewSubImgData(prev => [...prev, ...filteredFiles]);
-  //   setNewlySelectedSubImg(prev => [...prev, ...filteredFiles]);
-
-  //   const previewUrls = filteredFiles.map(file => URL.createObjectURL(file));
-  //   setPreviewSubImageUrls(prev => [...prev, ...previewUrls]);
-  // }
-
-
   async function handleSubImgChange(e) {
     const files = e.currentTarget.files;
     const fileArray = Array.from(files);
@@ -426,23 +392,18 @@ const ProductForm = () => {
   }
 
   function handleAddStockBtnClicked() {
-    // console.log('handleAddStockBtnClicked..')
     const obj = { size: '', stock: '' };
     setStockSizeList(prev => [...prev, obj])
   }
 
   function handleStockSizeChange(idx, field, value) {
-    // console.log('before stockSizeList', stockSizeList);  // before afters are give same output ,why?
-    // console.log('handleStockSizeChange..');
     const tempArr = [...stockSizeList];
     tempArr[idx] = { ...tempArr[idx], [field]: value }
 
     setStockSizeList(tempArr);
-    // console.log('after stockSizeList', stockSizeList);
   }
 
   function handleDeleteStockSize(idx) {
-    // console.log('handleDeleteStockSize..')
     if (stockSizeList.length <= 1) {
       setPopupContent('emptySize');
     } else {
@@ -459,19 +420,10 @@ const ProductForm = () => {
         return x.size !== val._id
       })
     })
-    // console.log('arr', arr);
     setRemainingSizes(arr);
   }
 
-  // useEffect(() => {
-  //   console.log('remainingSizes[0]', typeof remainingSizes[0]?.name)
-  //   console.log('remainingSizes[0]', typeof remainingSizes[0]?._id)
-  //   console.log('remainingSizes[0]', typeof remainingSizes[0]?.shortName)
-  // }, [remainingSizes])
-
   useEffect(() => {
-    // console.log('inside useeffect')
-    // console.log('stockSizeList', stockSizeList);
     setRemainingSizeList();
   }, [stockSizeList]);
 
@@ -488,9 +440,6 @@ const ProductForm = () => {
     setSelectedSizes(prev => prev.filter(item => item.id !== id));
   }
 
-  // useEffect(() => {
-  //   console.log('previewSubImageUrls', previewSubImageUrls);
-  // }, [previewSubImageUrls])
   function handleClick() {
     if (isSubCatListOpen || isSizeListOpen) {
       console.log('Event listner added..');
@@ -499,54 +448,8 @@ const ProductForm = () => {
     }
   }
 
-  // useEffect(() => {
-  //   if (isSubCatListOpen || isSizeListOpen) {
-  //     console.log('added..')
-  //     popupContainer.current.addEventListener("click",handleClick);
-  //   } else {  // if `isSizeListOpen` and  `isSubCatListOpen` both are false then eventListener should be removed
-  //     console.log('Removed')
-  //     popupContainer.current.removeEventListener("click",handleClick);
-  //   }
-  // }, [isSubCatListOpen, isSizeListOpen])
-
-
-
-  // ##########################
-
-  // useEffect(() => {
-  //   const container = popupContainer.current;
-  //   const shouldAttach = isSubCatListOpen || isSizeListOpen;
-
-  //   const handleClick = (e) => {
-  //     e.stopPropagation(); 
-  //     console.log('Event listener triggered..');
-  //     if (isSubCatListOpen) {
-  //       setIsSubCatListOpen(false);
-  //     } else if (isSizeListOpen) {
-  //       setIsSizeListOpen(false);
-  //     }
-  //   };
-
-  //   if (shouldAttach && container) {
-  //     console.log('Event listener added..');
-  //     container.addEventListener("click", handleClick);
-  //   }
-
-  //   return () => {
-  //     if (container) {
-  //       console.log('Event listener removed..');
-  //       container.removeEventListener("click", handleClick);
-  //     }
-  //   };
-  // }, [isSubCatListOpen, isSizeListOpen]);
-
-
   useEffect(() => {
     function handleClickOutside(event) {
-      // console.log('Event listener triggered..');
-      // console.log('event.target', event.target);
-      // console.log('popupContainer.current', popupContainer.current);
-      // console.log('popupContainer.current.contains(event.target)', popupContainer.current.contains(event.target));
       if (popupContainer.current && !popupContainer.current.contains(event.target)) {
         setIsSubCatListOpen(false);
       }
@@ -597,7 +500,7 @@ const ProductForm = () => {
           onClose={() => setIsSubCatFormOpen(false)}
         />
       )}
-      <div >
+      <div>
         <div className="product-form-container">
           <h2>{editProductData ? 'Update ' : 'Add '} Product</h2>
           <form onSubmit={formik.handleSubmit} className="product-form">
@@ -628,6 +531,26 @@ const ProductForm = () => {
                 </button>
               </div>
             </label>
+
+            <div style={{ marginBottom: '15px' }}>
+              <label style={{ marginBlock: '5px' }}>
+                Select SubCategory:
+              </label>
+              <div className="add-select">
+                <Select />
+                <button type='button'
+                  className="add-category-button"
+                  onClick={() => {  // when i clicked on this <div className="subcat-dropdown-header" onClick={() => setIsSubCatListOpen(!isSubCatListOpen)}> , button's click event also runs
+                    console.log('add sub cat clicked')
+                    setIsSubCatFormOpen(true)
+                  }}
+                  style={{ minWidth: '175px' }}
+                >
+                  <i className="bi bi-plus-lg"></i> Add Sub Category
+                </button>
+              </div>
+            </div>
+            {/* </div> */}
 
             <div style={{ marginBottom: '15px' }}>
               <label style={{ marginBlock: '5px' }}>
@@ -690,7 +613,7 @@ const ProductForm = () => {
             {/* <label> */}
             Select Main Image:
             {/* </label> */}
-            {previewMainImgUrl && <div className='subImg-div' style={{width:'120px'}}><img src={previewMainImgUrl} alt="preview" className="img" /></div>}
+            {previewMainImgUrl && <div className='subImg-div' style={{ width: '120px' }}><img src={previewMainImgUrl} alt="preview" className="img" /></div>}
 
             {imgIcon === 'cross' &&
               <i className="bi bi-x-circle img-upload-icon"
@@ -766,63 +689,6 @@ const ProductForm = () => {
                 <span className='rs-class'>Rs</span>
               </label>
             </div>
-
-            {/* <label>
-            Select Size:
-            <select
-              name="size"
-              value={formik.values.size}
-              onChange={formik.handleChange}
-              // onFocus={getAllSize}
-              required
-            >
-              <option value="">-- Select Size --</option>
-              {allSize.map((size, index) => (
-                <option key={index} value={size._id}>
-                  {size.shortName} {" - "}{size.name}
-                </option>
-              ))}
-            </select>
-          </label> */}
-
-
-            {/* <div style={{ marginBottom: '15px' }}>
-              <label style={{ marginBlock: '5px' }}>
-                Select Size:
-              </label>
-
-              <div className="selected-subcat-chip">
-                {selectedSizes?.map((val, idx) => {
-                  return <div className="chip" key={idx}>
-                    {val.shortName} {<span className="closebtn" onClick={() => removeSelectedSize(val.id)}>&times;</span>}
-                  </div>
-                })}
-              </div>
-
-              <div className="add-select">
-                <div className="subcat-dropdown-container">
-
-                  <div className="subcat-dropdown-header" onClick={() => setIsSizeListOpen(!isSizeListOpen)}>
-                    {isSizeListOpen ? <i className="bi bi-chevron-up"></i> : <i className="bi bi-chevron-down"></i>}
-                    -- Select Size --
-                  </div>
-
-                  {isSizeListOpen && (
-                    <ul className="subcat-dropdown-list">
-                      {allSize.length <= 0 && <li className='no-record'>No Size Available</li>}
-
-                      {allSize?.map((size, index) => (
-                        <li key={index} onClick={() => handleSizeClick({ id: size._id, name: size.name, shortName: size.shortName })}>
-                          <span>{size.shortName} {" - "} {size.name}</span>
-                          {selectedSizes.some(item => item.id === size._id) &&
-                            <i className="bi bi-check-lg" style={{ color: 'green' }}></i>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div> */}
 
             <div style={{ marginBottom: '15px' }}>
               Add Stock by Size
@@ -915,6 +781,43 @@ const ProductForm = () => {
             </div>
           </form>
         </div>
+
+        {/* <div className="mb-3">
+          <label htmlFor="choices-single-default" className="form-label font-size-13 text-muted">Default</label>
+          <div className="choices" data-type="select-one" tabIndex={0} role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false">
+            <div className="choices__inner">
+              <select className="form-control choices__input" data-trigger name="choices-single-default" id="choices-single-default" placeholder="This is a search placeholder" hidden tabIndex={-1} data-choice="active">
+                <option value>This is a placeholder</option>
+                <option value="Choice 1">Choice 1</option>
+                <option value="Choice 2">Choice 2</option>
+                <option value="Choice 3" selected>Choice 3</option>
+              </select>
+              <div className="choices__list choices__list--single" role="listbox">
+                <div className="choices__item choices__item--selectable" data-item data-id={4} data-value="Choice 3" aria-selected="true" role="option">
+                  Choice 3
+                </div>
+              </div>
+            </div>
+            <div className="choices__list choices__list--dropdown" aria-expanded="false">
+              <input type="search" className="choices__input choices__input--cloned" autoComplete="off" autoCapitalize="off" spellCheck="false" role="textbox" aria-autocomplete="list" aria-label="This is a placeholder set in the config" placeholder="This is a search placeholder" aria-activedescendant="choices--choices-single-default-item-choice-4" />
+              <div className="choices__list" role="listbox">
+                <div id="choices--choices-single-default-item-choice-2" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice data-id={2} data-value="Choice 1" data-select-text="Press to select" data-choice-selectable aria-selected="false">
+                  Choice 1
+                </div>
+                <div id="choices--choices-single-default-item-choice-3" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice data-id={3} data-value="Choice 2" data-select-text="Press to select" data-choice-selectable>
+                  Choice 2
+                </div>
+                <div id="choices--choices-single-default-item-choice-4" className="choices__item choices__item--choice is-selected choices__item--selectable is-highlighted" role="option" data-choice data-id={4} data-value="Choice 3" data-select-text="Press to select" data-choice-selectable aria-selected="true">
+                  Choice 3
+                </div>
+                <div id="choices--choices-single-default-item-choice-1" className="choices__item choices__item--choice choices__item--selectable" role="option" data-choice data-id={1} data-value data-select-text="Press to select" data-choice-selectable aria-selected="false">
+                  This is a placeholder
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+
       </div>
     </>
   );

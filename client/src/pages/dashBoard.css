@@ -173,13 +173,19 @@
     /* position: absolute;
     right: 1.5rem;
     top: 6.5rem; */
-    background-color: #28a745;
+    background-color: #10b981;
     color: white;
-    padding: 10px 20px;
+    /* padding: 10px 20px; */
+    padding: 12.2px 20px;
     border: none;
     border-radius: 6px;
     font-weight: bold;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-category-button:hover {
+    background-color: #0e9e6e;
     transition: background-color 0.2s ease;
 }
 
