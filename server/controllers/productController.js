@@ -194,6 +194,36 @@ export async function updateProduct(req, res) {
     }
 }
 
+export async function updateFewFieldOfProduct(req, res) {
+    const id = req.params.id;
+    const newProduct = {
+        ...req.body,
+    };
+
+    if (newProduct.stockSize) {
+        Array.isArray(newProduct.stockSize)
+            ? (newProduct.stockSize = newProduct.stockSize.map((val) =>
+                JSON.parse(val)
+            ))
+            : (newProduct.stockSize = JSON.parse(newProduct.stockSize));
+    }
+
+    try {
+        const record = await product.findByIdAndUpdate(id, newProduct);
+        res.status(200).send({
+            success: true,
+            message: "Product updated",
+            updatedProduct: record,
+        });
+    } catch (error) {
+        console.log("error", error);
+        res.status(404).send({
+            success: false,
+            error,
+        });
+    }
+}
+
 export async function deleteProduct(req, res) {
     const id = req.params.id;
     try {
@@ -254,14 +284,17 @@ export async function getBySearchText(req, res) {
     const skipProduct = pageNo * pageSize;
     console.log("req.query.pageSize", req.query.pageSize);
     console.log("req.query.pageNo", req.query.pageNo);
-
+    const searchTextRegex = searchText.trim().split(/\s+/).filter(word => word.length > 0);
     try {
-        const totalProduct = await product.countDocuments({
-            $or: [
-                { productName: { $regex: searchText, $options: "i" } },
-                { desc: { $regex: searchText, $options: "i" } },
-            ],
-        });
+        const query = {
+            $and: searchTextRegex.map(word => ({
+                $or: [
+                    { productName: { $regex: word, $options: "i" } },
+                    { desc: { $regex: word, $options: "i" } }
+                ]
+            }))
+        };
+        const totalProduct = await product.countDocuments(query);
 
         if (skipProduct > totalProduct) {
             res
@@ -272,12 +305,7 @@ export async function getBySearchText(req, res) {
         console.log("skipProduct", skipProduct);
         console.log("pageSize", pageSize);
         const response = await product
-            .find({
-                $or: [
-                    { productName: { $regex: searchText, $options: "i" } },
-                    { desc: { $regex: searchText, $options: "i" } },
-                ],
-            })
+            .find(query)
             .skip(skipProduct)
             .limit(pageSize); // limit is not working
 

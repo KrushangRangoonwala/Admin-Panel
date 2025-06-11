@@ -10,6 +10,8 @@ import Navbar from "../components/Navbar";
 import Pagination from "../components/Pagination";
 import UploadCsvModal from "../components/UploadCsvModal";
 import ProductTable from "./ProductTable";
+import Select from "../try/Select";
+import SingleSelect from "../try/SingleSelect";
 // import debounce from "lodash.debounce";
 
 const AllProducts = ({
@@ -30,6 +32,7 @@ const AllProducts = ({
     const [isUploadCsvModalOpen, setIsUploadCsvModalOpen] = useState(false);
 
     const [searchText, setSearchText] = useState('');
+    const [searchedProductNameList, setSearchedProductNameList] = useState([]);
     const [clearSearch, setClearSearch] = useState(false);
     const [isSearchOn, setIsSearchOn] = useState(false);
     // const [showRenderProduct, setShowRenderProduct] = useState(false);
@@ -50,8 +53,10 @@ const AllProducts = ({
 
     const [sortedField, setSortedField] = useState({ feild: '', order: 0 });
 
+    const [EditInputVal, setEditInputVal] = useState();
+
     useEffect(() => {
-        sortedField.feild !== '' && sortedField.order !== 0 ? getSortedProducts() : isSearchOn ? searchProduct() : getProducts();   
+        sortedField.feild !== '' && sortedField.order !== 0 ? getSortedProducts() : isSearchOn ? searchProduct() : getProducts();
     }, [pageNo, pageSize]);
 
     useEffect(() => {
@@ -71,43 +76,34 @@ const AllProducts = ({
         console.log('txt', txt);
         try {
             const searchedProducts = await api.get(`/product/searchBy/${txt}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);  // product api
+            handleSortingField(''); // reset sorting when search is performed
             setRenderProducts(searchedProducts.data.data);
+            setSearchedProductNameList(searchedProducts.data.data.map((prod) => prod.productName));
             setTotalProduct(searchedProducts.data.totalProduct);
         } catch (error) {
             console.log("error in search api", error);
         }
     }
 
-    function getProductBySearchText() {
-        searchText.length > 0
-            ? (() => {
-                setIsSearchOn(true);
-                searchProduct()
-            })()
-            : (() => {
-                setIsSearchOn(false);
-                getProducts();
-            })()
-    }
-
-
     function debounce(func, delay) {
-        console.log('debounceTimer', debounceTimer.current); // output: undefined
+        // console.log('debounceTimer', debounceTimer.current);
         clearTimeout(debounceTimer.current);
         debounceTimer.current = setTimeout(func, delay);
     }
 
-    function handleSearchTextChange(e) {
-        const txt = e.target.value;
+    function handleSearchTextChange(txt) {
+        // const txt = e.target.value;
         setPageNo(1);
         setSearchText(txt);
 
         debounce(() => {
             console.log('Debounced value:', txt);
-            if (txt.length > 0) {
+            if (txt.length > 3) {
+                // console.log("if (txt.length > 0) {");
                 setIsSearchOn(true);
                 searchProduct(txt);
             } else {
+                console.log("getProducts() called");
                 setIsSearchOn(false);
                 getProducts();
             }
@@ -134,6 +130,7 @@ const AllProducts = ({
             // console.log("response.data", response.data);
             setRenderProducts(response.data.allProduct);
             setTotalProduct(response.data.totalProduct);
+            // setSearchedProductNameList(response.data.allProduct.map((prod) => prod.productName));
             // handleIsAllProdSelected();
             // setSelectedProductOfAllPage([]);
         } catch (error) {
@@ -156,93 +153,12 @@ const AllProducts = ({
         setDeleteDialog(true);
     }
 
-    // useEffect(() => {
-    //     async function setProducts() {
-    //         //   if (isproductListReady) {
-    //         //     console.log("setting productsList");
-    //         //     console.log("from allproduct productList", productsList);
-    //         //     setRenderProducts(productsList);
-    //         //   } else {
-    //         // console.log("getProducts();");
-    //         getProducts();
-    //         //   }
-    //     }
-    //     // setProducts();
-    // }, []);
-
-    async function getCatAndSubCat() {
-        try {
-            const response = await api.get("/category");  // product api
-            console.log("response.data", response.data);
-            setAllCategories(response.data.allCategory);
-        } catch (error) {
-            console.log("Error in get category", error);
-        }
-
-        try {
-            const response = await api.get("/subCategory");  // product api
-            console.log("response.data", response.data);
-            setAllSubcategories(response.data.allSubCategory);
-        } catch (error) {
-            console.log("Error in get subcategory", error);
-        }
-    }
-
-    // useEffect(() => {
-    //     if (isFilterOpen && isRenderedFirstTime) {
-    //         getCatAndSubCat();
-    //         setIsRenderedFirstTime(false);
-    //     }
-    // }, [isFilterOpen]);
-
-    // function handleClearSearch() {
-    //     setClearSearch(false);
-    //     setSearchText('');
-    //     setIsAllProdSelected(false);
-    //     setSelectedProductOfAllPage([]);
-    //     setPageNo(1);
-    //     setTimeout(() => getProducts(), 300); // setPageNo(1) takes time
-    // }
-
-    function handleCheckboxDivClicked() {
-
-    }
-
     function handleCheckBoxClick(e) {
         e.stopPropagation();
         const { value, checked } = e.target;
         checked
             ? setSelectedProductOfAllPage((prev) => [...prev, value])
             : setSelectedProductOfAllPage((prev) => prev.filter((v) => v !== value));
-    }
-
-    function handleIsAllProdSelected() {
-        if (selectedProductOfAllPage.length > 0) {
-            const flag = renderProducts.every((prod) => selectedProductOfAllPage.includes(prod._id));
-            setIsAllProdSelected(flag);
-        }
-        // setIsAllProdSelected(false);
-    }
-
-    useEffect(() => {
-        getProducts();
-        getAllCat();
-    }, [])
-
-    async function getAllCat() {
-        try {
-            const response = await api.get('/category');  // category api
-            // console.log('Categories:', response.data);
-            setAllCategory(response.data.allCategory);
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    }
-
-    function getCatName(id) {
-        const cat = allCategory.find((val) => val._id === id);
-        // console.log('cat', cat);
-        return cat?.name;
     }
 
     function handleAllCheckBoxClicked(e) {
@@ -266,7 +182,165 @@ const AllProducts = ({
         }
     }
 
-    function setSortingField(field) {
+    function handleIsAllProdSelected() {
+        if (selectedProductOfAllPage.length > 0) {
+            const flag = renderProducts.every((prod) => selectedProductOfAllPage.includes(prod._id));
+            setIsAllProdSelected(flag);
+        }
+        // setIsAllProdSelected(false);
+    }
+
+    useEffect(() => {
+        handleIsAllProdSelected();
+        // console.log('selectedProductOfAllPage', selectedProductOfAllPage)
+    }, [selectedProductOfAllPage])
+
+    // function handleClickOutSide(e) {
+    //     console.log('e.target.value', e.target.value);
+    // }
+
+    // const EditInput = () => {
+    //     return (
+    //         <input type='number' onBlur={handleClickOutSide} value={EditInputVal} onChange={(e) => setEditInputVal(e.target.value)} />
+    //     )
+    // }
+
+    // function handledblClick(e) {
+    //     console.log('e.target.value', e.target.value);
+    //     e.target.innerHTML =  <EditInput />;
+    // }
+
+    async function updateProductByFewFields(id, fieldName, fieldValue) {
+        try {
+            const response = await api.put(`product/updateProductByFewField/id/${id}`, { [fieldName]: fieldValue });
+            console.log('response', response);
+            setTimeout(() => setPageNo(pageNo), 1000);  // setPageNo(pageNo) trigger ueffect, inside useEffect getProducts() clalls
+        } catch (error) {
+            console.error("Error updating product:", error);
+        }
+    }
+
+    const PriceCell = ({ id, fieldName, fieldValue }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [value, setValue] = useState(fieldValue);
+        const inputRef = useRef(null);
+
+        const handleDoubleClick = () => {
+            setIsEditing(true);
+        };
+
+        const handleChange = (e) => {
+            setValue(e.target.value);
+        };
+
+        const handleBlur = () => {
+            fieldValue !== value && updateProductByFewFields(id, fieldName, value);
+            setIsEditing(false);
+            console.log('User input value:', value);
+        };
+
+        return (
+            <td onDoubleClick={handleDoubleClick}>
+                {isEditing ? (<>
+                    ₹ <input
+                        ref={inputRef}
+                        type="text"
+                        value={value}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        onKeyDown={e => e.key === 'Enter' ? handleBlur() : null}
+                        // onFocus={() => inputRef.current.select()}  // doesn't working
+                        autoFocus
+                        className="edit-input"
+                    /></>
+                ) : (
+                    `₹ ${value}`
+                )}
+            </td>
+        );
+    };
+
+    const StatusCell = ({ id, fieldName, fieldValue }) => {
+        const [isEditing, setIsEditing] = useState(false);
+        const [value, setValue] = useState(fieldValue);
+        const selectRef = useRef(null);
+        const tdRef = useRef(null);
+
+        // Detect clicks outside the <td> to exit editing mode
+        useEffect(() => {
+            const handleClickOutside = (event) => {
+                if (isEditing && tdRef.current && !tdRef.current.contains(event.target)) {
+                    event.stopPropagation();
+                    handleBlur();
+                }
+            };
+
+            if (isEditing) {
+                document.addEventListener('click', handleClickOutside);
+            }
+
+            return () => {
+                document.removeEventListener('click', handleClickOutside);
+            };
+        }, [isEditing, value]); // Dependencies ensure the listener updates correctly
+
+
+        const handleBlur = (e) => {
+            setIsEditing(false); // Exit editing mode after selection
+            console.log('Selected value:', value);
+            if (fieldValue !== value) {
+                updateProductByFewFields(id, fieldName, value);
+            }
+        };
+
+        // Define options based on fieldName
+        const options = ['Ready to Ship', 'On Booking'];
+
+        return (
+            <td ref={tdRef} onDoubleClick={() => setIsEditing(true)} className="border border-gray-300 px-4 py-2 relative">
+                {isEditing ? (
+                    <select
+                        ref={selectRef}
+                        value={value}
+                        onBlur={handleBlur}
+                        onChange={(e) => setValue(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' ? handleBlur(e) : null}
+                        className="status-select"
+                        // autoFocus
+                    >
+                        <option value='ReadyToShip'>Ready to Ship</option>
+                        <option value='onBooking'>On Booking</option>
+                    </select>
+                ) : (
+                    `${fieldName === 'salePrice' ? '₹' : ''}${value}`
+                )}
+            </td>
+        );
+    };
+
+    async function getAllCat() {
+        try {
+            const response = await api.get('/category');  // category api
+            // console.log('Categories:', response.data);
+            setAllCategory(response.data.allCategory);
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    function getCatName(id) {
+        const cat = allCategory.find((val) => val._id === id);
+        // console.log('cat', cat);
+        return cat?.name;
+    }
+
+    useEffect(() => {
+        getProducts();
+        getAllCat();
+    }, [])
+
+
+    function handleSortingField(field) {
         console.log('field', field);
         // setPageNo(1);
         setSortedField((prev) => {
@@ -298,15 +372,11 @@ const AllProducts = ({
     useEffect(() => {
         if (sortedField.feild !== '' && sortedField.order !== 0) {
             getSortedProducts();
-        }else{
+        } else if (searchText.length <= 0) {
+            console.log('searchText', searchText);
             getProducts();
         }
     }, [sortedField])
-
-    useEffect(() => {
-        handleIsAllProdSelected();
-        // console.log('selectedProductOfAllPage', selectedProductOfAllPage)
-    }, [selectedProductOfAllPage])
 
     async function handleDownloadCsv() {
         console.log(
@@ -400,162 +470,6 @@ const AllProducts = ({
                     doneTxt={selectedProductOfAllPage.length > 1 ? 'Delete All' : 'Delete'}
                 />
             )}
-            <div>
-                {/* <FilterModal
-                isOpen={isFilterOpen}
-                onClose={() => setIsFilterOpen(false)}
-                allCategories={allCategories}
-                allSubcategories={allSubcategories}
-                selectedCategory={selectedCategory}
-                selectedSubcategory={selectedSubcategory}
-                // onCategoryChange={(e) => setSelectedCategory(e.target.value)}
-                setSelectedCategory={setSelectedCategory}
-                // onSubcategoryChange={(e) => setSelectedSubcategory(e.target.value)}
-                setSelectedSubcategory={setSelectedSubcategory}
-            /> */}
-
-                {/* <div className="all-product-container"> */}
-                {/* 
-            <div className="add-prod-btn">
-                <h2 className="product-list-title">All Products</h2>
-                <div className="search-filter">
-                        <button
-                            className="filter-btn"
-                            onClick={() => setIsFilterOpen(true)}
-                        >
-                            <i className="bi bi-filter"></i>Filter
-                        </button>
-                        
-                        <div className="search-box">
-                        
-                            <i className="bi bi-search search-icon"></i>
-                            <input
-                                type="text"
-                                value={searchText}
-                                onChange={(e) => setSearchText(e.target.value)}
-                                placeholder={"Search.."}
-                                className="search-input"
-                                style={{ border: clearSearch && '4px solid #00aaff' }}
-                            />
-                            {clearSearch && <i className="bi bi-x-lg cross-icon" onClick={handleClearSearch} style={{ color: '#00aaff' }}></i>}
-                        </div>
-                        <button
-                            className="submit-btn"
-                            style={{
-                                padding: "10px 14px",
-                                borderRadius: "20px",
-                                opacity: searchText.length <= 0 ? 0.5 : 1,
-                                cursor: searchText.length <= 0 && "no-drop",
-                            }}
-                            onClick={getProductBySearchText}
-                        >
-                            Search
-                        </button>
-                    </div>
-                <button
-                    className="add-cat-btn primary"
-                    onClick={() => navigate(`/addProduct`)}
-                >
-                    <i className="bi bi-plus-lg"></i> Add Product
-                </button>
-            </div> */}
-
-                {/* <div className="above-product">
-                    <div style={{ display: "flex", gap: "14px" }}>
-                        <button
-                            className={`submit-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
-                                }`}
-                            onClick={handleDownloadCsv}
-                            style={{ height: "35px" }}
-                        >
-                            download CSV
-                        </button>
-
-                        <div className="delete-div">
-                            <button
-                                type="button"
-                                className={`btn delete-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"
-                                    }`}
-                                onClick={
-                                    selectedProductOfAllPage.length > 0
-                                        ? handleDeleteBtnClicked
-                                        : null
-                                }
-                            >
-                                <i
-                                    className="bi bi-trash3-fill"
-                                    style={{ marginRight: "4px" }}
-                                ></i>
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                    <div className="upload-csv-div">
-                        <span onClick={handlecsvUpload}>Upload .csv file and update data</span>
-                    </div>
-                </div> */}
-
-                {/* <div className="above-product-list containerr">
-                    <div className="">
-                        <input
-                            type="checkbox"
-                            className="product-checkboxx"
-                            style={{ marginRight: "7px" }}
-                            onClick={(e) => handleAllCheckBoxClicked(e)}
-                            checked={isAllProdSelected}
-                        />
-                        <span onClick={(e) => handleAllCheckBoxClicked(e)}>
-                            Select All Product
-                        </span>
-                    </div>
-                    <p className="">Total Products: {totalProduct}</p>
-                </div> */}
-
-
-                {/* <div style={{ margin: '0 auto' }} className='grid-container'> */}
-                {/* <div className="product-list">
-                    {renderProducts.length <= 0 && <p className="no-record">No Record Found</p>}
-
-                    {renderProducts?.map((prod, i) => (
-                        <>
-                            <div
-                                key={i}
-                                className={`product-card ${i === 0 && "first-product"}`}
-                                style={{ cursor: "pointer" }}
-                                onClick={() => navigate(`/product/${prod._id}`)}
-                            >
-                                <img src={imageReader(prod, "mainImage")} alt={prod.name} />
-                                <div className="product-info">
-                                    <div className="product-name">
-                                        <label className="" onClick={e => e.stopPropagation()}>
-                                            <input
-                                                type="checkbox"
-                                                className="product-checkboxx"
-                                                value={prod._id}
-                                                checked={selectedProductOfAllPage.includes(prod._id)}
-                                                onClick={(e) => handleCheckBoxClick(e)}
-                                            />
-                                        </label>
-                                        <div className="act-btn">
-                                            <h6> {prod.productName}</h6>
-                                            <div className="actions">
-                                                <p>Rs {' '} {prod.salePrice}</p>
-                                                <i
-                                                    className="bi bi-trash3-fill delete-iconn"
-                                                    onClick={(e) => deleteIconClicked(e, prod)}
-                                                ></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </>
-                    ))}
-                </div> */}
-                {/* </div> */}
-                {/* </div> */}
-
-            </div>
 
             <div className="table-container">
                 <div className="table-box">
@@ -565,24 +479,32 @@ const AllProducts = ({
                         <button
                             className="btn submit-btn"
                             onClick={() => navigate(`/addProduct`)}
+                            style={{ padding: "10px 14px" }}
                         >
                             <i className="bi bi-plus-lg"></i> Add Product
                         </button>
                     </div>
                     <div className="top-actions">
-                        <div className="search-bar">
+                        {/* <div className="search-bar">
                             <i class="bi bi-search search-icon"></i>
                             <input type="text"
                                 placeholder="Search Product..."
-                                onChange={e => handleSearchTextChange(e)}
+                                onChange={e => handleSearchTextChange(e.target.value)}
                                 style={{ outline: isSearchOn ? "2px solid #00aaff" : null }}
+                                value={searchText}
                             />
-                            {/* {console.log('@@@ isSearchOn', isSearchOn)}
-                            <button
-                                className="btn edit-btn"
-                                onClick={getProductBySearchText}
-                            >Search</button> */}
+                        </div> */}
+
+                        {/* <div className="form-groupp"> */}
+                        {/* <label style={{ marginBlock: '5px' }}>SubCategory:</label> */}
+                        <div className="add-select">
+                            <SingleSelect optionsData={searchedProductNameList}
+                                selected={searchText}
+                                onChange={handleSearchTextChange}
+                                setSelected={setSearchText}
+                                fieldName="Products" />
                         </div>
+                        {/* </div> */}
 
                         <div className="action-buttons">
                             <button
@@ -590,13 +512,13 @@ const AllProducts = ({
                                 onClick={selectedProductOfAllPage.length > 0 ? handleDownloadCsv : null}
                             ><i className="bi bi-download"></i> Download CSV</button>
                             <button
-                                className={`btn edit-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"}`}
-                                onClick={selectedProductOfAllPage.length > 0 ? handlecsvUpload : null}
-                            ><i className="bi bi-upload"></i> Upload CSV</button>
-                            <button
                                 className={`btn delete-btn ${selectedProductOfAllPage.length <= 0 && "disableDelete"}`}
                                 onClick={selectedProductOfAllPage.length > 0 ? handleDeleteBtnClicked : null}
                             >Delete All</button>
+                            <button
+                                className={`btn edit-btn`}
+                                onClick={handlecsvUpload}
+                            ><i className="bi bi-upload"></i> Upload CSV</button>
                         </div>
                     </div>
 
@@ -622,37 +544,55 @@ const AllProducts = ({
                                             checked={isAllProdSelected} />
                                     </th>
                                     <th>Main Image</th>
-                                    <th onClick={() => setSortingField('productName')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('productName')
+                                    }}>
                                         <div className="sort-th">
                                             Product
                                             <SortingArrows order={sortedField.feild === 'productName' && sortedField.order} />
                                         </div>
                                     </th>
-                                    <th onClick={() => setSortingField('category')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('category')
+                                    }}>
                                         {/* <div className="sort-th"> */}
-                                            Category
-                                            {/* <SortingArrows order={sortedField.feild === 'category' && sortedField.order} /> */}
+                                        Category
+                                        {/* <SortingArrows order={sortedField.feild === 'category' && sortedField.order} /> */}
                                         {/* </div> */}
                                     </th>
-                                    <th onClick={() => setSortingField('mrpPrice')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('mrpPrice')
+                                    }}>
                                         <div className="sort-th">
                                             MRP Price
                                             <SortingArrows order={sortedField.feild === 'mrpPrice' && sortedField.order} />
                                         </div>
                                     </th>
-                                    <th onClick={() => setSortingField('salePrice')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('salePrice')
+                                    }}>
                                         <div className="sort-th">
                                             Sale Price
                                             <SortingArrows order={sortedField.feild === 'salePrice' && sortedField.order} />
                                         </div>
                                     </th>
-                                    <th onClick={() => setSortingField('status')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('status')
+                                    }}>
                                         <div className="sort-th">
                                             Status
                                             <SortingArrows order={sortedField.feild === 'status' && sortedField.order} />
                                         </div>
                                     </th>
-                                    <th onClick={() => setSortingField('weight')}>
+                                    <th onClick={() => {
+                                        setSearchText('');
+                                        handleSortingField('weight')
+                                    }}>
                                         <div className="sort-th">
                                             Weight
                                             <SortingArrows order={sortedField.feild === 'weight' && sortedField.order} />
@@ -691,11 +631,15 @@ const AllProducts = ({
 
                                                 <td>{prod.productName}</td>
                                                 <td>{getCatName(prod.categoryId)}</td>
-                                                <td>₹ {prod.mrpPrice}</td>
-                                                <td>₹ {prod.salePrice}</td>
-                                                <td>
+                                                {/* <td>₹ {prod.mrpPrice}</td> */}
+                                                <PriceCell id={`${prod._id}`} fieldName="mrpPrice" fieldValue={prod.mrpPrice} />
+                                                {/* <td>₹ {prod.salePrice}</td> */}
+                                                <PriceCell id={`${prod._id}`} fieldName="salePrice" fieldValue={prod.salePrice} />
+                                                {/* <td>
                                                     {prod.status === "ReadyToShip" ? "Ready to Ship" : prod.status === "onBooking" ? "On Booking" : " - "}
-                                                </td>
+                                                </td> */}
+                                                <StatusCell id={`${prod._id}`} fieldName="status" fieldValue={prod.status} />
+
                                                 <td>{prod.weight} kg</td>
                                                 <td>
                                                     <button

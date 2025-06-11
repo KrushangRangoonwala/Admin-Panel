@@ -11,6 +11,7 @@ import {
   updateProduct,
   uploadCsv,
   getSortedProduct,
+  updateFewFieldOfProduct,
 } from "../controllers/productController.js";
 import { uploadProductImages } from "../middleware/uploadFiles.js";
 import multer from "multer";
@@ -25,6 +26,8 @@ router
   .get(getProductById)
   .put(uploadProductImages, updateProduct)
   .delete(deleteProduct);
+
+router.put("/updateProductByFewField/id/:id", updateFewFieldOfProduct)  
 
 router.get("/productByCategory/:categoryId", getProductByCategory);
 router.get("/productBySubCategory/:subCategoryId", getProductBySubCategory);

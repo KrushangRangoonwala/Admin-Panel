@@ -61,11 +61,17 @@
   background-color: #218838;
 } */
 
-
 .product-form-actions {
   display: flex;
   justify-content: end;
   margin-top: 40px;
+  gap: 1rem;
+}
+
+.add-product-title{
+  margin-bottom: 1.4rem;
+  /* margin-top: 0.9rem; */
+  margin-left: 1rem;
 }
 
 .product-form button {
@@ -76,12 +82,12 @@
   cursor: pointer;
 }
 
-.product-form button[type='submit'] {
+.product-form button[type="submit"] {
   background-color: #10b981;
   color: white;
 }
 
-.product-form button[type='submit']:hover {
+.product-form button[type="submit"]:hover {
   background-color: #0e9e6e;
   transition: background-color 0.2s ease-in-out;
 }
@@ -119,7 +125,7 @@
   bottom: 2px;
 }
 
-.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
   /*ck editor's in built class, we use to set max height of it*/
   max-height: 20vh;
 }
@@ -132,13 +138,10 @@
   align-items: end;
 }
 
-
 /* ----  DROPDOWN  ----*/
 /* ----  DROPDOWN  ----*/
 /* ----  DROPDOWN  ----*/
 /* ----  DROPDOWN  ----*/
-
-
 
 .subcat-dropdown-container {
   /* width: 63%; */
@@ -194,7 +197,6 @@
   list-style: none;
   display: flex;
   justify-content: space-between;
-
 }
 
 .subcat-dropdown-list li:hover {
@@ -280,19 +282,20 @@
 /* ------------- */
 
 .stockSize {
-  display: flex;
+  display: grid;
+  grid-template-columns: 9fr 9fr 1fr;
   align-items: center;
   gap: 15px;
   margin-bottom: 10px;
 }
-
+/* 
 .stockSize select,
 .stockSize input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
-}
+} */
 
 .stockSelect {
   min-width: 150px;
@@ -310,8 +313,8 @@
   margin-left: 4px;
 }
 
-.deleteIcon:hover{
-  color:#dc2626;
+.deleteIcon:hover {
+  color: #dc2626;
 }
 
 .grid-containerr {
@@ -348,9 +351,21 @@
   top: 0px;
   right: 0px;
   color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
+  /* background-color: rgba(0, 0, 0, 0.5); */
   border-radius: 50%;
   font-size: 20px;
   cursor: pointer;
   padding: 2px;
+  z-index: 999;
+}
+
+
+
+.cancel-btn-bg {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+  top: 4px;
+  right: 0px;
 }

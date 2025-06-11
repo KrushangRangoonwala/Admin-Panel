@@ -206,8 +206,14 @@ const AddProductForm = () => {
                 formData.append(key, values[key]);
             }
         }
-
-        selectedSubCat.forEach((val) => formData.append('subCategoryId', val.id));
+        // console.log('%%% selectedSubCat', selectedSubCat);
+        console.log("dfsfsfsdfsdfsfsdfsfsd")
+        selectedSubCat.forEach((val) => {
+            console.log('val', val);
+            console.log('val._id', val._id);
+            console.log('typeof val._id', typeof val._id);
+            formData.append('subCategoryId', JSON.stringify(val._id))
+        });
         stockSizeList.forEach((val) => formData.append('stockSize', JSON.stringify(val)));
         // selectedSizes.forEach((val) => formData.append('size', val.id));
 
@@ -505,7 +511,7 @@ const AddProductForm = () => {
             )}
             {/* <div> */}
             <div className="add-product-form">
-                <h2>{editProductData ? 'Edit ' : 'Add '} Product</h2>
+                <h2 className='add-product-title'>{editProductData ? 'Edit ' : 'Add '} Product</h2>
                 <form onSubmit={formik.handleSubmit} className="">
                     <Step index={1} title="Product Info" description="Fill all information below">
                         <div className="form-container">
@@ -519,7 +525,7 @@ const AddProductForm = () => {
                                             value={formik.values.categoryId}
                                             onChange={handleCategoryChange}
                                             style={{ width: '100%' }}
-                                            className="form-control"
+                                            className="form-control mt-label"
                                             required >
                                             <option value="">-- Select Category --</option>
                                             {category.map((cat, index) => (
@@ -565,7 +571,7 @@ const AddProductForm = () => {
                                         name="productName"
                                         value={formik.values.productName}
                                         onChange={formik.handleChange}
-                                        className="form-control"
+                                        className="form-control mt-label"
                                         required />
                                 </div>
 
@@ -578,7 +584,7 @@ const AddProductForm = () => {
                                         value={formik.values.weight}
                                         onChange={formik.handleChange}
                                         step="any"
-                                        className="form-control"
+                                        className="form-control mt-label"
                                         required
                                     />
                                 </div>
@@ -604,7 +610,7 @@ const AddProductForm = () => {
                         <div className="form-container">
                             <div className="image-upload-container">
                                 <div className="main-image-section">
-                                    <h4>Main Image</h4>
+                                    <h4 className='image-title'>Main Image</h4>
                                     <label className="image-box">
                                         {previewMainImgUrl ? (
                                             <img src={previewMainImgUrl} alt="Main" className="preview-image" />
@@ -625,21 +631,22 @@ const AddProductForm = () => {
                                 </div>
 
                                 <div className="sub-images-section">
-                                    <h4>SubImages</h4>
+                                    <h4 className='image-title'>SubImages</h4>
                                     <div className="sub-image-grid">
                                         {previewSubImageUrls.map((img, idx) => (
-                                            <div className="image-box">
+                                            <div className="image-box" style={{ marginTop: '0px' }}>
                                                 <img src={img} alt={`Subimage-${idx + 1}`} className="preview-image" />
                                                 <i
                                                     className="bi bi-x-circle img-upload-icon"
                                                     onClick={() => handleRemoveSubImgUpload(idx, previewSubImgData[idx].originalName)
                                                     }
                                                 ></i>
+                                                <div className='img-upload-icon cancel-btn-bg'></div>
                                             </div>
                                         ))}
 
 
-                                        <label className="image-box">
+                                        <label className="image-box" style={{ marginTop: '0px' }}>
                                             <div className="upload-icon">
                                                 <MdCloudUpload size={32} />
                                                 <p>Upload</p>
@@ -657,159 +664,116 @@ const AddProductForm = () => {
                                 </div>
                             </div>
                         </div>
-                        {/* <label> */}
-                        Select Main Image:
-                        {/* </label> */}
-                        {previewMainImgUrl && <div className='subImg-div' style={{ width: '120px' }}><img src={previewMainImgUrl} alt="preview" className="img" /></div>}
 
-                        {imgIcon === 'cross' &&
-                            <i className="bi bi-x-circle img-upload-icon"
-                                style={{ cursor: 'pointer' }}
-                                onClick={handleCancelMainImgUpload}></i>}
-
-                        {imgIcon === 'trash' &&
-                            <i className="bi bi-trash-fill img-upload-icon"
-                                style={{ cursor: 'pointer' }}
-                                onClick={handleRemoveMainImg}></i>}
-                        <label>
-                            <input
-                                type="file"
-                                name="mainImage"
-                                accept="image/*"
-                                id='mainImage'
-                                onChange={(e) => handleMainImgChange(e)}
-                            // required
-                            />
-                        </label>
-                        {/* <label> */}
-                        Select Sub Images:
-                        {/* </label> */}
-                        <div className="grid-containerr">
-                            {previewSubImageUrls?.map((img, index) => (
-                                <div key={index} className="subImg-div">
-                                    <img src={img} alt={`preview-${index}`} />
-                                    <i
-                                        className="bi bi-x-circle img-upload-icon"
-                                        onClick={() =>
-                                            handleRemoveSubImgUpload(index, previewSubImgData[index].originalName)
-                                        }
-                                    ></i>
-                                </div>
-                            ))}
-                        </div>
-
-
-                        <label>
-                            <input
-                                type="file"
-                                name="subImages"
-                                accept="image/*"
-                                multiple
-                                onChange={(e) => handleSubImgChange(e)}
-                            />
-                        </label>
                     </Step>
 
                     <Step index={3} title="Product Pricing" description="Set product pricing and stock">
+                        <div className="form-container">
+                            <div className="price-div">
+                                <label className='price-label'>
+                                    <div className='label-cls'>MRP</div>
+                                    <input
+                                        type="number"
+                                        name="mrpPrice"
+                                        className="form-control mt-label"
+                                        style={{ paddingLeft: '40px', width: '100%' }}
+                                        value={formik.values.mrpPrice}
+                                        onChange={formik.handleChange}
+                                        required
+                                    />
+                                    <span className='rs-class'>Rs</span>
+                                </label>
 
-                        <div className="price-field-con">
-                            <label className='price-label'>
-                                MRP
-                                <input
-                                    type="number"
-                                    name="mrpPrice"
-                                    style={{ paddingLeft: '40px', width: '81%' }}
-                                    value={formik.values.mrpPrice}
-                                    onChange={formik.handleChange}
-                                    required
-                                />
-                                <span className='rs-class'>Rs</span>
-                            </label>
+                                <label className='price-label'>
+                                    <div className='label-cls'>Sale Price</div>
+                                    <input
+                                        type="number"
+                                        name="salePrice"
+                                        style={{ paddingLeft: '40px', width: '100%' }}
+                                        value={formik.values.salePrice}
+                                        onChange={formik.handleChange}
+                                        className="form-control mt-label"
+                                        required
+                                    />
+                                    <span className='rs-class'>Rs</span>
+                                </label>
+                            </div>
+                            <div className="price-grid">
+                                <label>
+                                    <div className='label-cls'>Select Status:</div>
+                                    <select
+                                        name="status"
+                                        value={formik.values.status}
+                                        onChange={formik.handleChange}
+                                        className='form-control mt-label stockSelect'
+                                        required
+                                    >
+                                        <option value="">-- Select Status --</option>
+                                        <option value="ReadyToShip">Ready To Ship</option>
+                                        <option value="onBooking">On Booking</option>
+                                    </select>
+                                </label>
 
-                            <label className='price-label'>
-                                Sale Price
-                                <input
-                                    type="number"
-                                    name="salePrice"
-                                    style={{ paddingLeft: '40px', width: '81%' }}
-                                    value={formik.values.salePrice}
-                                    onChange={formik.handleChange}
-                                    required
-                                />
-                                <span className='rs-class'>Rs</span>
-                            </label>
-                        </div>
+                                <div style={{ marginBottom: '15px' }}>
+                                    <div className='label-cls'>Add Stock by Size</div>
+                                    <div className=''>
+                                        {stockSizeList.map((val, idx) => {
+                                            const sizeObj = allSize.find(x => x._id === val.size)
+                                            const selectedOp = sizeObj && <option key={'qweqweqwe'} value={sizeObj._id} style={{ display: 'none' }}> {sizeObj.shortName} {" - "} {sizeObj.name} </option>
 
-                        <div style={{ marginBottom: '15px' }}>
-                            Add Stock by Size
+                                            return (
+                                                <div key={idx} className="stockSize">
+                                                    <select
+                                                        value={val.size}
+                                                        onChange={(e) => handleStockSizeChange(idx, 'size', e.target.value)}
+                                                        className="form-control"
+                                                        required
+                                                    >
+                                                        <option value="">-- Select Size --</option>
+                                                        {remainingSizes.map((size) => (
+                                                            <option key={size._id} value={size._id}>
+                                                                {size.shortName} - {size.name}
+                                                            </option>
+                                                        ))}
+                                                        {selectedOp}
+                                                    </select>
 
-                            {stockSizeList.map((val, idx) => {
-                                const sizeObj = allSize.find(x => x._id === val.size)
-                                const selectedOp = sizeObj && <option key={'qweqweqwe'} value={sizeObj._id} style={{ display: 'none' }}> {sizeObj.shortName} {" - "} {sizeObj.name} </option>
+                                                    <input
+                                                        type="number"
+                                                        value={val.stock}
+                                                        onChange={(e) => handleStockSizeChange(idx, 'stock', e.target.value)}
+                                                        className="form-control"
+                                                        placeholder="Available Quantity"
+                                                        required
+                                                    />
 
-                                return (
-                                    <div key={idx} className="stockSize">
-                                        <select
-                                            value={val.size}
-                                            onChange={(e) => handleStockSizeChange(idx, 'size', e.target.value)}
-                                            className="stockSelect"
-                                            required
-                                        >
-                                            <option value="">-- Select Size --</option>
-                                            {remainingSizes.map((size) => (
-                                                <option key={size._id} value={size._id}>
-                                                    {size.shortName} - {size.name}
-                                                </option>
-                                            ))}
-                                            {selectedOp}
-                                        </select>
-
-                                        <input
-                                            type="number"
-                                            value={val.stock}
-                                            onChange={(e) => handleStockSizeChange(idx, 'stock', e.target.value)}
-                                            className="stockInput"
-                                            placeholder="Available Quantity"
-                                            required
-                                        />
-
-                                        <i
-                                            className="bi bi-trash3-fill deleteIcon"
-                                            onClick={() => handleDeleteStockSize(idx)}
-                                        ></i>
+                                                    <i
+                                                        className="bi bi-trash3-fill deleteIcon"
+                                                        onClick={() => handleDeleteStockSize(idx)}
+                                                    ></i>
+                                                </div>
+                                            )
+                                        })}
                                     </div>
-                                )
-                            })}
-                            <button type='button' ref={addStockBtn} onClick={handleAddStockBtnClicked}>
-                                <i className="bi bi-plus-lg"></i> Add Size</button>
-                        </div>
+                                    <button type='button' ref={addStockBtn} onClick={handleAddStockBtnClicked} className='form-control mt-label add-size-btn'>
+                                        <i className="bi bi-plus-lg"></i> Add Size</button>
+                                </div>
+                            </div>
 
-                        <label>
-                            Select Status:
-                            <select
-                                name="status"
-                                value={formik.values.status}
-                                onChange={formik.handleChange}
-                                required
-                            >
-                                <option value="">-- Select Status --</option>
-                                <option value="ReadyToShip">Ready To Ship</option>
-                                <option value="onBooking">On Booking</option>
-                            </select>
-                        </label>
+                        </div>
                     </Step>
 
                     <div className="product-form-actions">
-                        <button type="submit">{editProductData ? 'Update Product' : 'Add Product'}</button>
-                        {/* <button type="button" className="cancel-btn">
-              Cancel
-            </button> */}
+                        <button type="button" className="act-btnn cancel-product">
+                            Cancel
+                        </button>
+                        <button type="submit" className='act-btnn submit-product'>{editProductData ? 'Update Product' : 'Add Product'}</button>
                     </div>
                 </form>
             </div >
 
             {/* </div> */}
-            <ImageUpload />
+            {/* <ImageUpload /> */}
         </>
     );
 };

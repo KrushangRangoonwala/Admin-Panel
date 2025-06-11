@@ -26,9 +26,11 @@ const Step = ({ index, title, description, children }) => {
 
     useEffect(() => {
         if (isOpen) {
-            setMaxHeight(`${contentRef.current.scrollHeight}px`);
+            setTimeout(() => {
+                setMaxHeight(`${contentRef.current.scrollHeight}px`);
+            }, 200);
         }
-    }, [isOpen]);
+    }, [isOpen, children]);
 
     return (
         <div className={`step-card ${isOpen ? "open" : ""}`}>

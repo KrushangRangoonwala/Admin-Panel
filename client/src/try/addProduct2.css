@@ -3,6 +3,8 @@
   background: #f7f8fa;
   padding: 20px;
   border-radius: 6px;
+  min-height: 86vh;
+  height: fit-content;
 }
 
 .step-card {
@@ -19,7 +21,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  padding: 16px;
+  padding: 1.5rem;
 }
 
 .step-title {
@@ -27,17 +29,20 @@
   align-items: center;
   gap: 17px;
   opacity: 0.7;
+  font-size: 1.1rem;
 }
 
 .step-index {
   background: #e1efff;
   color: #3870eb;
+  color: #4f6feb;
   border-radius: 50%;
   width: 42px;
   height: 42px;
   font-weight: bold;
   display: flex;
   align-items: center;
+  font-size: 1.1rem;
   justify-content: center;
 }
 
@@ -97,18 +102,23 @@ textarea {
   border: 2.7px solid #007BFF;
 } */
 
-
+.label-cls,
 .form-groupp label {
   font-weight: 500;
   color: #2c3e50;
-  align-self: center;
-  /* position: absolute; */
-  bottom: 0px;
   height: 100%;
 }
 
-.form-group input,
-.form-group textarea {
+.label-cls {
+  height: auto;
+}
+
+.mt-label {
+  margin-top: 4px;
+}
+/* 
+.form-groupp input,
+.form-groupp textarea {
   width: 100%;
   padding: 0.5rem 0.75rem;
   border: 1px solid #ccc;
@@ -116,20 +126,25 @@ textarea {
   font-size: 1rem;
 }
 
-.form-group textarea {
+.form-groupp textarea {
   resize: vertical;
   min-height: 100px;
-}
+} */
 
 .full-width {
   grid-column: 1 / -1;
 }
 
 /* Responsive: stack labels and inputs on smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 920px) {
   .form-grid {
     grid-template-columns: 1fr;
     /* box-sizing: border-box; */
+  }
+
+  .image-upload-container {
+    flex-direction: column;
+    align-items: center;
   }
 
   .form-groupp {
@@ -152,10 +167,57 @@ textarea {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  margin-top: 4px;
 }
 
 .form-control:focus {
   border-color: #80bdff;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.price-div {
+  /* display: flex;
+  justify-content: space-between; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 3rem;
+  margin-top: 1.7rem;
+}
+
+.add-size-btn {
+  width: auto;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: #415d79;
+}
+
+.act-btnn {
+  color: white;
+  padding: 12px 18px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.submit-product {
+  background-color: #10b981;
+}
+
+.cancel-product {
+  background-color: #e74c3c;
+}
+
+.cancel-product:hover {
+  /* background-color: #c0392b; */
+  background-color: #dc2626;
 }

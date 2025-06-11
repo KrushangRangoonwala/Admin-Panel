@@ -55,7 +55,7 @@ const productSchema = Schema({
   desc: {
     type: String,
   },
-});
+}, { timestamps: true });
 
 const Products = model("products", productSchema);
 

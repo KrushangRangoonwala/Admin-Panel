@@ -26,7 +26,7 @@ app.use(cors({
 dotenv.config();
 const PORT = process.env.PORT || 8000;
 
-connectToDB('mongodb://localhost:27017/app');
+connectToDB();
 
 app.use('/login', userRouter);
 app.use('/', checkAuth, otherDetailsRoute)

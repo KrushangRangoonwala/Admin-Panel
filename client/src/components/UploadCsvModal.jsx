@@ -30,7 +30,7 @@ const UploadCsvModal = ({ isOpen, onClose,onSubmit }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="cat-modal-content">
+            <div className="modal-container">
                 <h3 style={{ marginBottom: '5px', textAlign: 'center', display: 'block' }}>Upload .csv file</h3>
                 <h3 style={{ marginBottom: '10px', textAlign: 'center', display: 'block' }}>and Update Product's Data</h3>
 
@@ -40,10 +40,11 @@ const UploadCsvModal = ({ isOpen, onClose,onSubmit }) => {
                         onChange={(e) => {
                             console.log('e.target.files', e.target.files[0])
                             formik.setFieldValue('csv',e.target.files[0])
-                        }} />
+                        }} 
+                        required/>
 
                     <div className="form-actions">
-                        <button type="submit">Upload</button>
+                        <button type="submit" className='btn edit-btn'>Upload</button>
                         <button type="button" className="cancel-btn" onClick={onClose}>
                             Cancel
                         </button>

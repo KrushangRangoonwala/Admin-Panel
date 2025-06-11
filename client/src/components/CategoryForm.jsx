@@ -6,13 +6,14 @@ import api from '../axiosConfig';
 import imageReader from '../helpers/imageReader';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { MdCloudUpload } from 'react-icons/md';
 
 const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatData }) => {
   const [imagePreview, setImagePreview] = useState('');
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
   const [isRemoveImg, setIsRemoveImg] = useState(false);
-  const cancelImgUploadBtn = useRef(null);
-  const removeImgUploadBtn = useRef(null);
+  // const cancelImgUploadBtn = useRef(null);
+  // const removeImgUploadBtn = useRef(null);
 
   if (!isOpen) return null;
 
@@ -54,7 +55,7 @@ const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatD
       const url = imageReader(editCatData, "image");
       setUploadedImageUrl(url);
       setImagePreview(url);
-      removeImgUploadBtn.current.style.display = 'inline';
+      // removeImgUploadBtn.current.style.display = 'inline';
     }
   }, []);
 
@@ -78,30 +79,37 @@ const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatD
       setIsRemoveImg(false);
       formik.setFieldValue('image', file);
       setImagePreview(URL.createObjectURL(file));
-      cancelImgUploadBtn.current.style.display = 'inline';
-      removeImgUploadBtn.current.style.display = 'none';
+      // cancelImgUploadBtn.current.style.display = 'inline';
+      // removeImgUploadBtn.current.style.display = 'none';
     }
   }
 
   function handleCancelImgUpload() {
+    console.log("handleCancelImgUpload...")
     formik.setFieldValue('image', '');
-    document.getElementById('image').value = '';
-    cancelImgUploadBtn.current.style.display = 'none';
+    // document.getElementById('image').value = '';
+    // cancelImgUploadBtn.current.style.display = 'none';
     if (uploadedImageUrl) {
       setImagePreview(uploadedImageUrl);
-      removeImgUploadBtn.current.style.display = 'inline';
+      // removeImgUploadBtn.current.style.display = 'inline';
     } else {
       setImagePreview('');
     }
   }
 
   function handleRemoveImage() {
+    console.log("handleRemoveImage .....")
     formik.setFieldValue('image', '');
     setIsRemoveImg(true);
-    document.getElementById('image').value = '';
+    // document.getElementById('image').value = '';
     setImagePreview('');
     setUploadedImageUrl('');
-    removeImgUploadBtn.current.style.display = 'none';
+    // removeImgUploadBtn.current.style.display = 'none';
+  }
+
+  function handleCancelImgClick(e) {
+    e.stopPropagation();
+    uploadedImageUrl === imagePreview ? handleRemoveImage() : handleCancelImgUpload();
   }
 
   return (
@@ -110,20 +118,15 @@ const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatD
         <h2>{editCatData?._id ? 'Edit Category' : 'Add New Category'}</h2>
         <form onSubmit={formik.handleSubmit} className="category-form">
           <label>
-            Category Name
+            <div className='label-name'>Category Name</div>
             <input type="text" name="name" value={formik.values.name} onChange={handleCatNameChnage} required />
           </label>
 
           <label>
-            Slug
+            <div className='label-name'>Slug</div>
             <input type="text" name="slug" value={formik.values.slug} onChange={formik.handleChange} onBlur={handleSlugChange} required />
           </label>
-
-          <label>
-            Image
-            <input type="file" name="image" id="image" accept="image/*" onChange={handleImageChange} />
-          </label>
-
+          {/* 
           {imagePreview && (
             <div className="image-preview">
               <img src={imagePreview} alt="Preview" />
@@ -131,6 +134,38 @@ const CategoryForm = ({ isOpen, onSubmit, onClose, editCatData = {}, setEditCatD
               <i className="bi bi-trash-fill remove-icon" ref={removeImgUploadBtn} onClick={handleRemoveImage}></i>
             </div>
           )}
+          <label>
+            <div>Image</div>
+            <input type="file" name="image" id="image" accept="image/*" onChange={handleImageChange} />
+          </label> */}
+
+          <div className="" style={{ height: 'fit-content' }}>
+            <label>Image</label>
+            <label className="cat-img-box" style={{ display: "flex", margin: "0px" }}>
+              {imagePreview ? (
+                <>
+                  <img src={imagePreview} alt="Main" className="preview-image" />
+                  <i
+                    className="bi bi-x-circle cancel-img-icon"
+                    onClick={handleCancelImgClick}
+                  ></i>
+                  <div className='img-upload-icon cancel-btn-bg'></div>
+                </>
+              ) : (
+                <div className="upload-icon">
+                  <MdCloudUpload size={40} />
+                  <p>Upload</p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                name="mainImage"
+                id="mainImage"
+                onChange={handleImageChange}
+                hidden />
+            </label>
+          </div>
 
           <label>Description</label>
           <CKEditor

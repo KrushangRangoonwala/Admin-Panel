@@ -16,7 +16,7 @@
   width: 420px;
   max-height: 90vh;
   padding: 25px 30px;
-  border-radius: 12px;
+  border-radius: 5px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   animation: slideIn 0.3s ease-out;
@@ -86,6 +86,6 @@
   color: white;
   padding: 10px 18px;
   border: none;
-  border-radius: 6px;
+  /* border-radius: 6px; */
   cursor: pointer;
 }
