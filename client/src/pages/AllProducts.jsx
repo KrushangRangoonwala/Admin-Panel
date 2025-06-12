@@ -4,22 +4,13 @@ import imageReader from "../helpers/imageReader";
 import api from "../axiosConfig";
 import { useNavigate } from "react-router";
 import DeleteConfirmDialog from "../components/DeleteConfirmDialog";
-import SearchBox from "../components/SearchBox";
 import FilterModal from "../components/FilterModal";
 import Navbar from "../components/Navbar";
 import Pagination from "../components/Pagination";
 import UploadCsvModal from "../components/UploadCsvModal";
-import ProductTable from "./ProductTable";
-import Select from "../try/Select";
-import SingleSelect from "../try/SingleSelect";
-// import debounce from "lodash.debounce";
+import SingleSelect from "../components/SingleSelect";
 
-const AllProducts = ({
-    productsList,
-    isproductListReady,
-    subCategoryId,
-    categoryId,
-}) => {
+const AllProducts = () => {
     const navigate = useNavigate();
     const debounceTimer = useRef(null);
     const [allCategory, setAllCategory] = useState([]);
@@ -33,7 +24,6 @@ const AllProducts = ({
 
     const [searchText, setSearchText] = useState('');
     const [searchedProductNameList, setSearchedProductNameList] = useState([]);
-    const [clearSearch, setClearSearch] = useState(false);
     const [isSearchOn, setIsSearchOn] = useState(false);
     // const [showRenderProduct, setShowRenderProduct] = useState(false);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -53,7 +43,6 @@ const AllProducts = ({
 
     const [sortedField, setSortedField] = useState({ feild: '', order: 0 });
 
-    const [EditInputVal, setEditInputVal] = useState();
 
     useEffect(() => {
         sortedField.feild !== '' && sortedField.order !== 0 ? getSortedProducts() : isSearchOn ? searchProduct() : getProducts();
@@ -68,14 +57,11 @@ const AllProducts = ({
         setTotalPages(Math.ceil(totalProduct / pageSize))
     }, [totalProduct])
 
-    // useEffect(() => {
-    //     setPageNo(1);
-    // }, [isSearchOn])
 
     async function searchProduct(txt = searchText) {  // txt is optional, if not passed it will take searchText state value
         console.log('txt', txt);
         try {
-            const searchedProducts = await api.get(`/product/searchBy/${txt}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);  // product api
+            const searchedProducts = await api.get(`/product/searchBy/${txt}?pageNo=${pageNo - 1}&pageSize=${pageSize}`);
             handleSortingField(''); // reset sorting when search is performed
             setRenderProducts(searchedProducts.data.data);
             setSearchedProductNameList(searchedProducts.data.data.map((prod) => prod.productName));
@@ -92,14 +78,12 @@ const AllProducts = ({
     }
 
     function handleSearchTextChange(txt) {
-        // const txt = e.target.value;
         setPageNo(1);
         setSearchText(txt);
 
         debounce(() => {
             console.log('Debounced value:', txt);
             if (txt.length > 3) {
-                // console.log("if (txt.length > 0) {");
                 setIsSearchOn(true);
                 searchProduct(txt);
             } else {
@@ -113,7 +97,7 @@ const AllProducts = ({
 
     async function handleDeleteProduct(id) {
         try {
-            const response = await api.delete(`/product/id/${id}`);  // product api
+            const response = await api.delete(`/product/id/${id}`);
             console.log(response);
             getProducts();
         } catch (error) {
@@ -126,13 +110,10 @@ const AllProducts = ({
         try {
             const response = await api.get(
                 `/product?pageNo=${pageNo - 1}&pageSize=${pageSize}`
-            );  // product api
+            );
             // console.log("response.data", response.data);
             setRenderProducts(response.data.allProduct);
             setTotalProduct(response.data.totalProduct);
-            // setSearchedProductNameList(response.data.allProduct.map((prod) => prod.productName));
-            // handleIsAllProdSelected();
-            // setSelectedProductOfAllPage([]);
         } catch (error) {
             console.log("Error in get all product", error);
         }
@@ -194,21 +175,6 @@ const AllProducts = ({
         handleIsAllProdSelected();
         // console.log('selectedProductOfAllPage', selectedProductOfAllPage)
     }, [selectedProductOfAllPage])
-
-    // function handleClickOutSide(e) {
-    //     console.log('e.target.value', e.target.value);
-    // }
-
-    // const EditInput = () => {
-    //     return (
-    //         <input type='number' onBlur={handleClickOutSide} value={EditInputVal} onChange={(e) => setEditInputVal(e.target.value)} />
-    //     )
-    // }
-
-    // function handledblClick(e) {
-    //     console.log('e.target.value', e.target.value);
-    //     e.target.innerHTML =  <EditInput />;
-    // }
 
     async function updateProductByFewFields(id, fieldName, fieldValue) {
         try {
@@ -293,9 +259,6 @@ const AllProducts = ({
             }
         };
 
-        // Define options based on fieldName
-        const options = ['Ready to Ship', 'On Booking'];
-
         return (
             <td ref={tdRef} onDoubleClick={() => setIsEditing(true)} className="border border-gray-300 px-4 py-2 relative">
                 {isEditing ? (
@@ -320,7 +283,7 @@ const AllProducts = ({
 
     async function getAllCat() {
         try {
-            const response = await api.get('/category');  // category api
+            const response = await api.get('/category');
             // console.log('Categories:', response.data);
             setAllCategory(response.data.allCategory);
         } catch (error) {
@@ -391,7 +354,7 @@ const AllProducts = ({
                     {
                         responseType: "Blob", //  important for file download
                     }
-                );  // product api
+                );
 
                 const blob = new Blob([response.data], { type: "text/csv" });
                 const url = window.URL.createObjectURL(blob);
@@ -425,8 +388,6 @@ const AllProducts = ({
     }
 
     function SortingArrows({ order }) {  // use {} to wrap the order prop
-        // console.log('order', order);
-        // console.log('order === 1', order == 1);
         return <span >
             <sup><i className="bi bi-caret-up-fill up-arrow" style={{ opacity: order === 1 && "0.5" }}></i></sup>
             <sub><i className="bi bi-caret-down-fill down-arrow" style={{ opacity: order === -1 && "0.5" }}></i></sub>
@@ -485,26 +446,14 @@ const AllProducts = ({
                         </button>
                     </div>
                     <div className="top-actions">
-                        {/* <div className="search-bar">
-                            <i class="bi bi-search search-icon"></i>
-                            <input type="text"
-                                placeholder="Search Product..."
-                                onChange={e => handleSearchTextChange(e.target.value)}
-                                style={{ outline: isSearchOn ? "2px solid #00aaff" : null }}
-                                value={searchText}
-                            />
-                        </div> */}
 
-                        {/* <div className="form-groupp"> */}
-                        {/* <label style={{ marginBlock: '5px' }}>SubCategory:</label> */}
-                        <div className="add-select">
+                        <div className="add-select"> {/* Search bar */}
                             <SingleSelect optionsData={searchedProductNameList}
                                 selected={searchText}
                                 onChange={handleSearchTextChange}
                                 setSelected={setSearchText}
                                 fieldName="Products" />
                         </div>
-                        {/* </div> */}
 
                         <div className="action-buttons">
                             <button
@@ -670,9 +619,6 @@ const AllProducts = ({
                     />
                 </div>
             </div >
-
-            {/* <ProductTable /> */}
-
         </>
     );
 };

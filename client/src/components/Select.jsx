@@ -2,9 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './Select.css';
 
-const optionsData = [
-  'Apple', 'Banana', 'Cherry', 'Date', 'Grape', 'Kiwi', 'Lemon', 'Mango', 'Orange', 'Pineapple'
-];
 
 export default function Select({ optionsData, selected, setSelected, fieldName }) {
   const [isOpen, setIsOpen] = useState(false); // Dropdown open state
@@ -69,7 +66,7 @@ export default function Select({ optionsData, selected, setSelected, fieldName }
   };
 
   useEffect(() => {
-    if (optionsData && optionsData.length > 0) {
+    if (optionsData) {
       // Filter available options based on search term and already selected
       const filteredOptions = optionsData.filter(
         (opt) => (selected.findIndex(selOpt => selOpt._id === opt._id) === -1) && opt.name.toLowerCase().includes(searchTerm.toLowerCase())

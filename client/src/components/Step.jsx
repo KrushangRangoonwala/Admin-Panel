@@ -1,33 +1,48 @@
 import React, { useRef, useState, useEffect } from "react";
-import "./AddProduct2.css";
+import "./Step.css";
 
 
-const Step = ({ index, title, description, children }) => {
-    const [isOpen, setIsOpen] = useState(false);
+const Step = ({ index, title, description, children, isBoxOpen, setOpenedStep }) => {
+    const [isOpen, setIsOpen] = useState(isBoxOpen);
     const contentRef = useRef(null);
     const [maxHeight, setMaxHeight] = useState("0px");
 
     const toggleOpen = () => {
         if (!isOpen) {
             // Expanding: measure height and set
+            setOpenedStep(index);
             setIsOpen(true);
             setMaxHeight(`${contentRef.current.scrollHeight}px`);
         } else {
             // Collapsing: set fixed height first, then 0
             const currentHeight = `${contentRef.current.scrollHeight}px`;
             setMaxHeight(currentHeight);
-
+            setOpenedStep(null);
             requestAnimationFrame(() => {
-                setMaxHeight("0px");
+                setMaxHeight("0px");  
                 setIsOpen(false);
             });
         }
     };
 
     useEffect(() => {
+        if (isBoxOpen) {
+            setIsOpen(true);
+            setMaxHeight(`${contentRef.current.scrollHeight}px`);
+        } else {
+            setIsOpen(false);
+            setMaxHeight("0px");
+        }
+    }, [isBoxOpen]);
+
+    useEffect(() => {
         if (isOpen) {
             setTimeout(() => {
                 setMaxHeight(`${contentRef.current.scrollHeight}px`);
+            }, 200);
+        } else {
+            setTimeout(() => {
+                setMaxHeight("0px");
             }, 200);
         }
     }, [isOpen, children]);
