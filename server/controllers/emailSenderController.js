@@ -46,7 +46,8 @@ const generateEmailContent = (productList, orgMongooseProdObj) => {
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             <td style="width: 50%; vertical-align: top; padding: 10px; box-sizing: border-box;">
-              <img src="cid:main-${product._id}" alt="${product.productName}" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;" />
+              <img src="cid:main-${
+                product._id}" alt="${product.productName}" style="max-width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;" />
               <div style="margin-top: 10px; text-align: center; font-size: 0;">
                 ${product.subImages
         .map(

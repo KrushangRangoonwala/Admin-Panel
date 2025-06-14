@@ -286,4 +286,58 @@ console.log(Obejct.keys(cleaned_Response).include("salary")); // false
 ```
 
 ## VS code sticky Scroll
+
 ![alt text](image-4.png)
+
+<br>
+<br>
+
+## custome react hook
+
+### useIsFirstRender()
+
+- differentiat whether component renders fisrt time or not ?
+  https://usehooks.com/useisfirstrender
+
+### useDebounce()
+
+- use in SEARCH BAR
+- if user don't change input field till 500 millisecond, then only we want to call API, then use this
+- _Note : if we use setTimeOut(), then it runs every time when input change_
+  https://usehooks.com/usedebounce
+
+```
+npm i @uidotdev/usehooks
+```
+
+## Mongoose query's response-object's mutation
+
+```js
+const result = await DB_MODEL.findById(id);
+console.log(result); // { name: 'John', age: 32 }
+
+result.age = 50;
+result.city = "New York";
+
+console.log(result); // { name: 'John', age: 32 }
+```
+
+- Above result object is mongoose's object not a javascript object,
+- we can't change mongoose object.
+- if we want javascript objectinstead of mongoose, then we have to use `.lean()`.
+- then we can change result object
+
+```js
+const result = await DB_MODEL.findById(id).lean();
+console.log(result); // { name: 'John', age: 32 }
+
+result.age = 50;
+result.city = "New York";
+
+console.log(result); // { name: 'John', age: 50, city: "New York" }
+```
+-----
+#### *Another Point to Note*
+- If we store image in mongoDB *(mongo stores image in buffer)* and we query to get that image,then `image's buffer` only be in mongoose object, buffer can't converted to JS object.
+- If we showing im age fetched from mongoDB, then we have to use mongo object, not JS object.
+----
